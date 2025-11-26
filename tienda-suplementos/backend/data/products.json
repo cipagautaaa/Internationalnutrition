@@ -1,0 +1,2521 @@
+{
+  "categories": [
+    "Aminoácidos y Recuperadores",
+    "Comidas con proteína",
+    "Creatinas",
+    "Pre-entrenos y Energía",
+    "Proteínas",
+    "Salud y Bienestar"
+  ],
+  "products": [
+    {
+      "name": "ISO WHEY",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "6LB",
+      "price": 350000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 140000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "ONE UP ISOLATE",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 130000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BEST PROTEIN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "4LB",
+      "price": 400000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 215000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "BABY BEST PROTEIN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "1LB",
+      "price": 108000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BEST WHEY",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "5LB",
+      "price": 350000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 160000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "ISO BEST",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 265000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SACHET BEST PROTEIN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X12",
+      "price": 100000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SACHET BEST WHEY",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X12",
+      "price": 70000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "WHEY PURE",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "5LB",
+      "price": 285000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 140000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "1LB",
+          "price": 72000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "PROTON WHEY",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "4LB",
+      "price": 300000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 160000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "BIPRO",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 165000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "1LB",
+          "price": 80000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "BIPRO 3LB",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 225000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BIPRO RIPPED",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2.4LB",
+      "price": 165000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BIPRO LITE",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2.4LB",
+      "price": 165000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BIPRO MASS",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 165000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MEGAPLEX LITE",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 155000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ISOCLEAN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 180000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BIPRO COMPLEX",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 165000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BIPRO CAJA",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X18",
+      "price": 85000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ISO WHEY ISOLATE",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "6LB",
+      "price": 430000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 170000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "WHEY ESENCE",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 155000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BE ONE",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 250000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 180000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "LA WEY",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "1.7LB",
+      "price": 125000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BODY RIPPED",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 105000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ISO FIT",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "4LB",
+      "price": 320000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 170000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "HIGH STANDARD WHEY",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 215000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "WHEY PLATINUM",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "5LB",
+      "price": 360000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 150000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "IMN SENIOR",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "480G",
+      "price": 70000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "PURE ISO",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Limpia",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "1LB",
+      "price": 75000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MASS GAINER SNP",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "6LB",
+      "price": 190000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "3LB",
+          "price": 75000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "ISOLATE GAINER SNP",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 80000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "SMART GAINER",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "13LB",
+      "price": 345000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "6LB",
+          "price": 175000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "3LB",
+          "price": 100000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "2LB",
+          "price": 70000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "PROTON GAINER",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "6LB",
+      "price": 160000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "3LB",
+          "price": 85000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "TNT MEGA GAINER",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "10LB",
+      "price": 255000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "6LB",
+          "price": 160000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "3LB",
+          "price": 85000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "CREATINE POWER",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 65000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "3LB",
+          "price": 65000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "CREATINER POWER",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "10LB",
+      "price": 240000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "GAINZ",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "6.5LB",
+      "price": 190000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "3.2LB",
+          "price": 100000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "THE WHEY OF GAIN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 90000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "THEY WHEY OF GAIN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "3LB",
+      "price": 170000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "LA VIGA",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "7LB",
+      "price": 210000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "1.9LB",
+          "price": 65000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "MASS EVOLUTION",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "10LB",
+      "price": 170000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "7LB",
+          "price": 115000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "4LB",
+          "price": 80000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "2LB",
+          "price": 46000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "SUPER MEGA GAINER",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "10LB",
+      "price": 240000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "5LB",
+          "price": 140000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "2LB",
+          "price": 65000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "1LB",
+          "price": 40000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "MEGA GAINER",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "10LB",
+      "price": 265000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "5LB",
+          "price": 150000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "2LB",
+          "price": 70000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "1LB",
+          "price": 45000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "NITRO MASS",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "5LB",
+      "price": 245000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "2LB",
+          "price": 110000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "KING PROTEIN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Hipercalórica",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "12LB",
+      "price": 330000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "6LB",
+          "price": 185000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "4LB",
+          "price": 125000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        },
+        {
+          "size": "2LB",
+          "price": 65000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "VEGAN PROTEIN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Vegana",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "400G",
+      "price": 65000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MEGA SOY",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Vegana",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "750G",
+      "price": 70000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BEST VEGAN",
+      "description": "Descripción pendiente",
+      "category": "Proteínas",
+      "productType": "Vegana",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "2LB",
+      "price": 130000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "INTENZE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "30 SERV",
+      "price": 145000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "14 SERV",
+          "price": 75000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "TWISTER",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 110000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ENERGY X",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 30000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ULTIMATE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 120000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ELECTRON",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 125000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "PUMP NOX EDGE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 110000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "NITROX",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 50000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "PASE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 105000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SACHET INTENZE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X12",
+      "price": 70000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SACHET PASE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X36",
+      "price": 124000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MICRODOSIS PASE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X15",
+      "price": 63000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "FOCUS SNP",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Pre-entrenos",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 100000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "LEGACY",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "productType": "HCL",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "50 SERV",
+      "price": 130000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "30 SERV",
+          "price": 85000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "CREATOMIC",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "productType": "HCL",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 90000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BEAST IMN",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "productType": "HCL",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 100000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "SMART A-TACK",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "productType": "HCL",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 95000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "LEGACY PLUS",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "productType": "HCL",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "50 SERV",
+      "price": 140000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "30 SERV",
+          "price": 105000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "CREATINA HCL SNP",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "productType": "HCL",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 90000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SACHET LEGACY",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "productType": "HCL",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X32",
+      "price": 135000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CREATINA IMN",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "400G",
+      "price": 120000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "150G",
+          "price": 50000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "CREATINA CREAPURE IMN",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 110000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CREATINA IRON",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 130000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CREA STACK",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 150000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ATOMIC",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 115000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "LEGEND",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 80000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CREATINA GMN",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "300G",
+      "price": 110000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "100G",
+          "price": 35000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "MICRODOSIS LEGEND",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X15",
+      "price": 56000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SACHET LEGEND",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X36",
+      "price": 126000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CREATINE  SNP",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "100 SERV",
+      "price": 95000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": [
+        {
+          "size": "60SERV",
+          "price": 65000,
+          "originalPrice": null,
+          "image": "/placeholder-product.png",
+          "inStock": true
+        }
+      ]
+    },
+    {
+      "name": "CREABOLIC",
+      "description": "Descripción pendiente",
+      "category": "Creatinas",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 75000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ARMY",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 115000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "ALPHA BCAA",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 120000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "SMART STACK",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 80000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "NITROSHOCK",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 95000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BCAA 2.1.1",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 115000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MEGA CARBS",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 80000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "GL SMART",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 60000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "GLUTASTACK",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 65000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BCAA 4.2.2",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 75000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "GLUTAMINA 4500",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 65000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SACHET ARMY X20",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 90000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "COYOTE",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 60000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "AMINOS EAA SNP",
+      "description": "Descripción pendiente",
+      "category": "Aminoácidos y Recuperadores",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 80000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "SMART BURNER",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 140000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "REDUCTIONS ADVANCE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 130000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "LIPOCORE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 150000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "LIPODRENE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 160000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "LIPO 6 BLACK",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 105000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "HYDROXICUT",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 120000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BURNER STACK",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 140000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "TURN ON FIRE",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 75000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "REACTION",
+      "description": "Descripción pendiente",
+      "category": "Pre-entrenos y Energía",
+      "productType": "Quemadores de grasa",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 130000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "OMEGA 3 PROSCIENCE",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 77000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "COLLAGEN STACK",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 100000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "NUTRA C",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 65000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "VITAMINA C IMN",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 55000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "KORAGEEM",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 80000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "SHIELD",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 100000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "OMEGA 3 IMN",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 65000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "THE ONE",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 90000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "OPTIMUS",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 80000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MULTIMN",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 65000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "TESTABOLIC XTREME",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 150000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MONSTER TEST",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 120000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "TESTO ULTRA",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 90000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "TESTO X",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 130000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "NOVA BOOST",
+      "description": "Descripción pendiente",
+      "category": "Salud y Bienestar",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 55000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "PROTEIN PANCAKE CON HUEVO",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 55000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "PROTEIN PANCAKE SIN HUEVO",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 45000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA FITBAR",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X12",
+      "price": 140000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "CAJA SMART BAR",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "X12",
+      "price": 110000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "BARRA INSIDE",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 8500,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "SMART BAR",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 10000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "FITBAR",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 12000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "PROTEIN BROWNIE",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 12500,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "PROTEIN COOKIE",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 11000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    },
+    {
+      "name": "MANI INSIDE",
+      "description": "Descripción pendiente",
+      "category": "Comidas con proteína",
+      "images": [
+        "/placeholder-product.png"
+      ],
+      "baseSize": "UNICO",
+      "price": 5000,
+      "originalPrice": null,
+      "inStock": true,
+      "isActive": true,
+      "flavors": [
+        "Sin sabor"
+      ],
+      "variants": []
+    }
+  ]
+}

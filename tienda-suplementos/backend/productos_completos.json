@@ -1,0 +1,263 @@
+{
+  "productos_existentes": [
+    "creatina imn",
+    "best proteina", 
+    "proteina imn",
+    "bipro",
+    "creatina platinum",
+    "nutrex",
+    "Pre-Workout Energy",
+    "Multivitamínico Completo",
+    "BCAA 2:1:1",
+    "Omega 3 Fish Oil"
+  ],
+  "nuevos_productos": [
+    {
+      "name": "Proteina Whey Gold Standard",
+      "description": "La proteína más vendida del mundo. 24g de proteína por servicio, aminoácidos esenciales y BCAA naturales para máxima recuperación muscular.",
+      "price": 95000,
+      "category": "Proteínas",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_692730-MCO88994756824_082025-F.webp",
+      "baseSize": "2 lb",
+      "inStock": true,
+      "stock": 25,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Double Rich Chocolate", "Vainilla", "Fresa", "Cookies & Cream"],
+      "variants": [
+        {"size": "1 lb", "price": 55000},
+        {"size": "2 lb", "price": 95000},
+        {"size": "5 lb", "price": 210000}
+      ],
+      "tipo": "Whey Concentrate"
+    },
+    {
+      "name": "Proteina Isolate Premium",
+      "description": "Proteína aislada de suero con 90% de pureza. Libre de lactosa y carbohidratos, ideal para definición muscular y personas intolerantes.",
+      "price": 120000,
+      "category": "Proteínas",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_945847-MCO72345678901_102023-F.webp",
+      "baseSize": "2 lb",
+      "inStock": true,
+      "stock": 15,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Chocolate", "Vainilla", "Frutilla"],
+      "variants": [
+        {"size": "2 lb", "price": 120000},
+        {"size": "4 lb", "price": 215000}
+      ],
+      "tipo": "Whey Isolate"
+    },
+    {
+      "name": "Caseína Micelar Nocturna",
+      "description": "Proteína de digestión lenta ideal para antes de dormir. Liberación sostenida de aminoácidos durante 6-8 horas para recuperación nocturna.",
+      "price": 85000,
+      "category": "Proteínas",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_812349-MCO71234567890_092023-F.webp",
+      "baseSize": "2 lb",
+      "inStock": true,
+      "stock": 20,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Chocolate", "Vainilla", "Cookies & Cream"],
+      "variants": [
+        {"size": "2 lb", "price": 85000},
+        {"size": "4 lb", "price": 155000}
+      ],
+      "tipo": "Caseína Micelar"
+    },
+    {
+      "name": "Creatina Monohidrato Creapure",
+      "description": "Creatina monohidrato 100% pura marca Creapure alemana. Estudios científicos comprueban aumento del 15% en fuerza y potencia muscular.",
+      "price": 45000,
+      "category": "Creatinas", 
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_687523-MCO88123456789_072025-F.webp",
+      "baseSize": "300g",
+      "inStock": true,
+      "stock": 50,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Sin sabor"],
+      "variants": [
+        {"size": "300g", "price": 45000},
+        {"size": "500g", "price": 70000},
+        {"size": "1000g", "price": 125000}
+      ],
+      "tipo": "Monohidrato"
+    },
+    {
+      "name": "Creatina HCL Ultra",
+      "description": "Creatina HCL de máxima solubilidad. Requiere menor dosis que la monohidrato, sin retención de líquidos y digestión más cómoda.",
+      "price": 75000,
+      "category": "Creatinas",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_923456-MCO89234567890_082025-F.webp",
+      "baseSize": "120 caps",
+      "inStock": true,
+      "stock": 30,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Sin sabor"],
+      "variants": [
+        {"size": "60 caps", "price": 45000},
+        {"size": "120 caps", "price": 75000}
+      ],
+      "tipo": "HCL"
+    },
+    {
+      "name": "Pre-Entreno C4 Original",
+      "description": "Fórmula pre-entreno con 150mg de cafeína, beta-alanina, arginina y vitaminas. Energía explosiva, enfoque mental y pump muscular.",
+      "price": 65000,
+      "category": "Pre-entrenos y Energía",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_734567-MCO87345678901_062025-F.webp",
+      "baseSize": "30 serv",
+      "inStock": true,
+      "stock": 40,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Blue Razz", "Fruit Punch", "Watermelon", "Orange"],
+      "variants": [
+        {"size": "30 serv", "price": 65000},
+        {"size": "60 serv", "price": 115000}
+      ],
+      "tipo": "Estimulante"
+    },
+    {
+      "name": "Pre-Entreno Gorilla Mode",
+      "description": "Pre-entreno de alta potencia con 350mg de cafeína, L-citrulina, betaína y nootrópicos. Para entrenamientos extremos y máximo rendimiento.",
+      "price": 85000,
+      "category": "Pre-entrenos y Energía",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_845678-MCO88456789012_072025-F.webp",
+      "baseSize": "40 serv",
+      "inStock": true,
+      "stock": 25,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Bombsicle", "Mojo Mojito", "Tiger's Blood", "Firefly Lemonade"],
+      "variants": [
+        {"size": "40 serv", "price": 85000}
+      ],
+      "tipo": "Alta Potencia"
+    },
+    {
+      "name": "BCAAs 2:1:1 Scivation",
+      "description": "Aminoácidos de cadena ramificada en proporción científica 2:1:1. Reduce fatiga muscular, acelera recuperación y mantiene masa magra.",
+      "price": 55000,
+      "category": "Aminoácidos y Recuperadores",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_756789-MCO89567890123_082025-F.webp",
+      "baseSize": "30 serv",
+      "inStock": true,
+      "stock": 35,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Blue Raspberry", "Mango", "Watermelon", "Grape"],
+      "variants": [
+        {"size": "30 serv", "price": 55000},
+        {"size": "90 serv", "price": 145000}
+      ],
+      "tipo": "BCAA 2:1:1"
+    },
+    {
+      "name": "L-Glutamina Pura",
+      "description": "L-Glutamina 100% pura para recuperación muscular acelerada y salud intestinal. Aminoácido más abundante en músculos.",
+      "price": 40000,
+      "category": "Aminoácidos y Recuperadores",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_867890-MCO90678901234_092025-F.webp",
+      "baseSize": "300g",
+      "inStock": true,
+      "stock": 25,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Sin sabor"],
+      "variants": [
+        {"size": "300g", "price": 40000},
+        {"size": "500g", "price": 65000}
+      ],
+      "tipo": "L-Glutamina"
+    },
+    {
+      "name": "Multivitamínico para Hombres",
+      "description": "Complejo vitamínico diseñado para hombres activos. 75+ ingredientes incluyendo vitaminas, minerales, antioxidantes y extractos herbales.",
+      "price": 45000,
+      "category": "Salud y Bienestar",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_978901-MCO91789012345_102025-F.webp",
+      "baseSize": "90 tabs",
+      "inStock": true,
+      "stock": 40,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Sin sabor"],
+      "variants": [
+        {"size": "90 tabs", "price": 45000},
+        {"size": "180 tabs", "price": 80000}
+      ],
+      "tipo": "Multivitamínico"
+    },
+    {
+      "name": "Omega 3 Premium Fish Oil",
+      "description": "Aceite de pescado ultra purificado con alta concentración de EPA y DHA. Apoya salud cardiovascular, cerebral y reduce inflamación.",
+      "price": 35000,
+      "category": "Salud y Bienestar", 
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_089012-MCO92890123456_112025-F.webp",
+      "baseSize": "60 caps",
+      "inStock": true,
+      "stock": 50,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Natural", "Limón"],
+      "variants": [
+        {"size": "60 caps", "price": 35000},
+        {"size": "120 caps", "price": 65000}
+      ],
+      "tipo": "Omega 3"
+    },
+    {
+      "name": "ZMA (Zinc + Magnesio + B6)",
+      "description": "Complejo de zinc, magnesio y vitamina B6 para optimizar testosterona natural, mejorar calidad del sueño y acelerar recuperación.",
+      "price": 40000,
+      "category": "Rendimiento hormonal",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_190123-MCO93901234567_122025-F.webp",
+      "baseSize": "90 caps",
+      "inStock": true,
+      "stock": 30,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Sin sabor"],
+      "variants": [
+        {"size": "90 caps", "price": 40000}
+      ],
+      "tipo": "ZMA"
+    },
+    {
+      "name": "Barras Proteicas Quest",
+      "description": "Barras proteicas con 20g de proteína completa, fibra y 0 azúcar añadido. Perfectas como snack saludable o comida post-entreno.",
+      "price": 4500,
+      "category": "Comidas con proteína",
+      "image": "https://http2.mlstatic.com/D_NQ_NP_2X_234567-MCO94012345678_012026-F.webp",
+      "baseSize": "Unidad",
+      "inStock": true,
+      "stock": 100,
+      "isActive": true,
+      "rating": 0,
+      "reviews": [],
+      "flavors": ["Chocolate Chip", "Cookies & Cream", "S'mores", "Brownie"],
+      "variants": [
+        {"size": "Unidad", "price": 4500},
+        {"size": "Caja x12", "price": 48000}
+      ],
+      "tipo": "Barra Proteica"
+    }
+  ]
+}

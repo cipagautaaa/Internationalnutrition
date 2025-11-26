@@ -1,0 +1,176 @@
+/* Breakpoints personalizados */
+@layer utilities {
+  /* Mobile First - Todo por defecto es móvil */
+  
+  /* Tablets (sm) */
+  @media (min-width: 640px) {
+    .container {
+      max-width: 640px;
+    }
+  }
+  
+  /* Tablets grandes (md) */
+  @media (min-width: 768px) {
+    .container {
+      max-width: 768px;
+    }
+  }
+  
+  /* Laptops (lg) */
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 1024px;
+    }
+  }
+  
+  /* Desktops (xl) */
+  @media (min-width: 1280px) {
+    .container {
+      max-width: 1280px;
+    }
+  }
+}
+
+/* Estilos base responsivos */
+@layer base {
+  /* Tipografía responsiva */
+  html {
+    font-size: 14px;
+  }
+  
+  @media (min-width: 640px) {
+    html {
+      font-size: 15px;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    html {
+      font-size: 16px;
+    }
+  }
+  
+  /* Espaciado responsivo */
+  .section-padding {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  @media (min-width: 640px) {
+    .section-padding {
+      padding-top: 3rem;
+      padding-bottom: 3rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .section-padding {
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+  }
+  
+  /* Márgenes responsivos */
+  .responsive-margin {
+    margin: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-margin {
+      margin: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .responsive-margin {
+      margin: 2rem;
+    }
+  }
+}
+
+/* Utilidades responsivas comunes */
+@layer components {
+  /* Contenedor de tarjetas responsivo */
+  .responsive-grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .responsive-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+  
+  /* Botones responsivos */
+  .responsive-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-button {
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+  }
+  
+  /* Imágenes responsivas */
+  .responsive-image {
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+  }
+  
+  /* Texto responsivo */
+  .responsive-text {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  @media (min-width: 640px) {
+    .responsive-text {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .responsive-text {
+      font-size: 1.125rem;
+      line-height: 1.7;
+    }
+  }
+}
+
+/* Animaciones responsivas */
+@layer utilities {
+  .hover-scale {
+    transition: transform 0.2s ease;
+  }
+  
+  @media (hover: hover) {
+    .hover-scale:hover {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Reducir animaciones en dispositivos que prefieren reducir el movimiento */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}

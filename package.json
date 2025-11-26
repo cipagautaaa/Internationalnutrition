@@ -1,0 +1,32 @@
+{
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "csurf": "^1.11.0",
+    "express-rate-limit": "^8.2.1",
+    "express-validator": "^7.3.0",
+    "helmet": "^8.1.0",
+    "mongoose": "^8.19.3",
+    "redis": "^5.9.0",
+    "util": "^0.12.5",
+    "xlsx": "^0.18.5"
+  },
+  "name": "proyecto",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/juanpablobayoga/INT-suplementos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/juanpablobayoga/INT-suplementos/issues"
+  },
+  "homepage": "https://github.com/juanpablobayoga/INT-suplementos#readme"
+}

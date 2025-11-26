@@ -1,0 +1,260 @@
+[
+  {
+    "Nombre": "Kit Iniciación Fit",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Whey puré 1lb + creatina 100g Gmn + galleta mutantes + energy x",
+    "Precio": 125000
+  },
+  {
+    "Nombre": "Kit \"Cero Grasa\" Premium",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Bi pro 1lb + creatina Snp 300g + crema de arroz + galleta mutantes",
+    "Precio": 158000
+  },
+  {
+    "Nombre": "Pack Silueta Perfecta",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Baby best + creatina Imn 150g + galleta mutantes + energy x",
+    "Precio": 169000
+  },
+  {
+    "Nombre": "Pack Tono & Fuerza",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Whey puré 1lb + iron + galleta mutantes",
+    "Precio": 181000
+  },
+  {
+    "Nombre": "Kit Atleta Pro",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Bi pro 1lb + creatina IMN 400g + energy x + galleta mutantes",
+    "Precio": 204000
+  },
+  {
+    "Nombre": "Pack Definición Completa",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Whey puré 1lb + creatina Platinum + galleta mutantes + crema de avena",
+    "Precio": 234000
+  },
+  {
+    "Nombre": "Kit Recuperación & Tono",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Baby best 1lb + legacy 30 serv + crema de arroz + galleta mutantes",
+    "Precio": 199000
+  },
+  {
+    "Nombre": "Pack Fit Essentials",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Baby best 1lb + creatina 150g IMN + galleta mutantes + energy x",
+    "Precio": 169000
+  },
+  {
+    "Nombre": "Kit Definición Elite",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Bi pro 1lb + creatina IMN 400g + energy x + galleta mutantes",
+    "Precio": 204000
+  },
+  {
+    "Nombre": "Pack Supremo Definición",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Bi pro 1lb + creatina Platinum + energy x + galleta mutantes",
+    "Precio": 251000
+  },
+  {
+    "Nombre": "Pack Abdomen Plano",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "ISO whey 2lb Snp + galleta mutantes + energy x + creatina Snp 300g",
+    "Precio": 209000
+  },
+  {
+    "Nombre": "El Transformador 90 Días",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "ISO whey 6lb Snp + galleta mutantes + crema de arroz + creatina snp 500g",
+    "Precio": 413000
+  },
+  {
+    "Nombre": "Kit Músculo Magro",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Imn isolate 2lb + galleta mutantes + crema de avena + creatina Imn 150g",
+    "Precio": 211000
+  },
+  {
+    "Nombre": "La Bodega Fit",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Imn isolate 6lb + galleta mutantes + energy x + creatina Imn 400g",
+    "Precio": 502000
+  },
+  {
+    "Nombre": "Pack Best Definition",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Best whey 2lb + galleta mutantes + crema de arroz + legend 30 ser",
+    "Precio": 238000
+  },
+  {
+    "Nombre": "Ciclo Definición Total",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Best whey 5lb + galleta mutantes + crema de avena + legend 50 serv",
+    "Precio": 432000
+  },
+  {
+    "Nombre": "Kit Bi-Pro Performance",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Bi pro 2lb + galleta mutantes + energy x + creatina iron",
+    "Precio": 285000
+  },
+  {
+    "Nombre": "Pack Escultura Corporal",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Bi pro 3lb + galleta mutantes + crema de arroz + creatina IMN 400g",
+    "Precio": 328000
+  },
+  {
+    "Nombre": "Kit Mantenimiento Atlético",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Whey puré 2lb + galleta mutantes + crema de avena + Iron",
+    "Precio": 254000
+  },
+  {
+    "Nombre": "Suministro Tono Muscular",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Whey puré 5lb + galleta mutantes + energy x + iron",
+    "Precio": 387000
+  },
+  {
+    "Nombre": "Kit Wellness & Fibra",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Be One 2lb + Energy x + galleta mutantes + Creatina 100g GMN",
+    "Precio": 217000
+  },
+  {
+    "Nombre": "Pack Vida Sana Plus",
+    "Tipo": "DEFINICIÓN",
+    "Productos": "Be One 3lb + crema de avena + galleta mutantes + Creatina 300g GMN",
+    "Precio": 330000
+  },
+  {
+    "Nombre": "Kit Inicio Inteligente",
+    "Tipo": "VOLUMEN",
+    "Productos": "SMART gainer 3lb + galleta mutantes + energy x + legend 50 serv",
+    "Precio": 187000
+  },
+  {
+    "Nombre": "Pack Primeros Pasos",
+    "Tipo": "VOLUMEN",
+    "Productos": "The whey of gain 3lb + galleta mutantes + crema de arroz + creatina Imn 150g",
+    "Precio": 153000
+  },
+  {
+    "Nombre": "Kit \"Adiós al Flaco\"",
+    "Tipo": "VOLUMEN",
+    "Productos": "Mass Gainer 3lb + galleta mutantes + crema de avena + creatina 300 Snp",
+    "Precio": 143000
+  },
+  {
+    "Nombre": "Pack Fuerza Explosiva",
+    "Tipo": "VOLUMEN",
+    "Productos": "Creatina power 2lb + galleta mutantes + energy x + crea stack",
+    "Precio": 217000
+  },
+  {
+    "Nombre": "Combo Bomba Calórica",
+    "Tipo": "VOLUMEN",
+    "Productos": "1mega Gainer 2lb + super mega Gainer 1lb + galleta mutantes + crema de arroz + creatina 100g Gmn",
+    "Precio": 158000
+  },
+  {
+    "Nombre": "Kit Evolución Muscular",
+    "Tipo": "VOLUMEN",
+    "Productos": "Mass evolution 4lb + galleta mutantes + crema de avena + iron",
+    "Precio": 203000
+  },
+  {
+    "Nombre": "Pack Volumen Limpio",
+    "Tipo": "VOLUMEN",
+    "Productos": "SMART gainer 6lb + galleta mutantes + energy x + legacy 50 serv",
+    "Precio": 294000
+  },
+  {
+    "Nombre": "El Gigante Smart",
+    "Tipo": "VOLUMEN",
+    "Productos": "SMART gainer 13lb + galleta mutantes + crema de arroz + legend 50 serv",
+    "Precio": 438000
+  },
+  {
+    "Nombre": "Pack Constructor de Masa",
+    "Tipo": "VOLUMEN",
+    "Productos": "The whey of gain 6lb + galleta mutantes + crema de avena + creatina 400g",
+    "Precio": 271000
+  },
+  {
+    "Nombre": "Kit Titán 10 Libras",
+    "Tipo": "VOLUMEN",
+    "Productos": "Mass gainer 10lb + galleta mutantes + energy x + creatina 500g Snp",
+    "Precio": 277000
+  },
+  {
+    "Nombre": "Saco de Poder Puro",
+    "Tipo": "VOLUMEN",
+    "Productos": "Creatine power 10lb + galleta mutantes + crema de arroz + iron",
+    "Precio": 348500
+  },
+  {
+    "Nombre": "Pack Ganancia Express",
+    "Tipo": "VOLUMEN",
+    "Productos": "Gainz 3lb + galleta mutantes + crema de avena + creatina 150g IMN",
+    "Precio": 152000
+  },
+  {
+    "Nombre": "Kit Desarrollo Muscular",
+    "Tipo": "VOLUMEN",
+    "Productos": "Gainz 6lb + galleta mutantes + crema de arroz + creatina 400g IMN",
+    "Precio": 298000
+  },
+  {
+    "Nombre": "Combo Doble Calibre",
+    "Tipo": "VOLUMEN",
+    "Productos": "1 súper mega Gainer 5lb + 1mega Gainer 2lb + galleta mutantes + energy x + creatina 300g Gmn",
+    "Precio": 306000
+  },
+  {
+    "Nombre": "Pack Super Tamaño",
+    "Tipo": "VOLUMEN",
+    "Productos": "Súper mega Gainer 10lb + galleta mutantes + crema de avena + creatina Gmn 300g",
+    "Precio": 322000
+  },
+  {
+    "Nombre": "Kit Ganancia Extrema",
+    "Tipo": "VOLUMEN",
+    "Productos": "Mega gainer 10lb + galleta mutantes + energy x + iron",
+    "Precio": 357000
+  },
+  {
+    "Nombre": "Pack Progreso Garantizado",
+    "Tipo": "VOLUMEN",
+    "Productos": "Mass Evolution 7lb + galleta mutantes + crema de arroz + iron",
+    "Precio": 243000
+  },
+  {
+    "Nombre": "Pack Evolución Masiva",
+    "Tipo": "VOLUMEN",
+    "Productos": "Mass evolution 10lb + galleta mutantes + crema de avena + iron",
+    "Precio": 279000
+  },
+  {
+    "Nombre": "Pack Doble Impacto",
+    "Tipo": "VOLUMEN",
+    "Productos": "2 the whey of gain 6lb + galleta mutantes + energy x + creatina 400g",
+    "Precio": 425000
+  },
+  {
+    "Nombre": "La Despensa del Mutante",
+    "Tipo": "VOLUMEN",
+    "Productos": "2 mass Gainer 10lb + galleta mutantes + crema de arroz + creatina Snp 500g",
+    "Precio": 438000
+  },
+  {
+    "Nombre": "Suministro Industrial",
+    "Tipo": "VOLUMEN",
+    "Productos": "2 mass Evolution 10lb + galleta mutantes + crema de avena + iron",
+    "Precio": 424000
+  }
+]

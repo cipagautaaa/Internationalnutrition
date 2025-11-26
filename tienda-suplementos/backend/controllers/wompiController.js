@@ -1,0 +1,244 @@
+const mongoose = require('mongoose');
+const Order = require('../models/Order');
+const Product = require('../models/Product');
+const { sendNewOrderNotificationToAdmin, sendOrderConfirmationToCustomer } = require('../utils/emailService');
+const {
+  createWompiTransaction,
+  verifyWompiTransaction,
+  processWompiWebhook,
+  getAvailablePaymentMethods
+} = require('../utils/wompi');
+
+// Handler para crear transacción (compatible con llamadas desde /api/payments o /api/wompi)
+const createWompiTransactionHandler = async (req, res) => {
+  try {
+    console.log('📥 Recibiendo datos para transacción Wompi:', req.body);
+    const { items, shippingAddress, customerData } = req.body;
+    const discountFromClient = req.body.discount || null;
+    const discountCode = (discountFromClient?.code || req.body.discountCode || '').toString().trim().toUpperCase();
+    
+    if (!items || items.length === 0) {
+      console.log('❌ Error: No hay items en el carrito');
+      return res.status(400).json({
+        success: false,
+        message: 'No hay productos en el carrito'
+      });
+    }
+
+    // Procesar y validar productos
+    let totalAmount = 0;
+    const orderItems = [];
+
+    for (const item of items) {
+      const productId = item.productId || item.id || item._id;
+      let product = null;
+
+      try {
+        if (mongoose.Types.ObjectId.isValid(productId)) {
+          product = await Product.findById(productId);
+        } else {
+          product = await Product.findOne({
+            $or: [
+              { sku: productId },
+              { legacy_id: productId },
+              { id: productId }
+            ]
+          });
+
+          if (!product && typeof productId === 'number') {
+            const allProducts = await Product.find({});
+            product = allProducts.find(p =>
+              p.sku === productId.toString() ||
+              p.legacy_id === productId ||
+              p.name === item.name
+            );
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error buscando producto:', error);
+      }
+
+      if (!product) {
+        return res.status(400).json({ success: false, message: `Producto ${item.name || productId} no encontrado. Verifica que el producto esté disponible.` });
+      }
+
+      if (product.stock < item.quantity) {
+        return res.status(400).json({ success: false, message: `Stock insuficiente para ${product.name}` });
+      }
+
+      totalAmount += product.price * item.quantity;
+      orderItems.push({ product: product._id, quantity: item.quantity, price: product.price });
+    }
+
+    // Aplicar descuentos simples (ejemplo)
+    let discountAmount = 0;
+    if (discountCode === 'CUIDADOCONLOSJOJOS') {
+      discountAmount = Math.round(totalAmount * 0.15);
+    }
+    const netTotal = Math.max(0, totalAmount - discountAmount);
+
+    const mappedShippingAddress = {
+      street: shippingAddress.addressLine1 || '',
+      city: shippingAddress.city || '',
+      state: shippingAddress.region || shippingAddress.state || '',
+      zipCode: shippingAddress.postalCode || shippingAddress.zipCode || '',
+      country: shippingAddress.country || 'Colombia'
+    };
+
+    const order = await Order.create({
+      user: req.user?.id,
+      items: orderItems,
+      totalAmount: netTotal,
+      shippingAddress: mappedShippingAddress,
+      paymentMethod: 'wompi',
+      paymentStatus: 'pending'
+    });
+
+    const reference = `ORDER_${order._id}`;
+
+    const wompiResponse = await createWompiTransaction({
+      items: orderItems,
+      customerData: customerData || {
+        email: req.user?.email,
+        fullName: req.user ? `${req.user.firstName} ${req.user.lastName}` : '',
+        phoneNumber: req.user?.phoneNumber || '',
+        legalId: req.user?.legalId || '',
+        legalIdType: req.user?.legalIdType || 'CC'
+      },
+      shippingAddress,
+      total: netTotal,
+      reference,
+      orderId: order._id.toString()
+    });
+
+    // Garantizar que la respuesta incluya siempre la publicKey (evita que el frontend reciba undefined)
+    try {
+      if (wompiResponse && wompiResponse.transactionData) {
+        wompiResponse.transactionData.publicKey = wompiResponse.transactionData.publicKey || process.env.WOMPI_PUBLIC_KEY;
+        console.log('🔑 Wompi publicKey enviada en response (backend):', wompiResponse.transactionData.publicKey);
+      }
+    } catch (envErr) {
+      console.warn('⚠️ No fue posible asegurar publicKey en la respuesta:', envErr && envErr.message);
+    }
+
+    if (!wompiResponse.success) {
+      order.paymentStatus = 'failed';
+      await order.save();
+      return res.status(500).json({ success: false, message: wompiResponse.error || 'Error creando transacción con Wompi' });
+    }
+
+    order.wompiReference = reference;
+    await order.save();
+
+    return res.json({ success: true, orderId: order._id, wompiData: wompiResponse.transactionData });
+
+  } catch (error) {
+    console.error('❌ Error creando transacción Wompi (controller):', error);
+    return res.status(500).json({ success: false, message: 'Error procesando pago', error: error.message });
+  }
+};
+
+const verifyWompiHandler = async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    const verificationResult = await verifyWompiTransaction(transactionId);
+    if (!verificationResult.success) return res.status(500).json({ success: false, message: verificationResult.error });
+
+    const order = await Order.findOne({ wompiTransactionId: transactionId }).populate('items.product');
+    return res.json({ success: true, transaction: verificationResult.transaction, order });
+  } catch (error) {
+    console.error('Error verificando transacción (controller):', error);
+    res.status(500).json({ success: false, message: 'Error verificando transacción' });
+  }
+};
+
+const wompiWebhookHandler = async (req, res) => {
+  try {
+    const webhookResult = processWompiWebhook(req);
+    if (!webhookResult.success) return res.status(400).json({ success: false, message: webhookResult.error });
+
+    const { event } = webhookResult;
+    
+    // Manejar eventos de transacciones (compatible con Checkout y Gateway)
+    if (event.event === 'transaction.updated') {
+      const transaction = event.data.transaction;
+      const reference = transaction.reference;
+      
+      // Buscar orden por referencia o por transactionId (Gateway puede usar cualquiera)
+      let order = await Order.findOne({ wompiReference: reference });
+      
+      if (!order) {
+        // Si no se encuentra por referencia, buscar por transactionId (para Gateway)
+        order = await Order.findOne({ wompiTransactionId: transaction.id });
+      }
+      
+      if (!order) {
+        console.log(`⚠️ Orden no encontrada para transacción ${transaction.id} con referencia ${reference}`);
+        return res.status(404).json({ success: false, message: 'Orden no encontrada' });
+      }
+
+      // Actualizar transactionId si no estaba guardado (Gateway)
+      if (!order.wompiTransactionId) {
+        order.wompiTransactionId = transaction.id;
+      }
+      
+      // Mapear estados de Wompi
+      const previousStatus = order.paymentStatus;
+      
+      if (transaction.status === 'APPROVED') {
+        order.paymentStatus = 'paid';
+        order.status = 'processing';
+        
+        // Solo descontar stock si el pago no estaba aprobado previamente
+        if (previousStatus !== 'paid' && previousStatus !== 'APPROVED') {
+          for (const item of order.items) {
+            await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
+          }
+        }
+        
+        // Enviar emails de confirmación
+        try {
+          await order.populate('user');
+          await order.populate('items.product');
+          await sendNewOrderNotificationToAdmin(order, order.user);
+          await sendOrderConfirmationToCustomer(order, order.user);
+        } catch (emailError) {
+          console.error('Error enviando correos en webhook:', emailError);
+        }
+        
+      } else if (transaction.status === 'DECLINED' || transaction.status === 'ERROR') {
+        order.paymentStatus = 'failed';
+        order.status = 'cancelled';
+        
+      } else if (transaction.status === 'PENDING') {
+        order.paymentStatus = 'pending';
+      }
+
+      await order.save();
+      console.log(`✅ Webhook procesado: Orden ${order._id}, Estado: ${order.paymentStatus}`);
+    }
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error procesando webhook (controller):', error);
+    res.status(500).json({ success: false, message: 'Error procesando webhook' });
+  }
+};
+
+const getPaymentMethodsHandler = async (req, res) => {
+  try {
+    const methodsResult = await getAvailablePaymentMethods();
+    if (!methodsResult.success) return res.status(500).json({ success: false, message: methodsResult.error });
+    res.json({ success: true, methods: methodsResult.methods });
+  } catch (error) {
+    console.error('Error obteniendo métodos (controller):', error);
+    res.status(500).json({ success: false, message: 'Error obteniendo métodos de pago' });
+  }
+};
+
+module.exports = {
+  createWompiTransactionHandler,
+  verifyWompiHandler,
+  wompiWebhookHandler,
+  getPaymentMethodsHandler
+};

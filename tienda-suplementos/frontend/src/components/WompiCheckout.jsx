@@ -1,0 +1,599 @@
+﻿import React, { useState, useEffect } from 'react';
+import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
+import logoImg from '../assets/images/Captura_de_pantalla_2025-08-09_192459-removebg-preview.png';
+
+const WompiCheckout = () => {
+  const { items, clearCart, getTotalPrice } = useCart();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Estados para el formulario
+  const [customerData, setCustomerData] = useState({
+    fullName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
+    email: user?.email || '',
+    phoneNumber: user?.phone || '',
+    legalId: '',
+    legalIdType: 'CC'
+  });
+
+  const [shippingAddress, setShippingAddress] = useState({
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    region: '',
+    country: 'CO',
+    postalCode: '',
+    phoneNumber: ''
+  });
+
+  const [paymentMethod, setPaymentMethod] = useState('wompi');
+  const [loading, setLoading] = useState(false);
+  // Descuento
+  const [discountCode, setDiscountCode] = useState('');
+  const [discount, setDiscount] = useState({ type: null, value: 0, amount: 0, applied: false, code: '' });
+  // const [loadingProfile, setLoadingProfile] = useState(true); // eliminado por no usarse en UI
+  const [errors, setErrors] = useState({});
+
+  // Cargar datos del perfil al montar el componente
+  useEffect(() => {
+    loadUserProfile();
+  }, []);
+
+  const loadUserProfile = async () => {
+    try {
+      const response = await api.get('/users/profile');
+      
+      if (response.data.success) {
+        const profile = response.data.user;
+        
+        // Actualizar datos del cliente
+        setCustomerData(prev => ({
+          ...prev,
+          fullName: profile.firstName && profile.lastName 
+            ? `${profile.firstName} ${profile.lastName}` 
+            : prev.fullName,
+          email: profile.email || prev.email,
+          phoneNumber: profile.phone || prev.phoneNumber
+        }));
+
+        // Actualizar dirección de envío desde shippingInfo si existe
+        if (profile.shippingInfo && profile.shippingInfo.fullName) {
+          setShippingAddress({
+            addressLine1: profile.shippingInfo.street || '',
+            addressLine2: profile.shippingInfo.addressLine2 || '',
+            city: profile.shippingInfo.city || '',
+            region: profile.shippingInfo.region || '',
+            country: profile.shippingInfo.country || 'CO',
+            postalCode: profile.shippingInfo.zipCode || '',
+            phoneNumber: profile.shippingInfo.phoneNumber || profile.phone || ''
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      // No mostrar error, solo usar datos por defecto
+    } finally {
+      // no-op
+    }
+  };
+
+  // Validación de formulario simplificada
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!customerData.fullName) newErrors.fullName = 'Nombre completo es requerido';
+    if (!customerData.email) newErrors.email = 'Email es requerido';
+    if (!customerData.phoneNumber) newErrors.phoneNumber = 'Teléfono es requerido';
+    if (!customerData.legalId) newErrors.legalId = 'Cédula es requerida';
+    
+    if (!shippingAddress.addressLine1) newErrors.addressLine1 = 'Dirección es requerida';
+    if (!shippingAddress.city) newErrors.city = 'Ciudad es requerida';
+    if (!shippingAddress.region) newErrors.region = 'Departamento es requerido';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleTransferencia = () => {
+    // Preparar mensaje para WhatsApp
+    const productosTexto = items.map(item => 
+      `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toLocaleString('es-CO')}`
+    ).join('\n');
+    
+    const subtotal = getTotalPrice();
+    const discountAmount = discount.applied
+      ? (discount.type === 'percent' ? Math.round(subtotal * (discount.value / 100)) : Math.min(subtotal, discount.value))
+      : 0;
+    const totalConDescuento = Math.max(0, subtotal - discountAmount);
+    
+    const mensaje = `¡Hola! 👋
+
+Quiero realizar una compra por transferencia bancaria:
+
+*📋 DATOS DEL PEDIDO:*
+${productosTexto}
+
+*💰 Total: $${totalConDescuento.toLocaleString('es-CO')} COP*${discount.applied ? `\n(Descuento ${discount.code}: -$${discountAmount.toLocaleString('es-CO')})` : ''}
+
+*📦 DATOS DE ENVÍO:*
+• Nombre: ${customerData.fullName}
+• Teléfono: ${customerData.phoneNumber}
+• Email: ${customerData.email}
+• Dirección: ${shippingAddress.addressLine1}${shippingAddress.addressLine2 ? ', ' + shippingAddress.addressLine2 : ''}
+• Ciudad: ${shippingAddress.city}, ${shippingAddress.region}
+
+Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias! 🙏`;
+
+    // Codificar mensaje para URL
+    const mensajeCodificado = encodeURIComponent(mensaje);
+    
+    // Número de WhatsApp desde variable de entorno
+    const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER || '573006851794';
+    
+    // Crear URL de WhatsApp
+    const whatsappURL = `https://wa.me/${numeroWhatsApp}?text=${mensajeCodificado}`;
+    
+    // Abrir WhatsApp
+    window.open(whatsappURL, '_blank');
+    
+    // Limpiar carrito después de enviar mensaje
+    setTimeout(() => {
+      clearCart();
+      navigate('/products');
+    }, 1000);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (!validateForm()) return;
+
+    // Si es transferencia, redirigir a WhatsApp
+    if (paymentMethod === 'transferencia') {
+      handleTransferencia();
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const subtotal = getTotalPrice();
+      const discountAmount = discount.applied
+        ? (discount.type === 'percent' ? Math.round(subtotal * (discount.value / 100)) : Math.min(subtotal, discount.value))
+        : 0;
+      const totalConDescuento = Math.max(0, subtotal - discountAmount);
+      // Preparar datos para la transacción Wompi
+      const transactionData = {
+        items: items.map(item => ({
+          productId: item._id || item.id,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name
+        })),
+        customerData,
+        shippingAddress,
+        total: totalConDescuento,
+        discount: discount.applied ? { code: discount.code, type: discount.type, value: discount.value, amount: discountAmount } : null,
+        reference: `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        paymentMethod: 'wompi' // Siempre wompi para pagos online
+      };
+
+      console.log('🚀 Enviando datos a Wompi:', transactionData);
+
+      // Llamar al backend para crear la transacción
+      const response = await api.post('/payments/create-wompi-transaction', transactionData);
+
+      if (response.data.success) {
+        const { wompiData, orderId } = response.data;
+        
+        console.log('✅ Transacción creada exitosamente:', wompiData);
+        console.log('✅ Orden ID:', orderId);
+        
+        if (wompiData && wompiData.reference) {
+          console.log('🚀 Iniciando widget de Wompi...');
+          
+          // Redirigir al componente WompiPayment con los datos
+          navigate('/wompi-payment', { 
+            state: { 
+              wompiData: wompiData,
+              orderId: orderId 
+            }
+          });
+          
+        } else {
+          console.warn('⚠️ wompiData incompleto:', wompiData);
+          alert(`¡Orden creada exitosamente!\nID: ${orderId}\nProcede al pago manualmente.`);
+        }
+        
+      } else {
+        throw new Error(response.data.message || 'Error creando transacción');
+      }
+      
+    } catch (error) {
+      console.error('❌ Error procesando pago:', error);
+      alert(`Error: ${error.response?.data?.message || error.message || 'Error procesando el pago'}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const regions = [
+    'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá', 
+    'Casanare', 'Cauca', 'Cesar', 'Chocó', 'Córdoba', 'Cundinamarca', 'Guainía', 'Guaviare', 
+    'Huila', 'La Guajira', 'Magdalena', 'Meta', 'Nariño', 'Norte de Santander', 'Putumayo', 
+    'Quindío', 'Risaralda', 'San Andrés y Providencia', 'Santander', 'Sucre', 'Tolima', 
+    'Valle del Cauca', 'Vaupés', 'Vichada'
+  ];
+
+  // Helpers de totales
+  const subtotal = getTotalPrice();
+  const discountAmount = discount.applied
+    ? (discount.type === 'percent' ? Math.round(subtotal * (discount.value / 100)) : Math.min(subtotal, discount.value))
+    : 0;
+  const totalConDescuento = Math.max(0, subtotal - discountAmount);
+
+  // Secciones internas para descuento y totales
+  const DiscountCodeSection = () => {
+    const [message, setMessage] = useState('');
+
+    const knownCodes = {
+      'CUIDADOCONLOSJOJOS': { type: 'percent', value: 15 },
+    };
+
+    const applyDiscount = () => {
+      const code = discountCode.trim().toUpperCase();
+      if (!code) {
+        setMessage('Ingresa un código.');
+        return;
+      }
+      if (!knownCodes[code]) {
+        setMessage('Código inválido o expirado.');
+        return;
+      }
+      const conf = knownCodes[code];
+      setDiscount({ type: conf.type, value: conf.value, amount: 0, applied: true, code });
+      setMessage('Descuento aplicado.');
+    };
+
+    const removeDiscount = () => {
+      setDiscount({ type: null, value: 0, amount: 0, applied: false, code: '' });
+      setDiscountCode('');
+      setMessage('');
+    };
+
+    return (
+      <div className="mb-6 pb-6 border-b border-gray-300">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={discountCode}
+            onChange={(e) => setDiscountCode(e.target.value)}
+            placeholder="Código de descuento"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={discount.applied}
+          />
+          {discount.applied ? (
+            <button type="button" onClick={removeDiscount} className="px-4 py-3 border rounded-md text-gray-700 hover:bg-gray-50">
+              Quitar
+            </button>
+          ) : (
+            <button type="button" onClick={applyDiscount} className="px-4 py-3 bg-gray-900 text-white rounded-md hover:bg-black">
+              Aplicar
+            </button>
+          )}
+        </div>
+        {message && <p className="text-sm mt-2 text-gray-600">{message}</p>}
+        {discount.applied && (
+          <p className="text-sm mt-2 text-green-700">Código "{discount.code}" aplicado.</p>
+        )}
+      </div>
+    );
+  };
+
+  const TotalsSection = () => (
+    <div className="space-y-3">
+      <div className="flex justify-between text-sm text-gray-700">
+        <span>Subtotal</span>
+        <span>${subtotal.toLocaleString('es-CO')}</span>
+      </div>
+      {discount.applied && (
+        <div className="flex justify-between text-sm text-green-700">
+          <span>Descuento ({discount.code})</span>
+          <span>- ${discountAmount.toLocaleString('es-CO')}</span>
+        </div>
+      )}
+      <div className="flex justify-between text-base font-semibold text-gray-900 pt-2 border-t border-gray-200">
+        <span>Total</span>
+        <span>${totalConDescuento.toLocaleString('es-CO')} COP</span>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header con logo centrado */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-center">
+          <img src={logoImg} alt="INT Suplementos" className="h-10 object-contain" />
+        </div>
+      </div>
+
+      <div className="max-w-[1400px] mx-auto">
+        {/* Si el carrito está vacío, mostrar mensaje dentro del layout */}
+        {(!items || items.length === 0) ? (
+          <div className="max-w-4xl mx-auto p-6">
+            <div className="text-center">
+              <h1 className="text-3xl font-bold mb-4">Carrito Vacío</h1>
+              <p className="text-gray-600 mb-6">No tienes productos en tu carrito.</p>
+              <a href="/products" className="bg-blue-600 text-white px-6 py-3 rounded-lg">
+                Ver Productos
+              </a>
+            </div>
+          </div>
+        ) : (
+        <div className="grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-80px)]">
+          {/* Columna izquierda - Formulario */}
+          <div className="bg-white lg:border-r border-gray-200">
+            <form onSubmit={handleSubmit} className="max-w-xl mx-auto px-6 sm:px-8 lg:px-12 py-8 space-y-8">
+              
+              {/* Datos del Cliente */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold text-gray-900">Contacto</h2>
+                  <a href="/login" className="text-sm text-blue-600 hover:text-blue-700 underline">Iniciar sesión</a>
+                </div>
+                
+                <div className="space-y-3">
+                  <input
+                    type="email"
+                    value={customerData.email}
+                    onChange={(e) => setCustomerData({...customerData, email: e.target.value})}
+                    placeholder="Correo electrónico"
+                    className={`w-full px-4 py-3 border rounded-md ${errors.email ? 'border-red-7000' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                  />
+                </div>
+              </div>
+
+              {/* Dirección de Envío */}
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Entrega</h2>
+                
+                <div className="space-y-3">
+                  {/* País */}
+                  <div>
+                    <label className="block text-xs text-gray-600 mb-2">País / Región</label>
+                    <select
+                      value={shippingAddress.country}
+                      onChange={(e) => setShippingAddress({...shippingAddress, country: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-base"
+                    >
+                      <option value="CO">Colombia</option>
+                    </select>
+                  </div>
+
+                  {/* Nombre y apellidos */}
+                  <div className="grid grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      value={customerData.fullName.split(' ')[0] || ''}
+                      onChange={(e) => {
+                        const lastName = customerData.fullName.split(' ').slice(1).join(' ');
+                        setCustomerData({ ...customerData, fullName: `${e.target.value} ${lastName}`.trim() });
+                      }}
+                      placeholder="Nombre"
+                      className="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                    <input
+                      type="text"
+                      value={customerData.fullName.split(' ').slice(1).join(' ')}
+                      onChange={(e) => {
+                        const firstName = customerData.fullName.split(' ')[0];
+                        setCustomerData({ ...customerData, fullName: `${firstName} ${e.target.value}`.trim() });
+                      }}
+                      placeholder="Apellidos"
+                      className="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  {/* Documento */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <select
+                      value={customerData.legalIdType}
+                      onChange={(e) => setCustomerData({...customerData, legalIdType: e.target.value})}
+                      className="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                    >
+                      <option value="CC">CC</option>
+                      <option value="CE">CE</option>
+                      <option value="NIT">NIT</option>
+                      <option value="PP">Pasaporte</option>
+                    </select>
+                    <input
+                      type="text"
+                      value={customerData.legalId}
+                      onChange={(e) => setCustomerData({...customerData, legalId: e.target.value})}
+                      placeholder="Número de Documento"
+                      className="col-span-2 px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      required
+                    />
+                  </div>
+
+                  {/* Teléfono */}
+                  <input
+                    type="tel"
+                    value={customerData.phoneNumber}
+                    onChange={(e) => setCustomerData({...customerData, phoneNumber: e.target.value})}
+                    placeholder="Teléfono"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required
+                  />
+
+                  {/* Dirección */}
+                  <input
+                    type="text"
+                    value={shippingAddress.addressLine1}
+                    onChange={(e) => setShippingAddress({...shippingAddress, addressLine1: e.target.value})}
+                    placeholder="Dirección"
+                    className={`w-full px-4 py-3 border rounded-md ${errors.addressLine1 ? 'border-red-7000' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                    required
+                  />
+
+                  {/* Complemento */}
+                  <input
+                    type="text"
+                    value={shippingAddress.addressLine2}
+                    onChange={(e) => setShippingAddress({...shippingAddress, addressLine2: e.target.value})}
+                    placeholder="Casa, apartamento, etc. (opcional)"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+
+                  {/* Ciudad, Departamento, CP */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <input
+                      type="text"
+                      value={shippingAddress.city}
+                      onChange={(e) => setShippingAddress({...shippingAddress, city: e.target.value})}
+                      placeholder="Ciudad"
+                      className={`px-4 py-3 border rounded-md ${errors.city ? 'border-red-7000' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+                      required
+                    />
+                    <select
+                      value={shippingAddress.region}
+                      onChange={(e) => setShippingAddress({...shippingAddress, region: e.target.value})}
+                      className={`px-4 py-3 border rounded-md ${errors.region ? 'border-red-7000' : 'border-gray-300'} focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white`}
+                      required
+                    >
+                      <option value="">Departamento</option>
+                      {regions.map(region => (
+                        <option key={region} value={region}>{region}</option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      value={shippingAddress.postalCode}
+                      onChange={(e) => setShippingAddress({...shippingAddress, postalCode: e.target.value})}
+                      placeholder="Código postal (opcional)"
+                      className="px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Método de Pago (simple) */}
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 mb-4">Método de Pago</h2>
+                
+                <div className="space-y-3">
+                  <label className="flex items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="wompi"
+                      checked={paymentMethod === 'wompi'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-4 w-4 h-4"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">Pagar con Wompi</div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        <div className="flex items-center gap-4 mt-2">
+                          <span className="flex items-center gap-1">
+                            💳 <span className="text-xs">Tarjetas</span>
+                          </span>
+                          <span className="flex items-center gap-1">
+                            🏦 <span className="text-xs">PSE</span>
+                          </span>
+                          <span className="flex items-center gap-1">
+                            📱 <span className="text-xs">Nequi</span>
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-xs text-blue-600 mt-1">🔐 Pago seguro procesado por Wompi</div>
+                    </div>
+                  </label>
+                  
+                  <label className="flex items-center p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="transferencia"
+                      checked={paymentMethod === 'transferencia'}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="mr-4 w-4 h-4"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">Transferencia Bancaria</div>
+                      <div className="text-sm text-gray-600 mt-1">
+                        Te enviaremos los datos bancarios por WhatsApp
+                      </div>
+                      <div className="text-xs text-green-600 mt-1">💬 Contacto directo vía WhatsApp</div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+              {/* Botón de Envío */}
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full py-4 px-6 rounded-md text-base font-semibold transition-colors disabled:opacity-50 ${
+                  paymentMethod === 'transferencia'
+                    ? 'bg-green-600 text-white hover:bg-green-700'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                }`}
+              >
+                {loading 
+                  ? 'Procesando...' 
+                  : paymentMethod === 'transferencia'
+                    ? `Enviar por WhatsApp - $${totalConDescuento.toLocaleString('es-CO')}`
+                    : `Proceder al pago - $${totalConDescuento.toLocaleString('es-CO')}`
+                }
+              </button>
+            </form>
+          </div>
+
+          {/* Resumen de la orden - columna derecha estilo IMN */}
+          <div className="bg-gray-50">
+            <div className="max-w-xl mx-auto px-6 sm:px-8 lg:px-12 py-8">
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+                {/* Productos */}
+                <div className="space-y-4 mb-6 pb-6 border-b border-gray-300">
+                  {items.map((item) => (
+                    <div key={item._key || item.id} className="flex items-start gap-4">
+                      <div className="relative flex-shrink-0">
+                        <img src={item.image || '/placeholder.png'} alt={item.name} className="w-16 h-16 object-cover rounded-lg border-2 border-gray-200 bg-white" />
+                        <div className="absolute -top-2 -right-2 bg-gray-700 text-white text-xs font-semibold rounded-full w-6 h-6 flex items-center justify-center">{item.quantity}</div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 mb-1">{item.name}</p>
+                      </div>
+                      <div className="text-sm font-semibold text-gray-900 whitespace-nowrap">${(item.price * item.quantity).toLocaleString('es-CO', { minimumFractionDigits: 2 })}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Código de descuento */}
+                <DiscountCodeSection />
+
+                {/* Totales */}
+                <TotalsSection />
+
+                {/* Mensaje seguridad */}
+                <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-600">
+                  <span>🔒 Pago seguro procesado por Wompi</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default WompiCheckout;

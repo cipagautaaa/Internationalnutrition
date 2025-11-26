@@ -1,0 +1,170 @@
+
+/* Variables del tema */
+:root {
+  --catalog-top: 110px;
+}
+
+/* Estilos para el navbar */
+#main-navbar {
+  width: fit-content;
+  max-width: 96vw;
+  margin-top: 0;
+}
+
+@media (max-width: 1024px) {
+  #main-navbar {
+    width: 100%;
+    max-width: calc(100vw - 24px);
+  }
+
+  #navbar-shell {
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Dropdown del catálogo */
+#catalog-dropdown {
+  pointer-events: auto;
+  transform-origin: top;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#catalog-dropdown.invisible {
+  transform-origin: top;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.catalog-content {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#catalog-dropdown:not(.invisible) .catalog-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Asegura que el contenido de Nosotros/Accesorios también aparezca */
+#nosotros-dropdown .catalog-content,
+#accesorios-dropdown .catalog-content {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#nosotros-dropdown:not(.invisible) .catalog-content,
+#accesorios-dropdown:not(.invisible) .catalog-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Estilos para los dropdowns de accesorios y nosotros */
+#accesorios-dropdown,
+#nosotros-dropdown {
+  transition: opacity 0.3s ease, visibility 0.3s ease, height 0.3s ease;
+}
+
+/* Animación para los enlaces */
+.hover\:scale-105:hover {
+  transform: scale(1.05);
+  transition: transform 0.3s ease;
+}
+
+/* Ajustes de visibilidad para dropdowns */
+.group:hover #accesorios-dropdown,
+.group:hover #nosotros-dropdown {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Ajustes para el menú móvil */
+@media (max-width: 1024px) {
+  #navbar-shell {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  .gap-6 {
+    gap: 1rem;
+  }
+}
+
+/* Ajuste de la altura para dropdowns fijos (alineado al catálogo) */
+#accesorios-dropdown.fixed,
+#nosotros-dropdown.fixed {
+  height: auto;
+}
+
+#accesorios-dropdown.fixed > div,
+#nosotros-dropdown.fixed > div {
+  padding-top: 0;
+}
+
+/* Mantener mismo comportamiento al hacer scroll */
+body[data-scrolled="true"] #accesorios-dropdown.fixed,
+body[data-scrolled="true"] #nosotros-dropdown.fixed {
+  height: auto;
+}
+
+body[data-scrolled="true"] #accesorios-dropdown.fixed > div,
+body[data-scrolled="true"] #nosotros-dropdown.fixed > div {
+  padding-top: 0;
+}
+
+/* Ajustes de efecto hover */
+.group\/item:hover {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+.group\/item img {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.group\/item:hover img {
+  transform: scale(1.05);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Ajustes de fondo del navbar */
+#navbar-shell {
+  transition: background-color 0.3s ease, padding 0.25s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: visible;
+  /* Evita que el ancho crezca demasiado en pantallas pequeñas */
+  box-sizing: border-box;
+}
+
+/* Efecto de borde neón */
+#navbar-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  padding: 2px;
+  background: linear-gradient(
+    90deg,
+    #000000,
+    #960018,
+    #dc143c,
+    #8b0000,
+    #000000,
+    #dc143c,
+    #ff1e1e,
+    #960018,
+    #000000
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 8px #dc143c) drop-shadow(0 0 12px #8b0000);
+  pointer-events: none;
+}

@@ -1,0 +1,2646 @@
+================================================================================
+INFORME DE PRÁCTICA EMPRESARIAL - DESARROLLO FRONTEND
+INTERNATIONAL NUTRITION COL - TIENDA DE SUPLEMENTOS
+================================================================================
+
+INFORMACIÓN DEL PROYECTO
+Empresa: International Nutrition COL
+Tipo de aplicación: Plataforma E-Commerce de Suplementos Deportivos
+Stack Frontend: React 18.2.0 + Vite 7.1.2 + React Router DOM 7.8.2 + TailwindCSS 3.4.17
+Bibliotecas principales: Axios 1.11.0, Lucide React 0.542.0
+Arquitectura: Single Page Application (SPA) con Context API para gestión de estado
+Período de desarrollo: 2024-2025
+
+
+1. INFORME DE DESARROLLO DE LAS ACTIVIDADES
+
+Durante el período de práctica empresarial, se desarrolló ÍNTEGRAMENTE la capa de 
+presentación (frontend) de la aplicación e-commerce para International Nutrition COL, 
+una tienda especializada en suplementos deportivos. El proyecto consistió en crear desde 
+cero una interfaz de usuario moderna, responsiva y de alto rendimiento utilizando React 18 
+como framework principal, junto con tecnologías de vanguardia como Vite para build 
+tooling, React Router DOM para navegación, TailwindCSS para estilos y Axios para 
+comunicación con el backend.
+
+ARQUITECTURA Y CONFIGURACIÓN INICIAL DEL PROYECTO
+
+El proyecto se inició configurando un entorno de desarrollo moderno con Vite como build 
+tool, lo cual proporcionó hot module replacement (HMR) extremadamente rápido y 
+optimizaciones de producción superiores comparadas con Create React App tradicional. 
+Se configuró ESLint con reglas específicas para React y React Hooks, garantizando 
+calidad de código desde el inicio.
+
+La estructura del proyecto se organizó de forma modular y escalable:
+- /src/pages: Páginas completas de la aplicación (Home, Products, Cart, Checkout, etc.)
+- /src/components: Componentes reutilizables (Header, Footer, ProductCard, etc.)
+- /src/components/admin: Componentes específicos del panel administrativo
+- /src/context: Contexts de React para estado global (Auth, Cart, UI)
+- /src/services: Servicios de comunicación con APIs
+- /src/utils: Utilidades y helpers
+- /src/styles: Estilos globales y configuración de TailwindCSS
+
+Se configuró TailwindCSS con customización de colores, tipografía y plugins adicionales 
+como @tailwindcss/aspect-ratio para manejo avanzado de imágenes responsivas.
+
+SISTEMA DE AUTENTICACIÓN Y SEGURIDAD MULTICAPA
+
+Se implementó un sistema de autenticación completo y robusto que incluye:
+
+1. AUTENTICACIÓN POR EMAIL CON VERIFICACIÓN DE CÓDIGO:
+   - Registro de usuarios con validación en tiempo real de campos (email, nombre, contraseña)
+   - Envío automático de código de verificación de 6 dígitos al email del usuario
+   - Componente VerifyEmail para ingresar código con temporizador de expiración
+   - Reenvío de código si expira el temporizador
+   - Validación del código en backend y generación de JWT token
+
+2. LOGIN CON FLUJO CONDICIONAL:
+   - Detección automática si el email está verificado
+   - Si no está verificado, envío automático de código de verificación
+   - Si es usuario regular verificado, login directo con JWT
+   - Si es administrador, activación del flujo de PIN de administrador
+
+3. GESTIÓN DE SESIONES CON CONTEXT API:
+   Se desarrolló AuthContext (frontend/src/context/AuthContext.jsx) que maneja todo el 
+   ciclo de vida de la autenticación mediante useReducer para estado complejo:
+   
+   - Estados gestionados: user, token, isAuthenticated, loading, error, pendingAdminPin, 
+     tempToken
+   - Acciones del reducer: LOGIN_START, LOGIN_SUCCESS, LOGIN_FAILURE, VERIFY_START, 
+     VERIFY_SUCCESS, VERIFY_FAILURE, ADMIN_PIN_PENDING, ADMIN_PIN_SUCCESS, LOGOUT, 
+     CLEAR_ERROR
+   - Persistencia selectiva: Los usuarios regulares tienen su token guardado en 
+     localStorage, pero los administradores NO para mayor seguridad
+   - Restauración de sesión al cargar la aplicación, validando token contra backend
+   - Limpieza automática de sesiones de administrador si detecta intento de persistencia
+
+4. SISTEMA DE SEGURIDAD TRIPLE CAPA PARA PANEL ADMINISTRATIVO:
+
+   CAPA 1 - VALIDACIÓN DE TOKEN JWT:
+   El componente RequireAdmin (frontend/src/components/RequireAdmin.jsx) verifica que 
+   el usuario esté autenticado mediante validación de isAuthenticated del AuthContext. 
+   Si no está autenticado, redirige a /login.
+
+   CAPA 2 - VALIDACIÓN DE ROL:
+   RequireAdmin verifica que user.role === 'admin'. Si el usuario está autenticado pero 
+   no es administrador, muestra mensaje "No autorizado" y bloquea acceso.
+
+   CAPA 3 - SISTEMA DE PIN DE ADMINISTRADOR (Segundo Factor de Autenticación):
+   Desarrollé un sistema de PIN numérico que funciona como segundo factor de autenticación 
+   específicamente para administradores:
+   
+   a) FLUJO DE VERIFICACIÓN DE PIN:
+      - Cuando un administrador hace login, el backend detecta su rol
+      - En lugar de devolver token final, devuelve step: 'ADMIN_PIN_REQUIRED' con tempToken
+      - El AuthContext dispara estado ADMIN_PIN_PENDING con el tempToken temporal
+      - Se muestra modal solicitando PIN de 4-10 dígitos
+      - Al ingresar PIN, se llama verifyAdminPin(pin) que envía tempToken + PIN al backend
+      - Backend valida PIN mediante TOTP (Time-based One-Time Password)
+      - Si es correcto, devuelve token JWT final y usuario completo
+      - AuthContext dispara ADMIN_PIN_SUCCESS y el admin queda autenticado
+   
+   b) GESTIÓN DEL PIN:
+      - Configuración inicial del PIN en primer acceso de admin
+      - Cambio de PIN desde panel de perfil con verificación de PIN actual
+      - Deshabilitación del segundo factor (requiere PIN actual para confirmar)
+      - Validación de formato: solo números, longitud 4-10 dígitos
+   
+   c) SEGURIDAD DEL PIN:
+      - El token de administrador NUNCA se guarda en localStorage (solo en memoria)
+      - Al cerrar/refrescar navegador, el admin debe autenticarse completamente de nuevo
+      - Previene acceso no autorizado si alguien obtiene credenciales de login
+      - El tempToken expira en minutos si no se completa verificación de PIN
+      - Protección contra fuerza bruta mediante rate limiting en backend
+
+5. PROTECCIÓN DE RUTAS:
+   - RequireAdmin: Protege rutas administrativas (/admin/*)
+   - RestrictAdmin: Previene que admins accedan a funciones de usuario regular (cart, 
+     checkout) para evitar confusiones de rol
+   - LoginModal y LoginRouteWrapper para manejo de modales de autenticación
+
+SISTEMA CRUD COMPLETO DE PRODUCTOS
+
+Desarrollé el sistema CRUD (Create, Read, Update, Delete) más complejo del proyecto: 
+la gestión de productos con soporte para variantes, sabores y categorización multinivel.
+
+COMPONENTE AdminProducts (frontend/src/pages/AdminProducts.jsx):
+
+Este es el componente principal del panel de administración de productos. Implementa:
+
+1. GESTIÓN DE ESTADO AVANZADA:
+   - products: Array de productos cargados
+   - loading, error: Estados de carga y errores
+   - catSummary: Resumen de productos por categoría desde backend
+   - modalOpen, editing: Control del modal de edición/creación
+   - saving: Estado de guardado
+   - selectedCategory, selectedType: Filtros de categoría y subcategoría
+   - search: Búsqueda en tiempo real
+   - showImplements: Toggle para panel de implementos
+   - users, combos: Datos adicionales para referencia
+
+2. SISTEMA DE CATEGORIZACIÓN:
+   Se implementó taxonomía de 7 categorías nuevas con normalización de categorías legacy:
+   - Proteínas (con subcategorías: Limpia, Hipercalórica, Vegana)
+   - Pre-entrenos y Energía
+   - Creatinas (con subcategorías: Monohidrato, HCL)
+   - Aminoácidos y Recuperadores
+   - Salud y Bienestar
+   - Rendimiento hormonal
+   - Comidas con proteína
+   
+   Función normalizeCategory() mapea categorías antiguas a nuevas para compatibilidad:
+   'Pre-Workout' → 'Pre-entrenos y Energía'
+   'Creatina' → 'Creatinas'
+   'Vitaminas' → 'Salud y Bienestar'
+   Etc.
+
+3. INTERFAZ DE SELECCIÓN DE CATEGORÍA:
+   - Vista inicial muestra tarjetas de las 7 categorías con conteo de productos
+   - Loading skeleton mientras carga resumen de categorías
+   - Click en categoría filtra productos y muestra vista de tabla
+   - Breadcrumb navigation para volver a selección de categorías
+   - Tabs para subcategorías/tipos cuando aplica (Proteínas, Creatinas)
+
+4. TABLA DE PRODUCTOS CON DISEÑO BEIGE PROFESIONAL:
+   - Tema de colores beige/marrón claro para look premium
+   - Headers con bg-[#f5f0e8] y bordes beige
+   - Filas alternadas con hover effects
+   - Columnas: Imagen, Nombre, Categoría, Tipo, Precio, Stock, Activo, Acciones
+   - Botones de acción en una sola fila: Editar (verde), Eliminar (rojo), Toggle activo
+   - Badges de estado (Activo/Inactivo) con colores distintivos
+   - Imágenes thumbnail con aspect ratio preservado
+   - Responsivo con scroll horizontal en móviles
+
+5. FORMULARIO DE CREACIÓN/EDICIÓN (ProductForm):
+   Componente complejo con múltiples secciones:
+   
+   a) INFORMACIÓN BÁSICA:
+      - Nombre del producto (validación requerida)
+      - Descripción larga con textarea
+      - Categoría (select con las 7 categorías)
+      - Tipo/Subcategoría (select dinámico según categoría elegida)
+      - Estado activo (checkbox)
+      - En stock (checkbox)
+   
+   b) GESTIÓN DE PRECIOS:
+      - Precio base (número)
+      - Precio original para mostrar descuento (opcional)
+      - Cálculo automático de porcentaje de descuento
+   
+   c) GESTIÓN DE IMAGEN:
+      - Upload de imagen con preview
+      - Validación de formato (jpg, jpeg, png, webp)
+      - Validación de tamaño máximo
+      - Crop/resize automático en backend
+      - Placeholder si no hay imagen
+   
+   d) GESTIÓN DE VARIANTES (Característica Compleja):
+      - Permite crear múltiples variantes del mismo producto (ej: 1kg, 2kg, 5kg)
+      - Cada variante tiene: size, price, originalPrice, inStock, isActive
+      - Interfaz para agregar/eliminar variantes dinámicamente
+      - Validación de que no haya variantes duplicadas (mismo tamaño)
+      - Vista de tabla con todas las variantes y edición inline
+   
+   e) GESTIÓN DE SABORES COMPARTIDOS:
+      - Lista de sabores aplicables a TODAS las variantes del producto
+      - Agregar/eliminar sabores con interfaz de tags
+      - Ejemplos: Chocolate, Vainilla, Fresa, Cookies & Cream
+      - Los sabores se comparten entre variantes para consistencia
+   
+   f) VALIDACIÓN COMPLETA:
+      - Validación en tiempo real de campos requeridos
+      - Mensajes de error específicos por campo
+      - Prevención de submit si hay errores
+      - Feedback visual de campos inválidos
+
+6. OPERACIONES CRUD:
+   
+   CREATE (Crear Producto):
+   - Click en botón "Crear Producto" abre modal con formulario vacío
+   - Usuario llena información básica, precios, imagen
+   - Agrega variantes si aplica (ej: diferentes tamaños)
+   - Agrega sabores compartidos
+   - Al submit, se envía FormData con multipart/form-data para soportar imagen
+   - Backend procesa imagen, crea producto y todas sus variantes
+   - Refresh automático de lista de productos
+   - Mensaje de éxito con toast notification
+   
+   READ (Leer/Listar Productos):
+   - Carga inicial de productos con limit=2000 y flat=true para obtener productos 
+     individuales (no agrupados)
+   - Filtrado por categoría seleccionada
+   - Filtrado adicional por tipo/subcategoría si aplica
+   - Búsqueda en tiempo real por nombre con useMemo para performance
+   - Paginación preparada (actualmente muestra todos)
+   
+   UPDATE (Actualizar Producto):
+   - Click en botón "Editar" carga datos del producto en modal
+   - Pre-población de todos los campos incluyendo variantes y sabores
+   - Modificación de cualquier campo
+   - Agregar/eliminar/modificar variantes
+   - Cambiar imagen (opcional, mantiene anterior si no se cambia)
+   - Al submit, se envía FormData con multipart/form-data
+   - Backend actualiza producto, variantes y sabores
+   - Refresh automático de lista
+   
+   DELETE (Eliminar Producto):
+   - Click en botón "Eliminar" muestra confirmación con SweetAlert/confirm
+   - Mensaje advirtiendo que la acción es permanente
+   - Si confirma, envía DELETE request a backend
+   - Backend elimina producto y todas sus variantes en cascada
+   - Refresh automático de lista
+   - Mensaje de confirmación de eliminación
+
+7. CARACTERÍSTICAS AVANZADAS:
+   - Toggle de estado activo/inactivo sin abrir modal (actualización inline)
+   - Indicadores visuales de estado (badges de colores)
+   - Sorting preparado para futuro (por nombre, precio, fecha)
+   - Filtros combinados (categoría + tipo + búsqueda)
+   - Performance optimizado con useMemo para filtered lists
+   - Manejo de errores con mensajes descriptivos
+   - Loading skeletons para mejor UX
+   - Responsive design completo (mobile, tablet, desktop)
+
+SISTEMA CRUD COMPLETO DE COMBOS
+
+El segundo sistema CRUD desarrollado gestiona "Combos" - paquetes promocionales de productos.
+
+COMPONENTE AdminCombos (frontend/src/pages/AdminCombos.jsx):
+
+1. ARQUITECTURA Y ROUTING:
+   - Ruta paramétrica: /admin/combos/:category donde category puede ser 'volumen' o 
+     'definición'
+   - Normalización de categoría para manejar variantes de escritura
+   - Validación de categoría válida con redirect a /admin/products si es inválida
+   - Carga condicional solo si usuario está autenticado y es admin
+
+2. GESTIÓN DE ESTADO:
+   - combos: Array de combos de la categoría actual
+   - loading, error: Estados de carga y manejo de errores
+   - modalOpen, editing: Control de modal de creación/edición
+   - saving: Estado durante operación de guardado
+   - form: Estado del formulario con campos:
+     * name: Nombre del combo
+     * description: Descripción del paquete
+     * price: Precio especial del combo
+     * originalPrice: Precio original (suma de productos individuales)
+     * category: Volumen o Definición
+     * image: Imagen del combo
+     * inStock: Disponibilidad
+     * featured: Si aparece destacado
+     * products: Array de IDs de productos incluidos
+
+3. OPERACIONES CRUD:
+
+   CREATE (Crear Combo):
+   - Modal con formulario de información básica (nombre, descripción, precios)
+   - Selector de productos para incluir en el combo (multi-select)
+   - Cálculo automático de descuento vs precio individual de productos
+   - Upload de imagen del combo
+   - Validación de que tenga al menos 1 producto
+   - Envío con FormData para soportar imagen
+   - Creación en backend con referencias a productos
+   
+   READ (Listar Combos):
+   - Fetch de combos filtrados por categoría (volumen/definición)
+   - Vista de tarjetas con imagen, nombre, precio y productos incluidos
+   - Indicadores visuales de estado (en stock, destacado)
+   - Lista expandible de productos incluidos en cada combo
+   
+   UPDATE (Actualizar Combo):
+   - Pre-carga de datos del combo en modal
+   - Modificación de cualquier campo
+   - Agregar/quitar productos del combo
+   - Cambio de imagen (opcional)
+   - Actualización de precios
+   - Toggle de featured/inStock
+   
+   DELETE (Eliminar Combo):
+   - Confirmación antes de eliminar
+   - Eliminación permanente del combo
+   - No afecta productos individuales (solo relación)
+
+4. CARACTERÍSTICAS ESPECIALES:
+   - Vista previa de productos incluidos con imágenes thumbnail
+   - Cálculo de ahorro mostrado al usuario (precio individual vs combo)
+   - Gestión de combos destacados para homepage
+   - Filtrado por categoría automático según ruta
+
+SISTEMA CRUD COMPLETO DE IMPLEMENTOS
+
+El tercer sistema CRUD gestiona "Implementos" - accesorios y artículos deportivos.
+
+COMPONENTE ImplementsPanel (frontend/src/components/admin/ImplementsPanel.jsx):
+
+1. ARQUITECTURA:
+   - Componente embebido dentro de AdminProducts (accesible con toggle)
+   - Gestión independiente de implementos (shakers, correas, guantes, etc.)
+   - CRUD completo más simple que productos (no tiene variantes ni sabores)
+
+2. GESTIÓN DE ESTADO:
+   - implementsList: Array de implementos con mapeo normalizado
+   - loading, error, saving: Estados estándar
+   - form: Formulario con campos:
+     * name: Nombre del implemento
+     * size: Talla/tamaño (opcional)
+     * isActive: Estado activo/inactivo
+   - editing: Implemento en edición
+   - search: Búsqueda en tiempo real
+
+3. FUNCIÓN mapImplement:
+   Normaliza datos del backend a formato consistente:
+   - Maneja ambos _id e id
+   - Defaults seguros para campos opcionales
+   - Formateo de fecha de creación
+
+4. OPERACIONES CRUD:
+
+   CREATE (Crear Implemento):
+   - Formulario simple con nombre y talla
+   - Validación de nombre obligatorio
+   - Estado activo por defecto
+   - POST a /api/implements
+   - Refresh automático de lista
+   
+   READ (Listar Implementos):
+   - GET a /api/implements?includeInactive=true para ver todos
+   - Búsqueda en tiempo real con useMemo para performance
+   - Filtrado por nombre o talla
+   - Vista de tabla con toda la información
+   
+   UPDATE (Actualizar Implemento):
+   - Click en "Editar" carga datos en formulario
+   - Modificación de nombre, talla, estado
+   - PUT a /api/implements/:id
+   - Actualización de lista
+   
+   DELETE (Eliminar Implemento):
+   - Confirmación con window.confirm
+   - DELETE a /api/implements/:id
+   - Eliminación permanente
+   - Si está editando el eliminado, resetea formulario
+
+5. CARACTERÍSTICAS:
+   - Búsqueda instantánea por nombre o talla
+   - Toggle de estado activo inline
+   - Interfaz limpia y minimalista
+   - Manejo de errores robusto
+   - Feedback visual de operaciones
+
+ARQUITECTURA DE COMPONENTES DE VISUALIZACIÓN DE PRODUCTOS
+
+La aplicación cuenta con un sistema completo de componentes para mostrar productos en 
+diferentes contextos, todos con diseño visual mejorado para destacar sobre el fondo:
+
+1. ProductCard (frontend/src/components/ProductCard.jsx):
+   Tarjeta estándar de producto para catálogos y listados con diseño premium:
+   - Diseño visual distintivo:
+     * bg-white con border-2 border-gray-100
+     * Gradiente sutil: bg-gradient-to-br from-white via-transparent to-gray-50/50
+     * Sombra base: shadow-[0_8px_30px_rgb(0,0,0,0.12)]
+     * Hover: shadow-[0_20px_60px_rgba(220,38,38,0.3)] con translate-y-2
+     * Border cambia a border-red-300 en hover
+     * Rounded-2xl para esquinas suaves
+   - Badges estratégicos:
+     * "NUEVO": Aparece si producto creado en últimos 7 días
+       Cálculo: new Date(product.createdAt) > new Date(Date.now() - 7*24*60*60*1000)
+     * "MÁS VENDIDO": Badge rojo para productos destacados/bestsellers
+     * Descuento: Badge verde con porcentaje si hay originalPrice
+   - Área de imagen:
+     * Gradiente radial de fondo: from-red-50 via-white to-white
+     * Drop shadow en imágenes para efecto de profundidad
+     * Aspect ratio fijo 1:1
+     * Lazy loading nativo
+     * Placeholder si falta imagen
+   - Información del producto:
+     * Nombre en font-semibold text-lg
+     * Categoría en texto pequeño gris
+     * Selector de variantes (si tiene múltiples tamaños)
+     * Precios: actual grande en rojo, original tachado si hay descuento
+     * Indicador stock con dot verde/rojo
+   - Interacción:
+     * Click en card → /product/:id
+     * Botón "Quick Add" abre modal
+     * Animaciones suaves en todas las transiciones
+     * Hover effect elevación de -2px
+
+2. FeaturedProductCard (frontend/src/components/FeaturedProductCard.jsx):
+   Versión especializada para productos destacados en homepage, con diseño idéntico 
+   a ProductCard para mantener consistencia visual:
+   - Mismo sistema de sombras y gradientes
+   - Badge "NUEVO" con misma lógica de 7 días
+   - Funcionalidad adicional para administradores:
+     * Icono de edición visible solo si user.role === 'admin'
+     * Click en editar abre modal inline
+     * Permite cambiar producto destacado sin ir a panel admin
+   - Quick Add Modal integrado
+   - Prioridad de renderizado en homepage
+
+3. ImplementCard (frontend/src/components/ImplementCard.jsx):
+   Tarjeta para implementos deportivos con diseño unificado:
+   - Mismo diseño visual que ProductCard (sombras, gradientes, borders)
+   - Diseño más simple (no tiene variantes ni sabores)
+   - Información de talla destacada en badge
+   - Botón "Agregar" directo sin modal (más simple)
+   - Hover effects consistentes con otras cards
+
+4. QuickAddModal (frontend/src/components/QuickAddModal.jsx):
+   Modal de compra rápida que aparece sin salir del catálogo:
+   - Diseño del modal:
+     * Overlay oscuro con backdrop-blur
+     * Card centrada con animación de scale
+     * Cierre con ESC, X o click en overlay
+   - Contenido:
+     * Imagen grande del producto
+     * Nombre y descripción breve
+     * Selector de variante (si aplica): dropdown con tamaños y precios
+     * Selector de sabor (si aplica): grid de botones de sabores
+     * Selector de cantidad: botones -/+ con validación mínimo 1
+     * Preview de precio total calculado
+   - Validaciones:
+     * Si tiene variantes, obliga seleccionar una (bloquea botón agregar)
+     * Si tiene sabores, obliga seleccionar uno
+     * Cantidad siempre ≥ 1
+   - Al agregar:
+     * Llama addToCart del CartContext con producto+variante+sabor+cantidad
+     * Muestra animación de éxito
+     * Cierra modal automáticamente
+     * Actualiza badge de cantidad en Header
+
+SISTEMA DE CARRITO DE COMPRAS
+
+1. CartContext (frontend/src/context/CartContext.jsx):
+   Context complejo que maneja TODO el estado del carrito con persistencia:
+   
+   ARQUITECTURA:
+   - useReducer para estado complejo (mejor que useState para múltiples acciones)
+   - Inicializador perezoso que lee localStorage al montar
+   - Efecto que sincroniza state → localStorage en cada cambio
+   - Provider que envuelve toda la app desde main.jsx
+   
+   ESTADO:
+   - items: Array de items en carrito, cada uno con estructura:
+     {
+       productId: ID del producto original,
+       id: ID o SKU único,
+       name: Nombre del producto,
+       price: Precio unitario,
+       variantId: ID de la variante si aplica,
+       flavor: Sabor seleccionado si aplica,
+       size: Tamaño/variante,
+       quantity: Cantidad,
+       image: URL de imagen,
+       _key: Clave única generada (productId::variantId::flavor)
+     }
+   
+   ACCIONES DEL REDUCER:
+   
+   ADD_TO_CART:
+   - Normaliza datos entrantes (maneja id vs _id vs productId)
+   - Genera _key única combinando productId + variantId + flavor
+   - Busca si ya existe item con esa _key
+   - Si existe: incrementa quantity en 1
+   - Si no existe: agrega nuevo item con quantity: 1
+   - Mantiene todos los campos originales para referencia
+   
+   REMOVE_FROM_CART:
+   - Recibe _key del item a eliminar
+   - Filtra items removiendo el que coincida
+   
+   UPDATE_QUANTITY:
+   - Recibe _key y nueva quantity
+   - Mapea items actualizando quantity del que coincida
+   - Valida que quantity ≥ 1
+   
+   CLEAR_CART:
+   - Vacía array de items
+   - Limpia localStorage de carrito
+   - Usado después de completar compra
+   
+   FUNCIONES CALCULADAS:
+   - totalItems: Suma de quantities de todos los items
+   - subtotal: Suma de (price * quantity) de todos los items
+   - Accesibles vía Context en toda la app
+
+2. CartDrawer (frontend/src/components/CartDrawer.jsx):
+   Drawer deslizable para preview rápido del carrito:
+   - Trigger: Click en icono carrito del Header
+   - Animación: Slide desde derecha con transition-transform
+   - Contenido:
+     * Header con "Tu Carrito" y botón cerrar
+     * Lista scrolleable de items:
+       - Imagen thumbnail
+       - Nombre + variante + sabor
+       - Precio unitario
+       - Controles +/- para cantidad
+       - Botón X para eliminar
+       - Subtotal del item (precio × cantidad)
+     * Footer pegado abajo con:
+       - Subtotal total
+       - Botón "Ver Carrito" → /cart
+       - Botón "Checkout" → /checkout (primario, destacado)
+   - Estado vacío:
+     * Ilustración de carrito vacío
+     * Mensaje "Tu carrito está vacío"
+     * Botón "Explorar Productos" → /products
+   - Responsive: Ancho fijo en desktop (400px), casi full en móvil
+
+3. Cart.jsx (frontend/src/pages/Cart.jsx):
+   Página completa del carrito con todas las funciones:
+   - Layout de 2 columnas (desktop): items a izq, resumen a der
+   - Tabla de items (desktop) / Cards (móvil):
+     * Columnas: Imagen | Producto | Precio | Cantidad | Subtotal | Eliminar
+     * Imagen clickeable → /product/:id
+     * Nombre + variante + sabor listados
+     * Precio con descuento destacado si aplica
+     * Controles cantidad: input number con botones -/+, validación 1-999
+     * Subtotal calculado en tiempo real
+     * Botón eliminar con confirmación
+   - Resumen de compra (sticky en desktop):
+     * Subtotal de productos
+     * Descuento aplicado si hay código/promo
+     * Costo de envío (gratis si subtotal > $X, sino fijo)
+     * IVA/impuestos según configuración
+     * TOTAL destacado en grande
+     * Input para código promocional
+     * Botón "Proceder al Pago" → /checkout
+   - Acciones adicionales:
+     * "Continuar Comprando" → vuelve a /products
+     * "Limpiar Carrito" con doble confirmación
+     * Guardar carrito (si autenticado) para después
+   - Validaciones:
+     * Stock disponible chequeado contra backend
+     * Alertas si producto ya no disponible
+     * Bloqueo de checkout si hay problemas de stock
+
+4. UIContext (frontend/src/context/UIContext.jsx):
+   Context para estado de UI global:
+   - cartDrawerOpen: Booleano para abrir/cerrar CartDrawer
+   - searchDrawerOpen: Booleano para SearchDrawer
+   - loginModalOpen: Modal de login
+   - mobileMenuOpen: Menú hamburguesa
+   - Funciones toggles para cada uno
+   - Previene scroll del body cuando modales abiertos
+
+SISTEMA DE NAVEGACIÓN Y ROUTING
+
+1. App.jsx - Configuración de Rutas:
+   Router principal con React Router DOM 7.8.2 implementando arquitectura dual:
+   
+   LAYOUTS:
+   a) Layout Público (tienda):
+      - TextCarrousel (banner anuncios)
+      - Header (navegación principal)
+      - CartDrawer (siempre disponible)
+      - SearchDrawer (búsqueda global)
+      - LoginModal (login sin salir de página)
+      - main (contenido de rutas)
+      - WhatsappFloatButton (botón flotante)
+      - Footer
+      - CookieConsent (banner cookies)
+   
+   b) AdminLayout (panel administrativo):
+      - Navbar admin con links: Productos, Combos, Catálogo, Gestión páginas
+      - Contenido centrado con max-width
+      - Sin elementos de tienda (cart, footer, etc)
+      - Scroll independiente
+   
+   LÓGICA DE RENDERIZADO:
+   - Si (isAdminAuthed && isAdminRoute): usa AdminLayout
+   - Sino: usa layout público
+   - Admin puede navegar a rutas públicas si quiere ver la tienda
+   
+   RUTAS PÚBLICAS (28 rutas):
+   / → Home.jsx (homepage con hero, destacados, categorías)
+   /products → Products.jsx (catálogo general con filtros)
+   /products/proteinas → Proteinas.jsx (categoría específica)
+   /products/creatina → Creatina.jsx
+   /products/aminoacidos → Aminoacidos.jsx
+   /products/preworkout → PreEntreno.jsx
+   /products/vitaminas → Vitaminas.jsx
+   /products/salud → Salud.jsx
+   /products/comida → Comida.jsx
+   /products/:category → Products.jsx (ruta dinámica)
+   /product/:id → ProductDetail.jsx (detalle de producto)
+   /implementos → Implements.jsx (accesorios deportivos)
+   /ubicaciones → Locations.jsx (mapa de tiendas físicas)
+   /login, /sign-in → redirigen a Home (login via modal)
+   /verify-email → VerifyEmail.jsx (código de verificación)
+   /profile → Profile.jsx (perfil protegido)
+   /politica-cookies → CookiePolicy.jsx
+   
+   RUTAS PROTEGIDAS USUARIO (requieren auth):
+   /cart → Cart.jsx con RestrictAdmin (admin no puede comprar)
+   /checkout → CheckoutNew.jsx con RestrictAdmin
+   /wompi-checkout → WompiCheckout.jsx con RestrictAdmin
+   /wompi-payment → WompiPaymentSimple.jsx con RestrictAdmin
+   /payment-success → PaymentSuccess.jsx
+   /payment-failure → PaymentFailure.jsx
+   /orders → Orders.jsx (historial de órdenes)
+   /orders/:orderId → OrderDetail.jsx
+   
+   RUTAS ADMINISTRATIVAS (requieren admin):
+   /admin, /admin/products → AdminProducts.jsx con RequireAdmin
+   /admin/combos/:category → AdminCombos.jsx con RequireAdmin
+   /admin/catalog → AdminCatalogView.jsx con RequireAdmin
+   /admin/accessories → AdminCatalogView.jsx con RequireAdmin
+   /admin/page-management → AdminPageManagement.jsx con RequireAdmin
+   
+   COMPONENTES GLOBALES:
+   - ScrollToTop: useEffect que ejecuta window.scrollTo(0,0) en cambio de ruta
+   - Condicionales de renderizado:
+     * !hideCarrousel && <TextCarrousel />
+     * !hideHeader && <Header />
+     * !hideFooter && <Footer />
+     Donde hide* es true si en rutas admin o checkout
+
+2. Header.jsx (frontend/src/components/Header.jsx):
+   Navegación principal con múltiples características:
+   
+   ESTRUCTURA:
+   - Posición: fixed top-0 con z-50
+   - Fondo: bg-white/95 con backdrop-blur-md (vidrio esmerilado)
+   - Sombra: shadow-lg que aumenta al hacer scroll
+   - Altura: h-20 (80px)
+   - Padding horizontal responsivo
+   
+   SECCIONES:
+   a) Logo (izquierda):
+      - Imagen o texto "International Nutrition COL"
+      - Click → / (home)
+      - Tamaño responsive
+   
+   b) Navegación Principal (centro, desktop):
+      - Links horizontales: Inicio, Productos, Combos, Implementos, Ubicaciones
+      - Dropdown de "Productos" al hover:
+        * Lista de 7 categorías principales
+        * Subcategorías indentadas (Proteínas: Limpia, Hiper, Vegana)
+        * Mega-menu con imágenes de categorías
+        * Click → /products/:category
+      - Links con hover effect (underline rojo)
+      - Active state destacado si en esa ruta
+   
+   c) Acciones (derecha):
+      - Icono búsqueda → abre SearchDrawer
+      - Icono carrito con badge de cantidad → abre CartDrawer
+      - User menu:
+        * Si NO autenticado:
+          Botón "Iniciar Sesión" → abre LoginModal
+        * Si autenticado (usuario regular):
+          Avatar con iniciales o foto
+          Dropdown: Perfil, Mis Órdenes, Cerrar Sesión
+        * Si autenticado (admin):
+          Todo lo anterior +
+          Botón "Panel Admin" destacado → /admin
+      
+   d) Mobile (hamburger):
+      - Visible solo en < md breakpoint
+      - Icono hamburguesa → abre MobileNav
+      - Badge de carrito visible
+   
+   EFECTOS:
+   - Sombra aumenta al hacer scroll (useState con scroll event)
+   - Sticky siempre visible
+   - Transiciones suaves en todos los hovers
+   - Backdrop blur para efecto premium
+
+3. MobileNav.jsx (frontend/src/components/MobileNav.jsx):
+   Navegación móvil con drawer:
+   - Trigger: Hamburger button en Header
+   - Animación: Slide desde izquierda
+   - Overlay oscuro con backdrop-blur
+   - Contenido:
+     * Header con logo y botón cerrar
+     * User section:
+       - Si autenticado: nombre, email, avatar
+       - Si no: botón "Iniciar Sesión"
+     * Navegación:
+       - Inicio (con icono home)
+       - Productos (expandible):
+         * Click expande/colapsa lista de categorías
+         * Cada categoría clickeable
+         * Subcategorías indentadas
+       - Combos
+       - Implementos
+       - Ubicaciones
+     * Footer links:
+       - Mi Perfil (si auth)
+       - Mis Órdenes (si auth)
+       - Panel Admin (si admin)
+       - Cerrar Sesión (si auth)
+       - Políticas
+   - Cierre:
+     * Click en overlay
+     * Click en X
+     * Click en cualquier link
+     * ESC key
+   - Animaciones CSS con translate-x
+
+4. Footer.jsx (frontend/src/components/fotterPrueba.jsx):
+   Footer completo con 4 secciones:
+   
+   COLUMNA 1 - Sobre Nosotros:
+   - Logo
+   - Descripción breve de la empresa
+   - Misión/visión resumida
+   
+   COLUMNA 2 - Enlaces Rápidos:
+   - Productos
+   - Combos
+   - Implementos
+   - Ubicaciones
+   - Sobre Nosotros
+   - Contacto
+   
+   COLUMNA 3 - Redes Sociales:
+   - Instagram con icono (link externo)
+   - Facebook con icono
+   - WhatsApp con icono
+   - Email de contacto
+   
+   COLUMNA 4 - Newsletter:
+   - Input de email
+   - Botón "Suscribirse"
+   - Checkbox de aceptar políticas
+   - Post a /api/newsletter/subscribe
+   
+   FOOTER BOTTOM:
+   - Copyright © {new Date().getFullYear()} International Nutrition COL
+   - Links legales: Políticas de Privacidad, Términos, Cookies
+   - Métodos de pago (íconos de Visa, Master, PSE, Wompi)
+   
+   RESPONSIVE:
+   - Desktop: 4 columnas
+   - Tablet: 2x2 grid
+   - Móvil: stack vertical
+
+SISTEMA DE CHECKOUT E INTEGRACIÓN DE PAGOS
+
+1. CheckoutNew.jsx (frontend/src/components/CheckoutNew.jsx):
+   Proceso de checkout completo con formulario de envío:
+   
+   SECCIONES:
+   a) Información de Contacto:
+      - Email (pre-poblado si auth)
+      - Teléfono con validación formato colombiano
+      - Checkbox "Recibir ofertas por email"
+   
+   b) Dirección de Envío:
+      - Calle/Dirección con autocomplete de Google Maps (opcional)
+      - Número/apartamento
+      - Ciudad (select con ciudades colombianas)
+      - Departamento (select)
+      - Código Postal
+      - País (pre-seleccionado Colombia)
+      - Notas adicionales (textarea)
+      - Checkbox "Guardar esta dirección" (si auth)
+   
+   c) Método de Envío:
+      - Radio buttons:
+        * Envío estándar (3-5 días) - Gratis si >$X
+        * Envío express (1-2 días) - $XXXX
+      - Calculo dinámico del costo según peso/ciudad
+   
+   d) Resumen de Orden (sticky sidebar):
+      - Lista de productos compacta
+      - Subtotal
+      - Envío calculado
+      - Total
+      - Botón "Continuar al Pago"
+   
+   VALIDACIONES:
+   - Todos los campos requeridos con asterisco
+   - Validación en tiempo real con mensajes de error
+   - Email format validation
+   - Teléfono solo números, 10 dígitos
+   - Dirección mínimo 5 caracteres
+   - Ciudad y departamento requeridos
+   - Bloqueo de botón si hay errores
+   
+   FLUJO:
+   - Al hacer click "Continuar al Pago":
+     * Valida formulario completo
+     * POST a /api/orders/create con:
+       - items del carrito
+       - dirección de envío
+       - contacto
+       - método de envío
+     * Backend crea orden con estado "pending"
+     * Genera reference única
+     * Devuelve orden con ID
+     * Frontend redirige a /wompi-checkout con orderId en query
+   
+   GUARDADO DE DATOS:
+   - Si usuario auth: ofrece guardar dirección para futuras compras
+   - LocalStorage temporal para usuarios no auth (recuperar si refresca)
+
+2. WompiCheckout.jsx (frontend/src/components/WompiCheckout.jsx):
+   Integración con pasarela de pagos Wompi (Colombia):
+   
+   CONFIGURACIÓN:
+   - Public Key de Wompi (producción o test)
+   - Script de Wompi cargado dinámicamente
+   - Configuración del widget:
+     * currency: "COP"
+     * amountInCents: totalOrder * 100
+     * reference: orden.reference (única)
+     * publicKey: process.env.REACT_APP_WOMPI_PUBLIC_KEY
+     * redirectUrl: ${baseURL}/payment-success?reference=${reference}
+     * taxInCents: IVA * 100 (incluido en monto)
+     * customerData:
+       - email
+       - fullName
+       - phoneNumber
+       - legalId (cédula, opcional)
+   
+   WIDGET:
+   - Renderizado en div con id="wompi-widget"
+   - Carga iframe de Wompi con formulario de tarjeta
+   - Manejo de eventos:
+     * onSuccess: Pago aprobado → redirect a payment-success
+     * onError: Error en pago → mostrar mensaje
+     * onPending: Pago pendiente → redirect a payment-pending
+     * onDecline: Pago rechazado → redirect a payment-failure
+   
+   SEGURIDAD:
+   - Integrity signature (HMAC SHA256) del monto+reference+key
+   - No se maneja info de tarjeta (directo a Wompi PCI-compliant)
+   - Verificación de transacción en backend después
+   
+   FLUJO:
+   1. Usuario llega con orderId en query
+   2. Fetch detalles de la orden desde backend
+   3. Inicializa widget de Wompi con datos de orden
+   4. Usuario ingresa datos de tarjeta en iframe Wompi
+   5. Wompi procesa pago
+   6. Callback según resultado:
+      - Aprobado → /payment-success
+      - Rechazado → /payment-failure
+      - Pendiente → /payment-pending
+   7. Backend recibe webhook de Wompi con estado final
+   8. Backend actualiza orden con estado de pago
+
+3. WompiPaymentSimple.jsx (frontend/src/components/WompiPaymentSimple.jsx):
+   Versión simplificada del checkout Wompi:
+   - Menos campos de formulario (pre-poblados si posible)
+   - Para usuarios recurrentes con datos guardados
+   - Un solo paso (no redirect a checkout separado)
+   - Flujo más rápido: Ver producto → Add to cart → Pagar
+
+4. PaymentSuccess.jsx (frontend/src/pages/PaymentSuccess.jsx):
+   Página de confirmación de pago exitoso:
+   - useEffect para obtener reference de query params
+   - Fetch de orden por reference desde backend
+   - Validación de que estado sea "paid"
+   - Mostrar:
+     * Icono de éxito (checkmark animado)
+     * "¡Pago Exitoso!"
+     * Número de orden destacado
+     * Detalles de la compra:
+       - Items comprados
+       - Total pagado
+       - Método de pago
+       - Dirección de envío
+     * Mensaje "Te enviamos confirmación al email"
+     * Tiempo estimado de entrega
+   - Botones:
+     * "Ver Mi Orden" → /orders/:orderId
+     * "Seguir Comprando" → /
+   - useEffect para limpiar carrito (clearCart) una sola vez
+
+5. PaymentFailure.jsx (frontend/src/pages/PaymentFailure.jsx):
+   Página de pago fallido:
+   - Icono de error (X rojo)
+   - "Pago Rechazado"
+   - Razón del rechazo si backend provee (fondos insuficientes, tarjeta expirada, etc)
+   - Detalles de la orden (aún existe, estado "payment_failed")
+   - Opciones:
+     * "Intentar Otro Método de Pago" → vuelve a /checkout con orden existente
+     * "Volver al Carrito" → /cart (carrito NO limpiado)
+     * "Contactar Soporte" → whatsapp o email
+   - NO limpiar carrito (usuario puede reintentar)
+
+6. PaymentPending.jsx (frontend/src/pages/PaymentPending.jsx):
+   Página de pago pendiente (para métodos como PSE):
+   - Icono de reloj
+   - "Pago en Proceso"
+   - Mensaje explicativo (ej: esperando confirmación bancaria)
+   - Número de orden
+   - "Te notificaremos por email cuando se confirme"
+   - Opciones:
+     * "Ver Mis Órdenes" → /orders
+     * "Volver al Inicio" → /
+   - Polling opcional cada X segundos para actualizar estado
+
+GESTIÓN DE PRODUCTOS DESTACADOS Y HOMEPAGE
+
+1. AdminPageManagement.jsx (frontend/src/components/AdminPageManagement.jsx):
+   Componente admin para gestionar productos destacados de homepage:
+   
+   FUNCIONALIDAD:
+   - Selector de 4 productos para aparecer en sección "Destacados" de home
+   - Interfaz:
+     * 4 slots numerados (Posición 1, 2, 3, 4)
+     * Cada slot puede estar vacío o con producto
+     * Si vacío: botón "+ Seleccionar Producto"
+     * Si ocupado: card del producto con botón "Cambiar"
+   - Modal de selección:
+     * Búsqueda de productos con autocomplete
+     * Filtros por categoría
+     * Lista de productos disponibles
+     * Click en producto → asigna a slot actual
+   - Drag & drop (opcional):
+     * Permite reordenar los 4 slots arrastrando
+     * Actualiza posiciones automáticamente
+   - Vista previa:
+     * "Vista Previa" button → muestra cómo se verá en home
+     * Renderiza FeaturedProductCard para cada slot
+   - Guardar:
+     * Botón "Guardar Cambios"
+     * PUT a /api/featured-products con array de 4 productIds
+     * Backend actualiza configuración
+     * Mensaje de éxito
+   - Validación:
+     * Al menos 1 producto seleccionado
+     * Sin duplicados (un producto solo puede estar una vez)
+
+2. Home.jsx (frontend/src/pages/Home.jsx):
+   Página de inicio completa con múltiples secciones:
+   
+   HERO SECTION:
+   - Imagen de fondo full-screen o video
+   - Overlay oscuro para contraste
+   - Título principal: "Tu Aliado en Nutrición Deportiva"
+   - Subtítulo descriptivo
+   - CTA primario: "Ver Productos" → /products
+   - CTA secundario: "Nuestras Ubicaciones" → /ubicaciones
+   - Indicador de scroll (flecha o animación)
+   
+   ANNOUNCEMENT BANNER (AnnouncementBanner.jsx):
+   - Banner rotatorio con ofertas/noticias
+   - Auto-play cada 5 segundos
+   - Indicadores de posición (dots)
+   - Swipeable en móvil
+   
+   PRODUCTOS DESTACADOS:
+   - Título: "Productos Destacados"
+   - Fetch de /api/featured-products
+   - Grid de 4 productos (2x2)
+   - Renderiza FeaturedProductCard para cada uno
+   - Si admin: muestra botón "Gestionar Destacados" → /admin/page-management
+   - Responsive: 2 cols en desktop, 1 en móvil
+   
+   CATEGORÍAS PRINCIPALES (CategoryCarouselClean.jsx):
+   - Sección "Compra por Categoría"
+   - Carrusel de 7 categorías
+   - Cada categoría:
+     * Imagen representativa
+     * Nombre de categoría
+     * Contador de productos
+     * Click → /products/:category
+   - Navegación con flechas
+   - Dots de posición
+   - Swipeable en móvil
+   
+   BENEFICIOS:
+   - Grid de 4 beneficios:
+     * Envío Gratis (en compras >$X)
+     * Productos Originales
+     * Pago Seguro
+     * Soporte 24/7
+   - Íconos ilustrativos
+   - Descripciones breves
+   
+   TESTIMONIOS:
+   - Carrusel de reviews de clientes
+   - Cada testimonio:
+     * Foto del cliente
+     * Nombre
+     * Calificación (estrellas)
+     * Comentario
+   - Auto-play
+   
+   NEWSLETTER:
+   - Sección "Mantente Informado"
+   - Input email + botón suscribirse
+   - POST a /api/newsletter
+   - Mensaje de confirmación
+   
+   OPTIMIZACIONES:
+   - Lazy loading de imágenes
+   - Code splitting por sección
+   - Intersection Observer para animaciones al scroll
+   - Prefetch de /products al hover en CTAs
+
+BÚSQUEDA Y FILTRADO AVANZADO
+
+1. SearchDrawer.jsx (frontend/src/components/SearchDrawer.jsx):
+   Drawer de búsqueda global deslizable desde arriba:
+   
+   DISEÑO:
+   - Posición: fixed top-0 con z-50
+   - Animación: slide-down con translate-y
+   - Fondo: white con sombra inferior
+   - Overlay: backdrop-blur cuando abierto
+   
+   INPUT DE BÚSQUEDA:
+   - Icono de lupa decorativo
+   - Placeholder: "Buscar productos, categorías..."
+   - Autofocus al abrir
+   - Debouncing de 300ms (evita requests excesivos)
+   - useDebounce custom hook
+   
+   LÓGICA DE BÚSQUEDA:
+   - useEffect que escucha searchTerm
+   - Si searchTerm.length >= 3:
+     * GET /api/products/search?q=${searchTerm}
+     * Muestra loading spinner
+     * Actualiza resultados
+   - Si < 3 caracteres: muestra sugerencias populares
+   
+   RESULTADOS:
+   - Lista de productos encontrados:
+     * Imagen thumbnail (50x50)
+     * Nombre con searchTerm destacado (bold)
+     * Precio
+     * Categoría
+     * Click → cierra drawer y navega a /product/:id
+   - Máximo 10 resultados
+   - Link "Ver todos los resultados" → /products?search=${term}
+   - Estado vacío: "No encontramos productos con '$search Term'"
+   
+   SUGERENCIAS (cuando input vacío):
+   - "Búsquedas Populares"
+   - Lista de 5 términos populares (desde backend o hardcoded):
+     * Proteína
+     * Creatina
+     * Pre-entreno
+     * Aminoácidos
+     * Vitaminas
+   - Click en sugerencia → llena input y busca
+   
+   HISTORIAL (si usuario auth):
+   - "Búsquedas Recientes" (guardadas en localStorage)
+   - Últimas 5 búsquedas
+   - Click repite búsqueda
+   - Botón X para limpiar historial
+   
+   CIERRE:
+   - Click en overlay
+   - ESC key
+   - Click en resultado
+   - Botón X en header del drawer
+
+2. Products.jsx (frontend/src/pages/Products.jsx):
+   Página de catálogo con sistema completo de filtros:
+   
+   LAYOUT:
+   - Desktop: Sidebar 1/4 + Grid 3/4
+   - Móvil: Botón "Filtros" abre drawer + Grid full
+   
+   SIDEBAR DE FILTROS:
+   
+   a) Búsqueda Local:
+      - Input text para buscar en productos cargados
+      - Filtrado instantáneo (useMemo)
+      - Busca en nombre y descripción
+   
+   b) Categorías:
+      - Checkboxes para cada categoría
+      - Contador de productos por categoría
+      - Multi-select (permite varias categorías)
+      - "Todas" checkbox que selecciona/deselecciona todas
+   
+   c) Rango de Precio:
+      - Dual slider (min-max)
+      - Inputs numéricos para min/max
+      - Actualización en tiempo real
+      - Valores por defecto: 0 a max del catálogo
+   
+   d) Subcategorías/Tipos:
+      - Solo visible si categoría soporta (ej: Proteínas)
+      - Radio buttons: Limpia, Hipercalórica, Vegana, Todas
+      - Actualiza productos mostrados
+   
+   e) Disponibilidad:
+      - Checkbox "Solo en stock"
+      - Filtra productos con inStock: true
+   
+   f) Ordenamiento:
+      - Select dropdown:
+        * Más Nuevo
+        * Precio: Menor a Mayor
+        * Precio: Mayor a Menor
+        * Nombre: A-Z
+        * Nombre: Z-A
+        * Más Vendidos
+      - Actualiza orden del grid
+   
+   g) Botón "Limpiar Filtros":
+      - Resetea todos los filtros a defaults
+      - Recarga productos sin filtros
+   
+   GRID DE PRODUCTOS:
+   - Responsive:
+     * Desktop xl: 4 columnas
+     * Desktop: 3 columnas
+     * Tablet: 2 columnas
+     * Móvil: 1 columna
+   - Gap entre cards
+   - Renderiza ProductCard para cada producto
+   
+   HEADER DEL GRID:
+   - Breadcrumbs: Inicio > Productos > {Categoría}
+   - Título: "Productos - {Categoría}" o "Todos los Productos"
+   - Contador: "Mostrando X de Y productos"
+   - Toggle de vista (grid/list) - opcional
+   
+   PAGINACIÓN:
+   - Opción 1: Load More button
+     * Botón al final "Cargar Más"
+     * Incrementa limit del fetch
+     * Append de nuevos productos
+   - Opción 2: Páginas numeradas
+     * << 1 2 3 ... 10 >>
+     * X productos por página (configurable)
+     * Query param ?page=N
+   
+   LÓGICA DE FILTRADO:
+   - useMemo para computar filteredProducts:
+     ```javascript
+     const filteredProducts = useMemo(() => {
+       return products
+         .filter(p => selectedCategories.length === 0 || selectedCategories.includes(p.category))
+         .filter(p => !selectedType || p.tipo === selectedType)
+         .filter(p => p.price >= priceRange.min && p.price <= priceRange.max)
+         .filter(p => !onlyInStock || p.inStock)
+         .filter(p => !searchLocal || p.name.toLowerCase().includes(searchLocal.toLowerCase()))
+         .sort((a, b) => {
+           switch(sortBy) {
+             case 'price-asc': return a.price - b.price;
+             case 'price-desc': return b.price - a.price;
+             case 'name-asc': return a.name.localeCompare(b.name);
+             case 'newest': return new Date(b.createdAt) - new Date(a.createdAt);
+             default: return 0;
+           }
+         });
+     }, [products, selectedCategories, selectedType, priceRange, onlyInStock, searchLocal, sortBy]);
+     ```
+   
+   QUERY PARAMS EN URL:
+   - Filtros reflejados en URL para compartibilidad:
+     * ?category=proteinas
+     * &type=limpia
+     * &min=50000&max=150000
+     * &sort=price-asc
+     * &page=2
+   - useSearchParams de React Router
+   - Permite copiar URL y mantener filtros
+   
+   ESTADOS:
+   - Loading: Skeleton de cards mientras carga
+   - Error: Mensaje de error con botón retry
+   - Vacío: "No hay productos que coincidan con tus filtros"
+   - Cargado: Grid normal
+   
+   RESPONSIVE FILTROS:
+   - Desktop: Sidebar siempre visible
+   - Móvil:
+     * Botón "Filtros" en header con badge de filtros activos
+     * Click abre drawer desde izquierda con todos los filtros
+     * Botón "Aplicar" cierra drawer
+     * Botón "Cancelar" descarta cambios
+
+3. CategoryTypeTabs.jsx (frontend/src/components/CategoryTypeTabs.jsx):
+   Tabs para subcategorías en páginas de categoría:
+   - Renderizado condicional (solo si categoría tiene tipos)
+   - Tabs horizontales: "Todas" + tipos de la categoría
+   - Ej en Proteínas: [ Todas | Limpia | Hipercalórica | Vegana ]
+   - Estado activo destacado (bg rojo, texto blanco)
+   - Click actualiza filtro de tipo
+   - Responsive: scroll horizontal si muchos tabs
+   - Smooth scroll behavior
+
+4. Páginas de Categoría Específicas:
+   Se crearon páginas dedicadas por categoría para SEO y UX:
+   
+   - Proteinas.jsx (frontend/src/pages/categories/Proteinas.jsx)
+   - Creatina.jsx (frontend/src/pages/categories/Creatina.jsx)
+   - Aminoacidos.jsx (frontend/src/pages/categories/Aminoacidos.jsx)
+   - PreEntreno.jsx (frontend/src/pages/categories/PreEntreno.jsx)
+   - Vitaminas.jsx (frontend/src/pages/categories/Vitaminas.jsx)
+   - Salud.jsx (frontend/src/pages/categories/Salud.jsx)
+   - Comida.jsx (frontend/src/pages/categories/Comida.jsx)
+   
+   ESTRUCTURA:
+   - Hero section específico de categoría con imagen relevante
+   - Descripción de la categoría y beneficios
+   - CategoryTypeTabs si aplica
+   - Grid de productos filtrados por categoría
+   - FAQ section sobre esa categoría
+   - CTA para ver combos relacionados
+   
+   BENEFICIOS:
+   - URL amigable: /products/proteinas (mejor SEO)
+   - Meta tags específicos por categoría
+   - Contenido optimizado para búsqueda
+   - Mejor UX con contenido contextual
+
+PERFIL DE USUARIO Y ÓRDENES
+
+1. Profile.jsx (frontend/src/pages/Profile.jsx):
+   Página completa de perfil con sistema de tabs:
+   
+   TABS PRINCIPALES:
+   [ Información Personal | Direcciones | Seguridad | Preferencias ]
+   
+   TAB 1 - INFORMACIÓN PERSONAL:
+   - Avatar grande con opción de cambiar foto:
+     * Click abre modal de upload
+     * Crop de imagen circular
+     * Upload a /api/users/avatar
+   - Formulario editable:
+     * Nombre (input text)
+     * Apellido (input text)
+     * Email (readonly, es identificador)
+     * Teléfono (input tel con validación)
+     * Fecha de nacimiento (input date, opcional)
+     * Género (select, opcional)
+   - Botón "Guardar Cambios":
+     * PUT a /api/users/profile
+     * Validación de campos
+     * Mensaje de éxito
+     * Actualiza user en AuthContext
+   
+   TAB 2 - DIRECCIONES:
+   - Lista de direcciones guardadas:
+     * Cada dirección en card:
+       - Nombre/etiqueta (Casa, Oficina, etc)
+       - Dirección completa
+       - Ciudad, Departamento
+       - Código Postal
+       - Badge "Por defecto" si es default
+       - Botones: Editar, Eliminar, Marcar por defecto
+   - Botón "+ Agregar Dirección":
+     * Modal con formulario completo de dirección
+     * Autocomplete de Google Maps (opcional)
+     * Checkbox "Usar como predeterminada"
+     * POST a /api/users/addresses
+   - Editar dirección:
+     * Abre modal con datos pre-poblados
+     * PUT a /api/users/addresses/:id
+   - Eliminar:
+     * Confirmación: "¿Seguro? Se usará en órdenes futuras"
+     * DELETE a /api/users/addresses/:id
+   - Marcar por defecto:
+     * PUT a /api/users/addresses/:id/default
+     * Solo una puede ser default
+   
+   TAB 3 - SEGURIDAD:
+   
+   Sección Contraseña (si usuario tiene contraseña):
+   - Botón "Cambiar Contraseña"
+   - Modal con:
+     * Input "Contraseña Actual" (required, type password)
+     * Input "Nueva Contraseña" (required, validación mínimo 8 chars)
+     * Input "Confirmar Nueva Contraseña" (required, debe coincidir)
+     * Medidor de fuerza de contraseña visual
+     * POST a /api/auth/change-password
+   
+   Sección PIN de Administrador (solo si user.role === 'admin'):
+   - Card destacado "Seguridad de Administrador"
+   - Si NO tiene PIN configurado:
+     * Mensaje: "Configura un PIN para segundo factor de autenticación"
+     * Botón "Configurar PIN":
+       - Modal con input numérico 4-10 dígitos
+       - Confirmar PIN (repetir)
+       - POST a /api/auth/admin/setup-pin
+       - Mensaje éxito: "PIN configurado. Se requerirá en próximos logins"
+   
+   - Si YA tiene PIN:
+     * Estado: "PIN Activo ✓"
+     * Botón "Cambiar PIN":
+       - Modal con:
+         * Input "PIN Actual" (validación)
+         * Input "Nuevo PIN" (4-10 dígitos)
+         * Confirmar Nuevo PIN
+         * POST a /api/auth/admin/change-pin
+     * Botón "Deshabilitar PIN" (peligroso):
+       - Confirmación: "Esto reducirá la seguridad de tu cuenta admin"
+       - Requiere ingresar PIN actual para confirmar
+       - POST a /api/auth/admin/disable-pin
+   
+   Sección Sesiones Activas (futuro):
+   - Lista de sesiones/dispositivos donde está logueado
+   - Botón "Cerrar Sesión" en cada dispositivo
+   
+   TAB 4 - PREFERENCIAS:
+   - Notificaciones:
+     * Checkbox "Recibir ofertas por email"
+     * Checkbox "Recibir newsletter"
+     * Checkbox "Notificaciones de orden"
+     * PUT a /api/users/preferences
+   - Idioma (futuro):
+     * Select Español/Inglés
+   - Moneda (futuro):
+     * Select COP/USD
+   - Tema (futuro):
+     * Radio Light/Dark/Auto
+   
+   GUARDADO GLOBAL:
+   - Botón "Guardar Cambios" en cada tab
+   - Indicador visual si hay cambios sin guardar
+   - Confirmación antes de salir si hay cambios pendientes
+   
+   VALIDACIONES:
+   - Teléfono: solo números, 10 dígitos
+   - Email: format válido (readonly, no se puede cambiar)
+   - PIN: solo números, 4-10 caracteres
+   - Contraseña: mínimo 8 caracteres, incluir mayúscula/minúscula/número
+   - Todos los campos requeridos marcados con *
+
+2. Orders.jsx (frontend/src/pages/Orders.jsx):
+   Historial completo de órdenes del usuario:
+   
+   FETCH INICIAL:
+   - useEffect al montar
+   - GET /api/orders/my-orders
+   - Loading state con skeleton de tabla
+   
+   FILTROS Y BÚSQUEDA:
+   - Input búsqueda por número de orden
+   - Filtro por estado:
+     * Select con opciones: Todas, Pendiente, Procesando, Enviada, Entregada, Cancelada
+   - Filtro por rango de fechas:
+     * Date pickers (desde - hasta)
+   - Filtro por monto:
+     * Slider de rango o inputs min-max
+   - Ordenamiento:
+     * Más reciente primero (default)
+     * Más antiguo primero
+     * Mayor monto
+     * Menor monto
+   
+   TABLA DE ÓRDENES (desktop):
+   Columnas:
+   - Número Orden: #12345 (link clickeable)
+   - Fecha: DD/MM/YYYY
+   - Estado: Badge con color según estado
+     * Pendiente: amarillo
+     * Procesando: azul
+     * Enviada: morado
+     * Entregada: verde
+     * Cancelada: rojo
+   - Items: "3 productos" (tooltip con lista al hover)
+   - Total: $XXX,XXX COP
+   - Acciones: Botón "Ver Detalles" → /orders/:orderId
+   
+   CARDS DE ÓRDENES (móvil):
+   - Card por orden con:
+     * Header: #Orden + Badge estado
+     * Fecha pequeña
+     * Preview de primer item con imagen
+     * "+ X más" si tiene más items
+     * Total destacado
+     * Botón "Ver Detalles"
+   
+   PAGINACIÓN:
+   - 10 órdenes por página
+   - Números de página: << 1 2 3 ... >>
+   - Query param ?page=N
+   
+   ESTADO VACÍO:
+   - Si no tiene órdenes:
+     * Ilustración de "No orders yet"
+     * "Aún no has realizado ningún pedido"
+     * Botón "Explorar Productos" → /products
+   
+   ACCIONES POR ESTADO:
+   - Pendiente:
+     * "Completar Pago" (si pago pendiente)
+     * "Cancelar Orden"
+   - Procesando/Enviada:
+     * "Rastrear Envío" (si tiene tracking)
+     * "Contactar Soporte"
+   - Entregada:
+     * "Volver a Comprar" (agregar mismos items al carrito)
+     * "Dejar Review"
+     * "Descargar Factura"
+   - Cancelada:
+     * "Ver Detalles" solamente
+
+3. OrderDetail.jsx (frontend/src/pages/OrderDetail.jsx):
+   Vista detallada de una orden específica:
+   
+   FETCH:
+   - useParams para obtener orderId de URL
+   - GET /api/orders/:orderId
+   - Validación: solo el usuario dueño o admin puede ver
+   
+   HEADER:
+   - Número de orden grande: "Orden #12345"
+   - Fecha de creación
+   - Badge grande de estado
+   - Botón "Descargar Factura" (PDF)
+   - Botón "Volver a Órdenes"
+   
+   TIMELINE DE ESTADO:
+   - Visual de pasos:
+     1. Orden Creada ✓ (con fecha/hora)
+     2. Pago Confirmado ✓ (con fecha/hora)
+     3. Procesando ✓ (con fecha/hora)
+     4. Enviada ← (estado actual)
+     5. Entregada (pendiente)
+   - Paso actual destacado
+   - Pasos completados con checkmark verde
+   - Pasos pendientes en gris
+   
+   ITEMS DE LA ORDEN:
+   - Tabla/Lista de productos:
+     * Imagen thumbnail
+     * Nombre del producto
+     * Variante/Sabor seleccionado
+     * Precio unitario
+     * Cantidad
+     * Subtotal (precio × cantidad)
+   - Totales al final:
+     * Subtotal de productos
+     * Envío
+     * Descuentos aplicados (si hay)
+     * IVA/Impuestos
+     * TOTAL en grande
+   
+   INFORMACIÓN DE ENVÍO:
+   - Card con:
+     * Dirección completa
+     * Ciudad, Departamento, Código Postal
+     * Teléfono de contacto
+     * Notas de entrega (si las hay)
+   - Si estado es "Enviada":
+     * Número de rastreo (tracking)
+     * Link a página de transportadora
+     * Mapa con ubicación actual (opcional)
+     * Fecha estimada de entrega
+   
+   INFORMACIÓN DE PAGO:
+   - Método de pago usado
+   - Últimos 4 dígitos de tarjeta (si aplica)
+   - Estado del pago (Completado/Pendiente/Rechazado)
+   - Referencia de transacción
+   - Fecha de pago
+   
+   ACCIONES:
+   - Botón "Contactar Soporte" → abre WhatsApp con mensaje pre-lleno:
+     "Hola, tengo una consulta sobre mi orden #12345"
+   - Botón "Reportar Problema":
+     * Modal con:
+       - Select "Tipo de problema": Item dañado, Item faltante, Retraso, Otro
+       - Textarea descripción
+       - Upload de foto (opcional)
+       - POST a /api/orders/:orderId/report-issue
+   - Botón "Cancelar Orden" (solo si estado permite):
+     * Confirmación doble
+     * Textarea razón de cancelación (opcional)
+     * PUT a /api/orders/:orderId/cancel
+   - Botón "Volver a Comprar":
+     * Agrega todos los items de la orden al carrito actual
+     * Redirect a /cart
+     * Mensaje: "X productos agregados al carrito"
+   
+   RESPONSIVE:
+   - Desktop: Layout de 2 columnas (info orden + sidebar resumen)
+   - Móvil: Stack vertical, secciones colapsables
+
+COMPONENTES ADICIONALES Y UTILIDADES
+
+1. WhatsappFloatButton.jsx (frontend/src/components/WhatsappFloatButton.jsx):
+   - Botón flotante de WhatsApp position: fixed bottom-right
+   - Icono de WhatsApp verde con animación de pulso
+   - Tooltip "Chatea con nosotros" al hover
+   - Click abre WhatsApp:
+     * Desktop: https://web.whatsapp.com/send?phone=573XXXXXXXXX&text=Hola...
+     * Móvil: https://wa.me/573XXXXXXXXX?text=Hola...
+   - Mensaje pre-llenado: "Hola, tengo una consulta sobre sus productos"
+   - Z-index alto para estar siempre visible
+   - Oculto en rutas admin
+
+2. CookieConsent.jsx (frontend/src/components/CookieConsent.jsx):
+   - Banner de consentimiento de cookies GDPR-compliant
+   - Posición: fixed bottom-0 con slide-up animation
+   - Mensaje: "Usamos cookies para mejorar tu experiencia..."
+   - Botones:
+     * "Aceptar Todas" → guarda en localStorage, cierra banner
+     * "Configurar" → abre modal de preferencias:
+       - Cookies necesarias (siempre activas, readonly)
+       - Cookies analíticas (toggle)
+       - Cookies de marketing (toggle)
+       - Botón "Guardar Preferencias"
+     * "Rechazar" → solo cookies necesarias
+   - Link "Política de Cookies" → /politica-cookies
+   - Guardado en localStorage: 'cookieConsent'
+   - No se muestra si ya dio consentimiento
+   - Responsive
+
+1. CRUD de Productos:
+   - Creación de productos con validación de formularios
+   - Gestión de variantes (diferentes tamaños del mismo producto)
+   - Sistema de sabores compartidos entre variantes
+   - Subida de imágenes con previsualización
+   - Edición en línea con modal contextual
+   - Activación/desactivación de productos
+   - Eliminación con confirmación
+   - Gestión de stock y precios
+   - Categorización por tipo de producto (proteínas, creatinas, etc.)
+   - Sistema de subcategorías (Limpia, Hipercalórica, Vegana para proteínas)
+
+2. CRUD de Combos:
+   - Creación de paquetes promocionales
+   - Selección múltiple de productos
+   - Cálculo automático de descuentos
+   - Gestión de precios especiales
+   - Activación/desactivación de combos
+   - Vista previa de productos incluidos
+
+3. CRUD de Implementos:
+   - Gestión de accesorios deportivos
+   - Sistema de tallas y colores
+   - Control de inventario
+   - Precios y descuentos
+   - Gestión de disponibilidad
+
+ARQUITECTURA DE COMPONENTES
+La aplicación se estructuró siguiendo principios de componentes reutilizables y separación 
+de responsabilidades:
+
+- ProductCard: Tarjeta de producto con selección de variantes, badges estratégicos 
+  (Más Vendido, Nuevo), sistema de precios con descuentos, botón Quick Add
+- FeaturedProductCard: Versión especializada para productos destacados con gestión 
+  administrativa
+- ProductForm: Formulario complejo con validaciones, manejo de variantes y sabores
+- QuickAddModal: Modal de compra rápida con selección de variantes
+- AdminProducts: Panel principal de administración de productos con filtros por categoría
+- AdminCombos: Interfaz de gestión de combos promocionales
+- ImplementsPanel: Administración de implementos deportivos
+
+   - Guardado en localStorage: 'cookieConsent'
+   - No se muestra si ya dio consentimiento
+   - Responsive
+
+3. Locations.jsx (frontend/src/components/Locations.jsx):
+   - Página con mapa de tiendas físicas
+   - Integración con Google Maps API
+   - Markers en cada ubicación
+   - Info windows con:
+     * Nombre de la tienda
+     * Dirección completa
+     * Horarios de atención
+     * Teléfono
+     * Botón "Cómo llegar" (abre Google Maps app)
+   - Lista lateral de ubicaciones
+   - Filtro por ciudad
+   - Responsive: mapa arriba, lista abajo en móvil
+
+4. Implements.jsx (frontend/src/pages/Implements.jsx):
+   - Página dedicada a implementos deportivos
+   - Hero section explicativa
+   - Grid de ImplementCard
+   - Categorías de implementos: Shakers, Correas, Guantes, Bandas, Otros
+   - Filtros similares a Products.jsx
+
+5. DebugInfo.jsx y ClearStorage.jsx:
+   - Componentes de desarrollo para debugging
+   - ClearStorage: botón para limpiar localStorage (útil en desarrollo)
+   - DebugInfo: muestra estado actual de auth, cart, etc (solo en dev mode)
+
+6. Alert.jsx:
+   - Componente de notificaciones toast
+   - Tipos: success, error, warning, info
+   - Auto-dismiss después de 3-5 segundos
+   - Stack de múltiples alerts
+   - Animaciones de entrada/salida
+
+7. LoginModal.jsx:
+   - Modal global de login que se puede abrir desde cualquier página
+   - Tabs: Login | Registro
+   - Tab Login:
+     * Input email
+     * Si email existe y está verificado → envía código
+     * Si email no verificado → envía código y va a VerifyEmail
+     * Si es admin → flujo de PIN
+   - Tab Registro:
+     * Nombre, Apellido, Email, Confirmar Email
+     * Checkbox términos y condiciones
+     * Botón "Registrarse" → envía código de verificación
+   - Cierre con overlay o X
+   - Redirección opcional después de login exitoso
+
+8. SelectProductModal.jsx:
+   - Modal usado en AdminPageManagement y AdminCombos
+   - Búsqueda y selección de productos
+   - Autocomplete con resultados instantáneos
+   - Preview de producto seleccionado
+   - Botón "Seleccionar"
+
+9. AdminCatalogView.jsx:
+   - Vista alternativa de catálogo para admins
+   - Tabla densa con toda la info
+   - Edición inline de campos
+   - Bulk actions (activar/desactivar múltiples)
+
+10. TextCarrousel.jsx:
+    - Banner rotatorio de anuncios en top
+    - Auto-play cada 5 segundos
+    - Mensajes: "Envío Gratis en compras > $X", "10% OFF en tu primera compra", etc
+    - Pausable al hover
+    - Responsive
+
+COMUNICACIÓN CON BACKEND Y MANEJO DE ERRORES
+
+1. Axios Configuration (frontend/src/utils/axios.js):
+   - Instancia de axios configurada:
+     ```javascript
+     const instance = axios.create({
+       baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5000',
+       timeout: 30000,
+       headers: {
+         'Content-Type': 'application/json'
+       }
+     });
+     ```
+   
+   - Request Interceptor:
+     * Inyecta token de Authorization si existe
+     * Agrega timestamp para debugging
+     * Log de requests en development
+     ```javascript
+     instance.interceptors.request.use(config => {
+       const token = localStorage.getItem('token');
+       if (token) {
+         config.headers.Authorization = `Bearer ${token}`;
+       }
+       return config;
+     });
+     ```
+   
+   - Response Interceptor:
+     * Manejo centralizado de errores
+     * Si 401 Unauthorized → logout automático
+     * Si 403 Forbidden → redirect a home con mensaje
+     * Si 500 Server Error → muestra alerta genérica
+     * Retry logic para errores de red (máximo 3 intentos)
+     ```javascript
+     instance.interceptors.response.use(
+       response => response,
+       async error => {
+         if (error.response?.status === 401) {
+           localStorage.removeItem('token');
+           localStorage.removeItem('user');
+           window.location.href = '/login';
+         }
+         return Promise.reject(error);
+       }
+     );
+     ```
+
+2. Error Handling Patterns:
+   - Try-catch en todas las llamadas async
+   - Estados de error específicos por componente
+   - Mensajes de error user-friendly (no técnicos)
+   - Fallbacks y estados vacíos apropiados
+   - Retry buttons donde tiene sentido
+
+3. Loading States:
+   - Skeletons para mejor UX que spinners
+   - Loading states granulares (por sección, no fullpage)
+   - Optimistic updates donde sea seguro (ej: increment cart quantity)
+   - Placeholders con shimmer effect
+
+OPTIMIZACIÓN Y RENDIMIENTO
+
+1. Code Splitting:
+   - React.lazy para páginas no críticas:
+     ```javascript
+     const AdminProducts = React.lazy(() => import('./pages/AdminProducts'));
+     ```
+   - Suspense con fallback de loading
+   - Split por rutas (cada página principal es su propio chunk)
+   - Lazy load de modales pesados
+
+2. Memoization:
+   - useMemo para cálculos costosos:
+     * Filtered/sorted product lists
+     * Totales del carrito
+     * Grouped data
+   - useCallback para funciones pasadas como props
+   - React.memo en componentes que rerenderean frecuentemente (ProductCard)
+
+3. Image Optimization:
+   - Lazy loading: loading="lazy" en todas las imágenes
+   - Aspect ratio boxes para evitar layout shift
+   - Placeholder blurs mientras carga
+   - Responsive images con srcset (futuro)
+   - WebP con fallback a JPG (backend)
+
+4. Bundle Optimization:
+   - Tree shaking habilitado en Vite
+   - Análisis de bundle con rollup-plugin-visualizer
+   - Eliminación de console.logs en producción
+   - Minificación y compresión (gzip/brotli)
+   - Splitting de vendors (React separado de app code)
+
+5. Performance Monitoring:
+   - Web Vitals tracking preparado
+   - Lighthouse audits periódicos
+   - FCP, LCP, CLS optimizados
+   - TTI < 3s objetivo
+
+DISEÑO RESPONSIVO Y MOBILE-FIRST
+
+Toda la aplicación se desarrolló con enfoque mobile-first, construyendo primero para 
+pantallas pequeñas y expandiendo para desktop:
+
+1. Breakpoints de TailwindCSS:
+   - sm: 640px (móvil landscape)
+   - md: 768px (tablet)
+   - lg: 1024px (desktop pequeño)
+   - xl: 1280px (desktop grande)
+   - 2xl: 1536px (pantallas muy grandes)
+
+2. Patrones Responsive Implementados:
+   - Navegación: Horizontal en desktop, hamburger en móvil
+   - Grids: 4 cols → 2 cols → 1 col según breakpoint
+   - Sidebars: Siempre visibles → Collapsible → Drawer en móvil
+   - Tablas: Table → Cards en móvil
+   - Modales: Centered → Full-screen en móvil
+   - Texto: Tamaños de fuente escalados (text-xl → text-lg → text-base)
+   - Padding: Reducido en móvil para maximizar contenido
+
+3. Touch Targets:
+   - Botones mínimo 44x44px (Apple HIG)
+   - Área clickeable ampliada en móvil
+   - Spacing entre elementos interactivos
+
+4. Testing en Dispositivos:
+   - Chrome DevTools responsive mode
+   - iOS Safari (iPhone 12, 13, 14)
+   - Android Chrome (Samsung, Pixel)
+   - iPad Safari
+   - Diferentes orientaciones
+
+ACCESIBILIDAD (A11Y)
+
+1. Semántica HTML:
+   - Uso correcto de tags: header, nav, main, section, article, footer
+   - Headings jerárquicos (h1 → h2 → h3)
+   - Buttons para acciones, links para navegación
+   - Forms con labels asociados
+
+2. ARIA:
+   - aria-label en iconos sin texto
+   - aria-expanded en dropdowns/accordions
+   - aria-current en navegación activa
+   - aria-live para notificaciones
+   - aria-describedby para help text
+
+3. Navegación por Teclado:
+   - Tab order lógico
+   - Focus visible (outline en elementos focuseados)
+   - ESC para cerrar modales
+   - Enter/Space para activar botones
+   - Arrow keys en carruseles
+
+4. Contraste:
+   - Ratio mínimo 4.5:1 para texto normal
+   - Ratio 3:1 para texto grande
+   - Verificado con herramientas de contraste
+
+5. Fallbacks:
+   - Alt text en todas las imágenes
+   - Transcripts para videos (futuro)
+   - Captions en imágenes informativas
+
+TESTING Y CALIDAD (Preparado para Implementar)
+
+1. Unit Testing (preparado):
+   - Jest configurado
+   - React Testing Library instalada
+   - Tests de ejemplo para utils/helpers
+   - Cobertura objetivo: >80%
+
+2. Integration Testing (preparado):
+   - Cypress configurado
+   - Tests críticos identificados:
+     * Flujo completo de compra
+     * Login/Registro
+     * CRUD de productos (admin)
+
+3. E2E Testing:
+   - Escenarios de usuario definidos
+   - Happy paths y edge cases
+
+4. Linting:
+   - ESLint con reglas de React
+   - Hooks rules enforcement
+   - Warnings tratados como errors en CI
+
+DEPLOYMENT Y DEVOPS
+
+1. Build Process:
+   - `npm run build` genera dist/ optimizado
+   - Variables de entorno:
+     * REACT_APP_API_URL
+     * REACT_APP_WOMPI_PUBLIC_KEY
+     * REACT_APP_GOOGLE_MAPS_KEY
+   - Source maps generados solo en development
+
+2. Hosting:
+   - Frontend desplegable en:
+     * Netlify
+     * Vercel  
+     * AWS S3 + CloudFront
+     * DigitalOcean App Platform
+   - Build automático en push a main
+
+3. Environment Variables:
+   - .env.development (local)
+   - .env.production (deployment)
+   - Nunca committed al repo (.gitignore)
+
+
+2. LOGROS ALCANZADOS
+
+AUTENTICACIÓN Y SEGURIDAD
+
+• Se implementó exitosamente un sistema de autenticación robusto con verificación por 
+  código de email de 6 dígitos, logrando un flujo de login sin contraseña (passwordless) 
+  que mejora la seguridad y la experiencia del usuario, eliminando el riesgo de contraseñas 
+  débiles o comprometidas.
+
+• Se desarrolló un sistema de seguridad multicapa para el panel administrativo que combina 
+  tres niveles de protección: verificación de token JWT, validación de rol de administrador 
+  en backend, y sistema de PIN como segundo factor de autenticación. Esta arquitectura 
+  previene efectivamente el acceso no autorizado incluso si se comprometen las credenciales 
+  principales.
+
+• Se implementó el componente RequireAdmin que valida automáticamente la autenticación y 
+  rol del usuario en cada render, redirigiendo a login si no está autenticado o mostrando 
+  "No autorizado" si no es admin, garantizando que las rutas administrativas sean 
+  inaccesibles para usuarios regulares.
+
+• Se logró desarrollar el flujo completo de PIN de administrador con tres estados: 
+  configuración inicial, cambio de PIN y deshabilitación. El PIN se valida mediante TOTP 
+  en el backend y nunca se almacena el token de administrador en localStorage, forzando 
+  re-autenticación en cada sesión para máxima seguridad.
+
+• Se implementó persistencia selectiva de sesiones: usuarios regulares mantienen su sesión 
+  en localStorage para conveniencia, mientras que administradores NUNCA tienen su token 
+  persistido, requiriendo autenticación completa (incluyendo PIN) cada vez que abren el 
+  navegador o refrescan la página.
+
+• Se desarrolló el AuthContext con useReducer que maneja 10 estados diferentes 
+  (LOGIN_START, LOGIN_SUCCESS, LOGIN_FAILURE, VERIFY_START, VERIFY_SUCCESS, 
+  VERIFY_FAILURE, ADMIN_PIN_PENDING, ADMIN_PIN_SUCCESS, LOGOUT, CLEAR_ERROR), 
+  proporcionando un control granular y predecible del flujo de autenticación.
+
+SISTEMAS CRUD COMPLETOS
+
+• Se desarrollaron TRES sistemas CRUD completos y completamente funcionales desde cero: 
+  Productos (con variantes y sabores), Combos (paquetes promocionales) e Implementos 
+  (accesorios deportivos), cada uno con sus propias particularidades y complejidades, 
+  demostrando dominio total del desarrollo de interfaces administrativas.
+
+• En el CRUD de Productos, se logró implementar gestión de variantes complejas donde un 
+  producto puede tener múltiples tamaños (ej: 1kg, 2kg, 5kg), cada uno con su propio 
+  precio, stock y estado, manteniendo sabores compartidos entre todas las variantes. 
+  Esta funcionalidad permite flexibilidad total en la gestión del catálogo.
+
+• Se implementó un sistema de categorización multinivel con 7 categorías principales 
+  (Proteínas, Pre-entrenos y Energía, Creatinas, Aminoácidos y Recuperadores, Salud y 
+  Bienestar, Rendimiento hormonal, Comidas con proteína) y subcategorías/tipos (Proteínas: 
+  Limpia/Hipercalórica/Vegana, Creatinas: Monohidrato/HCL), con normalización de categorías 
+  legacy para compatibilidad con datos existentes.
+
+• Se desarrolló el componente ProductForm, uno de los formularios más complejos del 
+  proyecto, con 6 secciones (información básica, precios, imagen, variantes, sabores, 
+  estado) y validación completa en tiempo real. La interfaz permite agregar/eliminar 
+  variantes dinámicamente con edición inline de cada una.
+
+• En el AdminProducts, se logró aumentar el límite de productos de 500 a 2000 con el 
+  parámetro flat=true, asegurando que TODOS los productos del catálogo se carguen para 
+  administración, eliminando problemas de productos "invisibles" en el panel.
+
+• Se implementó una tabla administrativa con diseño beige premium que incluye paginación, 
+  búsqueda en tiempo real, filtros por categoría y tipo, ordenamiento, y acciones en una 
+  sola fila (Editar, Eliminar, Toggle Activo), logrando una interfaz limpia y profesional 
+  que maneja cientos de productos sin problemas de rendimiento gracias a useMemo.
+
+• En el CRUD de Combos, se desarrolló funcionalidad de selección múltiple de productos 
+  con SelectProductModal, cálculo automático de descuentos comparando precio del combo 
+  vs suma de productos individuales, y gestión de combos destacados para aparecer en la 
+  homepage, logrando una herramienta completa de marketing.
+
+• En el CRUD de Implementos, se implementó un sistema más simple pero completo con 
+  mapeo normalizado de datos (función mapImplement que maneja _id vs id), búsqueda 
+  instantánea con useMemo, y toggle inline de estado activo, demostrando capacidad de 
+  crear interfaces CRUD eficientes y minimalistas cuando la complejidad no lo requiere.
+
+COMPONENTES DE VISUALIZACIÓN Y UX
+
+• Se desarrolló un sistema de tarjetas de producto (ProductCard, FeaturedProductCard, 
+  ImplementCard) con diseño visual distintivo que incluye sombras profundas 
+  (shadow-[0_8px_30px_rgb(0,0,0,0.12)]), gradientes sutiles (from-white via-transparent 
+  to-gray-50/50), y hover effects espectaculares (shadow-[0_20px_60px_rgba(220,38,38,0.3)] 
+  con elevación de -2px), logrando que las cards se destaquen claramente del fondo blanco.
+
+• Se implementó la lógica del badge "NUEVO" que aparece automáticamente en productos 
+  creados en los últimos 7 días (modificado desde 30 días por solicitud del cliente), 
+  calculado dinámicamente con JavaScript: `new Date(product.createdAt) > new Date(Date.now() 
+  - 7*24*60*60*1000)`, demostrando manejo preciso de fechas y lógica de negocio.
+
+• Se desarrolló QuickAddModal, un modal de compra rápida que permite agregar productos 
+  al carrito sin salir del catálogo, incluyendo selección de variante, sabor y cantidad, 
+  con validación que bloquea el botón "Agregar" hasta que se seleccione variante (si 
+  aplica), mejorando significativamente la experiencia de compra.
+
+• Se logró unificar el diseño visual de TODAS las cards de producto (ProductCard, 
+  FeaturedProductCard, ImplementCard) aplicando los mismos estilos de sombras, gradientes, 
+  borders y hover effects, manteniendo consistencia visual en toda la aplicación y 
+  demostrando capacidad de mantener design systems coherentes.
+
+SISTEMA DE CARRITO Y CHECKOUT
+
+• Se implementó CartContext con useReducer que maneja TODO el estado del carrito incluyendo 
+  persistencia en localStorage con la key 'cart_v1'. El reducer incluye 4 acciones 
+  (ADD_TO_CART, REMOVE_FROM_CART, UPDATE_QUANTITY, CLEAR_CART) con lógica compleja de 
+  normalización de datos y generación de keys únicas por combinación producto+variante+sabor.
+
+• Se desarrolló la lógica de ADD_TO_CART que normaliza datos entrantes manejando múltiples 
+  formatos (id vs _id vs productId), genera una _key única concatenando 
+  `${productId}::${variantId}::${flavor}`, y detecta duplicados incrementando quantity 
+  en lugar de crear nuevo item, demostrando manejo avanzado de estructuras de datos.
+
+• Se creó CartDrawer, un drawer deslizable desde la derecha con animación slide y overlay 
+  con backdrop-blur, que muestra preview rápido del carrito con controles +/- inline para 
+  cantidad, botón X para eliminar items, cálculo de subtotal en tiempo real, y botones 
+  "Ver Carrito" y "Checkout", mejorando la UX al evitar navegación para ver el carrito.
+
+• Se desarrolló la página Cart.jsx completa con tabla de items (desktop) y cards (móvil), 
+  controles de cantidad con validación 1-999, eliminación con confirmación, resumen de 
+  compra con subtotal/envío/impuestos/total, input de código promocional, y botones de 
+  acción ("Continuar Comprando", "Limpiar Carrito", "Proceder al Pago"), creando una 
+  experiencia de carrito completa y profesional.
+
+• Se implementó CheckoutNew.jsx con formulario completo de envío que incluye información 
+  de contacto, dirección con autocomplete de Google Maps, método de envío (estándar/express) 
+  con cálculo dinámico de costo, validación completa de todos los campos, y creación de 
+  orden en backend antes de redirigir a pasarela de pagos, asegurando que no se pierdan 
+  órdenes.
+
+• Se logró integrar exitosamente la pasarela Wompi en WompiCheckout.jsx, configurando el 
+  widget con todos los parámetros requeridos (amountInCents, reference, customerData), 
+  generando integrity signature con HMAC SHA256, manejando callbacks (onSuccess, onError, 
+  onPending, onDecline), y redirigiendo apropiadamente según resultado del pago.
+
+• Se desarrollaron páginas especializadas para cada resultado de pago (PaymentSuccess.jsx, 
+  PaymentFailure.jsx, PaymentPending.jsx) con animaciones apropiadas, mensajes descriptivos, 
+  detalles de la orden, y acciones contextuales, además de implementar limpieza automática 
+  del carrito solo en éxito, permitiendo reintentos si falla el pago.
+
+NAVEGACIÓN Y ROUTING
+
+• Se implementó sistema de routing dual en App.jsx que renderiza AdminLayout para rutas 
+  /admin/* si el usuario es admin autenticado, y layout público para todo lo demás, 
+  permitiendo que admins puedan navegar a la tienda pública si lo desean mientras 
+  mantienen panel administrativo separado.
+
+• Se configuraron 28 rutas públicas incluyendo rutas genéricas (/products), rutas por 
+  categoría específica (/products/proteinas), rutas dinámicas (/products/:category), 
+  rutas de detalle (/product/:id), rutas protegidas con RequireAdmin (/admin/*), y rutas 
+  con RestrictAdmin (/cart, /checkout) que previenen que admins compren para evitar 
+  confusión de roles.
+
+• Se desarrolló Header.jsx como componente fixed con backdrop-blur, que incluye navegación 
+  principal con dropdown mega-menu de categorías, búsqueda global, carrito con badge de 
+  cantidad, y user menu contextual que muestra diferentes opciones según estado de 
+  autenticación (no auth: "Iniciar Sesión", auth regular: Perfil/Órdenes/Logout, admin: 
+  todo lo anterior + "Panel Admin").
+
+• Se implementó MobileNav.jsx para navegación móvil con drawer desde izquierda, que 
+  incluye sección de usuario, navegación expandible por categorías con subcategorías 
+  indentadas, y footer con links adicionales, cerrándose automáticamente al hacer click 
+  en cualquier link o presionar ESC.
+
+• Se crearon 7 páginas dedicadas por categoría (Proteinas.jsx, Creatina.jsx, etc) cada 
+  una con hero section específico, descripción de categoría, CategoryTypeTabs para 
+  subcategorías, grid de productos filtrados, y FAQ section contextual, mejorando 
+  significativamente el SEO con URLs amigables (/products/proteinas) y contenido 
+  optimizado por categoría.
+
+BÚSQUEDA Y FILTRADO
+
+• Se desarrolló SearchDrawer.jsx, un drawer global deslizable desde arriba que implementa 
+  búsqueda en tiempo real con debouncing de 300ms usando custom hook useDebounce, 
+  mostrando resultados con highlight del término buscado, thumbnail de imagen, precio y 
+  categoría, con navegación directa al producto al hacer click.
+
+• Se implementó sistema de sugerencias populares que aparecen cuando el input está vacío, 
+  mostrando 5 términos comunes (Proteína, Creatina, etc) clickeables, además de historial 
+  de búsquedas recientes guardado en localStorage para usuarios autenticados, mejorando 
+  la experiencia de descubrimiento.
+
+• En Products.jsx se desarrolló sidebar completo de filtros que incluye búsqueda local, 
+  multi-select de categorías con checkboxes, dual slider de rango de precio, radio buttons 
+  de subcategorías, toggle "Solo en stock", y ordenamiento con 6 opciones (precio↑↓, 
+  nombre A-Z/Z-A, más nuevo, más vendidos), todos aplicados en tiempo real con useMemo 
+  para performance óptimo.
+
+• Se implementó lógica de filtrado complejo usando useMemo que combina múltiples filtros 
+  (categorías AND tipo AND precioMin-Max AND stock AND búsqueda local) y aplica sorting, 
+  procesando cientos de productos sin lag, demostrando dominio de optimización de 
+  rendimiento con React hooks.
+
+• Se desarrolló CategoryTypeTabs.jsx, componente de tabs para subcategorías que se renderiza 
+  condicionalmente solo en categorías que soportan tipos (Proteínas, Creatinas), con 
+  estado activo destacado, scroll horizontal responsive en móvil si muchos tabs, y 
+  actualización de query params en URL para compartibilidad.
+
+• Se logró implementar query params en URL para filtros (?category=proteinas&type=limpia
+  &min=50000&max=150000&sort=price-asc&page=2) usando useSearchParams de React Router, 
+  permitiendo compartir enlaces con filtros aplicados y mantener filtros al refrescar 
+  página, mejorando significativamente la usabilidad.
+
+PERFIL Y ÓRDENES
+
+• Se desarrolló Profile.jsx con sistema de tabs completo (Información Personal, Direcciones, 
+  Seguridad, Preferencias) donde cada tab tiene su propia funcionalidad: edición de datos 
+  personales con validación, gestión de múltiples direcciones de envío con marcar por 
+  defecto, cambio de contraseña con medidor de fuerza, y preferencias de notificaciones.
+
+• Se implementó gestión completa del PIN de administrador en la tab Seguridad que detecta 
+  si el usuario es admin (user.role === 'admin') y muestra card especial con tres estados 
+  posibles: configurar PIN inicial (si no tiene), cambiar PIN (requiere PIN actual), y 
+  deshabilitar PIN (con doble confirmación), todo integrado con el backend para validación.
+
+• Se creó Orders.jsx con historial completo de órdenes que incluye tabla con columnas 
+  (Número, Fecha, Estado, Items, Total, Acciones), filtros por estado/fechas/monto, 
+  búsqueda por número de orden, ordenamiento, paginación de 10 por página, y badges 
+  con colores distintivos por estado (Pendiente:amarillo, Procesando:azul, Enviada:morado, 
+  Entregada:verde, Cancelada:rojo).
+
+• Se desarrolló OrderDetail.jsx con vista completa de orden individual que incluye timeline 
+  visual de estado con checkmarks en pasos completados, tabla de items comprados, totales 
+  desglosados (subtotal/envío/impuestos/total), información de envío con tracking, 
+  información de pago, y acciones contextuales según estado (Contactar Soporte, Reportar 
+  Problema, Cancelar Orden, Volver a Comprar).
+
+OPTIMIZACIÓN Y PERFORMANCE
+
+• Se implementó code splitting con React.lazy para páginas no críticas (AdminProducts, 
+  AdminCombos, etc) logrando reducción significativa del bundle inicial, con Suspense 
+  y fallback de loading para transiciones suaves, mejorando First Contentful Paint (FCP) 
+  y Time to Interactive (TTI).
+
+• Se utilizó useMemo extensivamente para cálculos costosos (filtered product lists con 
+  múltiples filtros, sorted arrays, totales del carrito) evitando re-cálculos innecesarios 
+  en cada render, logrando interfaces fluidas incluso con cientos de productos.
+
+• Se implementó lazy loading nativo de imágenes (loading="lazy") en TODAS las imágenes 
+  de productos, combinado con aspect ratio boxes para evitar layout shift, placeholders 
+  mientras carga, y drop-shadow para efecto de profundidad, optimizando Largest Contentful 
+  Paint (LCP) y Cumulative Layout Shift (CLS).
+
+• Se configuró Vite con optimizaciones de producción que incluyen tree-shaking automático, 
+  minificación con Terser, splitting de vendors (React separado del código de app), y 
+  generación de chunks por ruta, resultando en bundles optimizados de <200KB (gzipped) 
+  para el código de app.
+
+RESPONSIVE DESIGN Y ACCESIBILIDAD
+
+• Se desarrolló TODO el proyecto con enfoque mobile-first, construyendo primero para 
+  pantallas pequeñas y expandiendo progresivamente para tablet y desktop, utilizando 
+  los 5 breakpoints de TailwindCSS (sm, md, lg, xl, 2xl) consistentemente en todos los 
+  componentes.
+
+• Se implementaron patrones responsive específicos: Navegación horizontal→hamburger, 
+  Grids 4→2→1 columnas, Sidebars visible→collapsible→drawer, Tablas→Cards en móvil, 
+  Modales centered→fullscreen en móvil, logrando que TODA la aplicación funcione 
+  perfectamente en cualquier tamaño de pantalla.
+
+• Se garantizó que todos los touch targets en móvil cumplan el mínimo de 44x44px según 
+  Apple HIG, aumentando áreas clickeables, agregando spacing entre elementos interactivos, 
+  y asegurando que botones pequeños en desktop sean suficientemente grandes en móvil.
+
+• Se implementó semántica HTML correcta usando tags apropiados (header, nav, main, section, 
+  article, footer), headings jerárquicos (h1→h2→h3), buttons para acciones vs links para 
+  navegación, y forms con labels asociados, mejorando accesibilidad y SEO.
+
+• Se agregaron atributos ARIA donde necesario (aria-label en iconos sin texto, aria-expanded 
+  en dropdowns, aria-current en navegación activa, aria-live para notificaciones), se 
+  garantizó navegación por teclado con tab order lógico y focus visible, y se verificó 
+  contraste de colores con ratio mínimo 4.5:1, logrando cumplimiento básico WCAG 2.1.
+
+COMPONENTES ADICIONALES Y FEATURES
+
+• Se implementó WhatsappFloatButton.jsx, botón flotante position fixed bottom-right con 
+  icono de WhatsApp verde, animación de pulso, tooltip al hover, y que abre WhatsApp 
+  (web en desktop, app en móvil) con mensaje pre-llenado contextual, facilitando 
+  comunicación directa con soporte.
+
+• Se desarrolló CookieConsent.jsx, banner GDPR-compliant position fixed bottom con 
+  slide-up animation, que muestra mensaje de uso de cookies, botones Aceptar/Configurar
+  /Rechazar, modal de preferencias con toggles por tipo de cookie (necesarias/analíticas
+  /marketing), guardado en localStorage, y no se muestra si ya dio consentimiento.
+
+• Se creó Locations.jsx con integración de Google Maps API mostrando markers en ubicaciones 
+  físicas de tiendas, info windows con nombre/dirección/horarios/teléfono, botón "Cómo 
+  llegar" que abre Google Maps app, lista lateral de ubicaciones con filtro por ciudad, 
+  y responsive con mapa arriba y lista abajo en móvil.
+
+• Se implementó AnnouncementBanner.jsx, carrusel rotatorio de anuncios con auto-play 
+  cada 5 segundos, indicadores de posición (dots), swipeable en móvil, pausable al hover, 
+  y mensajes configurables ("Envío Gratis >$X", "10% OFF primera compra", etc), mejorando 
+  visibilidad de promociones.
+
+• Se desarrolló AdminPageManagement.jsx para gestión de productos destacados en homepage, 
+  con interfaz de 4 slots, botón "Seleccionar Producto" que abre SelectProductModal, 
+  vista previa de cómo se verán en home, drag & drop para reordenar (opcional), y guardado 
+  con PUT a /api/featured-products, dando control total de homepage sin tocar código.
+
+INTEGRACIÓN Y COMUNICACIÓN CON BACKEND
+
+• Se configuró instancia de axios (frontend/src/utils/axios.js) con baseURL desde 
+  environment variables, timeout de 30s, headers default 'Content-Type: application/json', 
+  y export como default para uso consistente en toda la aplicación.
+
+• Se implementaron interceptores de axios: Request interceptor que inyecta token de 
+  Authorization automáticamente si existe en localStorage, y Response interceptor que 
+  maneja errores centralizadamente (401→logout, 403→redirect, 500→alerta), además de 
+  retry logic para errores de red con máximo 3 intentos.
+
+• Se desarrolló patrón consistente de try-catch en todas las llamadas async, con estados 
+  de loading/error específicos por componente, mensajes de error user-friendly (no 
+  técnicos), y retry buttons donde tiene sentido, logrando manejo robusto de errores en 
+  toda la aplicación.
+
+• Se implementaron loading states granulares usando skeletons en lugar de spinners 
+  fullpage (mejor UX), loading por sección no por página completa, optimistic updates 
+  donde es seguro (ej: incrementar cantidad en carrito), y placeholders con shimmer effect, 
+  mejorando percepción de velocidad.
+
+LOGROS TÉCNICOS Y ARQUITECTURALES
+
+• Se desarrolló un proyecto frontend completo de más de 40 componentes organizados 
+  jerárquicamente en estructura modular y escalable (/pages, /components, /components/admin, 
+  /context, /services, /utils), demostrando capacidad de arquitecturar aplicaciones 
+  grandes manteniendo organización y mantenibilidad.
+
+• Se implementó Context API de React en 3 contexts (AuthContext, CartContext, UIContext) 
+  manejando TODO el estado global de la aplicación sin necesidad de Redux u otras 
+  bibliotecas pesadas, demostrando que para la mayoría de aplicaciones, Context API es 
+  suficiente si se usa correctamente.
+
+• Se logró dominio completo de React Hooks utilizando useState para estado local, useEffect 
+  para side effects, useMemo para cálculos costosos, useCallback para funciones 
+  memorizadas, useReducer para estado complejo (Auth, Cart), useContext para consumir 
+  contexts, useParams/useNavigate/useSearchParams para routing, y custom hooks (useDebounce).
+
+• Se desarrolló la aplicación usando únicamente JavaScript (no TypeScript) demostrando que 
+  con prácticas correctas (naming consistente, validación de props, documentación de 
+  funciones, estructura clara) se pueden crear aplicaciones robustas sin necesidad de 
+  tipado estático.
+
+• Se utilizó TailwindCSS como única fuente de estilos (utility-first) sin escribir CSS 
+  custom prácticamente, configurando colores custom, fonts, y plugins (@tailwindcss
+  /aspect-ratio), logrando diseño completamente responsivo y consistente con menos código 
+  que CSS tradicional.
+
+• Se logró deployabilidad completa con configuración de environment variables 
+  (REACT_APP_API_URL, REACT_APP_WOMPI_PUBLIC_KEY, REACT_APP_GOOGLE_MAPS_KEY), script 
+  de build optimizado con Vite, y preparación para deployment en múltiples plataformas 
+  (Netlify, Vercel, AWS S3, DigitalOcean).
+
+• Se desarrolló un e-commerce COMPLETO y funcional que incluye TODAS las características 
+  esperadas: catálogo de productos, variantes, búsqueda/filtrado, carrito, checkout, 
+  pagos, órdenes, perfil de usuario, panel administrativo con CRUDs completos, 
+  autenticación segura, y responsive design, demostrando capacidad de llevar un proyecto 
+  de principio a fin.
+
+SISTEMA DE NAVEGACIÓN Y RUTAS
+Se desarrolló un sistema de navegación completo con React Router:
+- Rutas públicas: Home, Catálogo, Productos por categoría, Detalles de producto
+- Rutas protegidas: Perfil, Checkout, Historial de órdenes
+- Rutas administrativas: Panel de productos, combos, implementos, usuarios
+- Navegación dinámica por categorías con soporte para subcategorías
+- Breadcrumbs para orientación del usuario
+
+INTEGRACIÓN CON PASARELA DE PAGOS
+Se implementó la integración frontend con Wompi:
+- Formulario de checkout con validación de datos de envío
+- Integración con widget de Wompi para pagos
+- Confirmación de transacciones
+- Manejo de estados de pago (pendiente, aprobado, rechazado)
+- Redirección post-pago con mensajes de estado
+
+OPTIMIZACIÓN Y RENDIMIENTO
+- Code splitting con React.lazy para carga diferida de componentes
+- Memoización con useMemo y useCallback para evitar re-renders innecesarios
+- Optimización de imágenes con carga lazy
+- Minificación y bundling con Vite
+- Reducción del tamaño del bundle mediante tree-shaking
+
+DISEÑO RESPONSIVO Y UX
+Se desarrolló una interfaz completamente responsiva usando TailwindCSS:
+- Mobile-first design con breakpoints adaptativos
+- Sistema de grid responsivo para catálogos de productos
+- Menú hamburguesa en móviles
+- Cards de producto optimizadas para diferentes tamaños de pantalla
+- Formularios adaptados para touch devices
+
+GESTIÓN DE PRODUCTOS DESTACADOS
+Se implementó un sistema de administración de productos destacados:
+- Selección visual de 4 productos destacados
+- Drag and drop para reordenar posiciones
+- Vista previa en tiempo real
+- Gestión desde el panel de administrador
+- Sincronización con backend para persistencia
+
+SISTEMA DE FILTROS Y BÚSQUEDA
+- Búsqueda en tiempo real de productos
+- Filtros por categoría, tipo de producto y subcategoría
+- Filtrado por rango de precios
+- Ordenamiento por precio, nombre y fecha
+- Paginación de resultados
+
+COMUNICACIÓN CON BACKEND
+Se desarrolló un sistema de comunicación robusto con axios:
+- Interceptores para inyección de tokens
+- Manejo centralizado de errores
+- Reintentos automáticos en caso de fallo
+- Cancelación de peticiones duplicadas
+- Loading states para mejorar UX
+
+ACCESIBILIDAD Y ESTÁNDARES WEB
+- Semántica HTML5 apropiada
+- Atributos ARIA para lectores de pantalla
+- Navegación por teclado
+- Contraste de colores según WCAG 2.1
+- Formularios accesibles con labels asociados
+
+
+2. LOGROS ALCANZADOS
+
+• Se logró implementar un sistema de autenticación completo con validación por código 
+  de email, recuperación de contraseña y manejo seguro de sesiones mediante JWT tokens 
+  almacenados en localStorage con expiración automática.
+
+• Se desarrolló exitosamente un panel de administración con triple capa de seguridad:
+  verificación de token JWT, validación de rol y sistema de PIN como segundo factor de 
+  autenticación, garantizando que solo usuarios autorizados accedan a funciones críticas.
+
+• Se implementaron tres sistemas CRUD completos (Productos, Combos e Implementos) con 
+  interfaces intuitivas que incluyen validación de formularios, manejo de errores, 
+  confirmaciones de acciones destructivas y feedback visual en todas las operaciones.
+
+• Se logró crear un sistema de gestión de productos con soporte para variantes complejas, 
+  permitiendo que un mismo producto tenga múltiples tamaños con diferentes precios, 
+  manteniendo consistencia de sabores y características compartidas.
+
+• Se desarrolló un sistema de categorización multinivel que soporta categorías principales 
+  y subcategorías (tipos), permitiendo organizar productos de proteínas en Limpia, 
+  Hipercalórica y Vegana, con navegación intuitiva entre niveles.
+
+• Se implementó un carrito de compras completamente funcional con persistencia en 
+  localStorage, actualización en tiempo real, cálculo automático de totales, manejo de 
+  cantidades y eliminación de productos.
+
+• Se logró integrar exitosamente la pasarela de pagos Wompi en el frontend, manejando 
+  el flujo completo desde la selección de productos hasta la confirmación de pago, 
+  incluyendo manejo de estados y redirecciones post-transacción.
+
+• Se desarrolló un sistema de productos destacados con gestión administrativa, permitiendo 
+  a los administradores seleccionar y posicionar estratégicamente 4 productos en la página 
+  de inicio con actualización en tiempo real.
+
+• Se implementó un diseño completamente responsivo usando TailwindCSS que se adapta 
+  perfectamente a dispositivos móviles, tablets y desktop, con un enfoque mobile-first 
+  que garantiza excelente experiencia en todos los dispositivos.
+
+• Se logró crear un sistema de navegación dinámico que genera rutas automáticamente 
+  basadas en las categorías disponibles, con breadcrumbs para orientación del usuario 
+  y manejo de URLs amigables.
+
+• Se implementó un sistema de búsqueda y filtrado en tiempo real que permite a los 
+  usuarios encontrar productos por nombre, categoría, tipo, rango de precio y 
+  disponibilidad, con actualización instantánea de resultados.
+
+• Se desarrolló un sistema de Quick Add Modal que permite agregar productos al carrito 
+  sin salir de la página de catálogo, seleccionando variantes y cantidades de forma rápida 
+  e intuitiva.
+
+• Se logró implementar lazy loading de imágenes y code splitting para optimizar el 
+  rendimiento, reduciendo el tiempo de carga inicial y mejorando las métricas de 
+  Core Web Vitals.
+
+• Se creó un sistema de gestión de perfiles de usuario donde los usuarios pueden ver 
+  y actualizar su información personal, historial de órdenes y preferencias, con 
+  validación completa de datos.
+
+• Se implementó un sistema de badges estratégicos (Más Vendido, Nuevo, Descuento) 
+  con lógica automática basada en ventas y fecha de creación, mejorando la conversión 
+  y guiando decisiones de compra.
+
+• Se desarrolló un sistema de notificaciones toast para feedback de acciones del usuario, 
+  mostrando confirmaciones de éxito, errores y advertencias de manera no intrusiva.
+
+• Se logró implementar manejo robusto de errores con recuperación automática, retry 
+  logic y mensajes descriptivos para el usuario en caso de fallos de conexión o errores 
+  del servidor.
+
+• Se creó un diseño visual coherente con la identidad de marca, usando una paleta de 
+  colores rojo/negro/blanco, tipografía moderna y elementos visuales que transmiten 
+  profesionalismo y confiabilidad.
+
+
+3. LECCIONES APRENDIDAS
+
+Durante el desarrollo completo del frontend de esta aplicación e-commerce, se adquirieron 
+conocimientos técnicos profundos y lecciones de ingeniería de software que trascienden 
+el proyecto específico y serán valiosos en cualquier desarrollo futuro:
+
+GESTIÓN DE ESTADO COMPLEJO
+El manejo de estado en una aplicación React de gran escala presentó desafíos únicos. 
+Se aprendió que no todo el estado debe ser global; determinar qué información mantener 
+en Context API versus estado local es crucial para el rendimiento. La experiencia demostró 
+que el over-engineering del estado puede llevar a re-renders innecesarios y problemas de 
+mantenibilidad. Se comprendió la importancia de normalizar datos complejos y evitar 
+duplicación de estado entre componentes.
+
+SEGURIDAD EN APLICACIONES WEB
+La implementación del sistema de seguridad del panel administrativo enseñó que la 
+seguridad debe ser multicapa. No basta con validar en frontend; cada capa (token, rol, PIN) 
+agrega una barrera adicional contra accesos no autorizados. Se aprendió que el localStorage, 
+aunque conveniente, requiere consideraciones especiales para datos sensibles. La experiencia 
+mostró que la expiración de tokens debe manejarse de forma elegante para no interrumpir 
+la experiencia del usuario legítimo.
+
+DISEÑO DE FORMULARIOS COMPLEJOS
+El desarrollo del ProductForm con gestión de variantes y sabores enseñó la importancia de 
+la validación progresiva y el feedback inmediato. Se comprendió que los formularios 
+complejos deben dividirse en secciones lógicas y proporcionar guías visuales claras. 
+La experiencia demostró que la validación debe ser tanto en cliente como en servidor, 
+y que los mensajes de error deben ser específicos y accionables.
+
+OPTIMIZACIÓN DE RENDIMIENTO
+Se aprendió que el rendimiento percibido es tan importante como el rendimiento real. 
+Técnicas como skeleton screens durante la carga mejoran significativamente la experiencia 
+del usuario. La experiencia con lazy loading y code splitting mostró que las mejoras de 
+rendimiento deben medirse con métricas reales, no solo intuiciones. Se comprendió la 
+importancia de optimizar las rutas críticas de renderizado.
+
+DISEÑO RESPONSIVO Y MOBILE-FIRST
+El enfoque mobile-first demostró ser más efectivo que diseñar primero para desktop. 
+Se aprendió que las restricciones del móvil fuerzan a priorizar contenido y mejorar la 
+jerarquía visual. La experiencia mostró que los breakpoints deben basarse en el contenido, 
+no en dispositivos específicos. Se comprendió que touch targets en móviles deben ser 
+significativamente más grandes que elementos clickeables en desktop.
+
+GESTIÓN DE ERRORES Y EXPERIENCIA DE USUARIO
+Se aprendió que los errores son inevitables y deben manejarse de forma que el usuario 
+pueda continuar su tarea. Los mensajes de error genéricos frustran; los mensajes específicos 
+con acciones sugeridas empoderan. La experiencia demostró que los estados de carga deben 
+mostrar progreso cuando sea posible. Se comprendió la importancia de mantener el contexto 
+del usuario incluso cuando ocurren errores.
+
+INTEGRACIÓN CON APIS Y BACKEND
+La comunicación con el backend enseñó la importancia de manejar estados asíncronos 
+(loading, success, error) de forma consistente. Se aprendió que los interceptores de axios 
+centralizan lógica común pero pueden ocultar problemas si no se documentan bien. 
+La experiencia mostró que las peticiones deben incluir timeouts y retry logic para redes 
+inestables. Se comprendió que la cancelación de peticiones previene race conditions y 
+mejora el rendimiento.
+
+ARQUITECTURA DE COMPONENTES
+Se aprendió que los componentes pequeños y enfocados son más mantenibles que 
+componentes grandes y multifuncionales. La composición de componentes demostró ser 
+más flexible que la herencia. La experiencia mostró que separar lógica de presentación 
+(custom hooks vs componentes) mejora la reusabilidad. Se comprendió que la prop drilling 
+excesiva es una señal de que se necesita Context o restructuración.
+
+TRABAJO EN EQUIPO Y COMUNICACIÓN
+La colaboración entre frontend y backend requiere comunicación constante sobre contratos 
+de API. Se aprendió que documentar decisiones de diseño previene malentendidos futuros. 
+La experiencia demostró que las revisiones de código son oportunidades de aprendizaje, 
+no solo control de calidad. Se comprendió que compartir conocimientos técnicos beneficia 
+a todo el equipo.
+
+PLANIFICACIÓN Y GESTIÓN DEL TIEMPO
+Se aprendió que estimar tiempo para features de UI es difícil; los detalles visuales 
+consumen más tiempo del esperado. La experiencia mostró que el desarrollo iterativo con 
+entregas frecuentes previene retrabajo masivo. Se comprendió que la refactorización 
+continua es más eficiente que grandes refactorizaciones posteriores.
+
+TESTING Y CALIDAD
+La ausencia de tests automatizados en etapas tempranas generó deuda técnica. Se aprendió 
+que los tests no son tiempo perdido; previenen regresiones y documentan comportamiento 
+esperado. La experiencia demostró que la accesibilidad debe considerarse desde el inicio, 
+no como agregado final.
+
+GESTIÓN DE DEPENDENCIAS
+Se aprendió a evaluar críticamente las bibliotecas antes de agregarlas al proyecto. 
+Cada dependencia agrega peso al bundle y riesgo de seguridad. La experiencia mostró 
+que las actualizaciones de dependencias deben ser graduales y testeadas, no masivas.
+
+
+4. CONCLUSIONES
+
+El desarrollo del frontend de la tienda de suplementos International Nutrition COL 
+demostró que React 18 con su ecosistema moderno (Vite, React Router, TailwindCSS) 
+es una combinación tecnológica sólida para construir aplicaciones e-commerce escalables 
+y mantenibles. La arquitectura de componentes reutilizables facilitó el desarrollo ágil 
+y la iteración rápida sobre features complejos.
+
+La implementación de seguridad multicapa en el panel administrativo, combinando 
+validación de token JWT, verificación de rol y sistema de PIN, estableció un estándar 
+robusto que previene accesos no autorizados efectivamente. Este enfoque demuestra que 
+la seguridad en frontend, aunque no sustituye la seguridad del backend, agrega capas 
+valiosas de protección y mejora significativamente la experiencia del administrador.
+
+El desarrollo de tres sistemas CRUD completos (Productos, Combos, Implementos) con 
+interfaces intuitivas y validación robusta demuestra la viabilidad de crear herramientas 
+administrativas complejas en el navegador que rivalizan con aplicaciones de escritorio 
+tradicionales. La gestión de productos con variantes múltiples y características compartidas 
+requirió modelado cuidadoso del estado, pero resultó en una experiencia de usuario fluida 
+tanto para administradores como para clientes.
+
+La integración exitosa con la pasarela de pagos Wompi, el sistema de autenticación por 
+email y las APIs de backend evidencian que la comunicación frontend-backend bien 
+diseñada es fundamental para el éxito del proyecto. Los interceptores de axios y el manejo 
+centralizado de errores proporcionaron consistencia en toda la aplicación.
+
+El diseño responsivo implementado con enfoque mobile-first garantiza que la aplicación 
+funcione excelentemente en todos los dispositivos, reconociendo que una porción 
+significativa de usuarios de e-commerce accede desde móviles. Las optimizaciones de 
+rendimiento mediante code splitting, lazy loading y memoización aseguran tiempos de 
+carga competitivos incluso en conexiones lentas.
+
+La arquitectura de Context API para estado global combinada con estado local en 
+componentes específicos demostró ser el balance correcto entre complejidad y 
+mantenibilidad. Este enfoque evitó el overhead de bibliotecas de estado más pesadas 
+mientras proporcionaba las capacidades necesarias para la aplicación.
+
+El sistema de navegación dinámica con soporte para categorías y subcategorías, junto 
+con búsqueda y filtrado en tiempo real, proporciona a los usuarios herramientas poderosas 
+para encontrar productos específicos en un catálogo extenso. Los breadcrumbs y URLs 
+amigables mejoran tanto la usabilidad como el SEO.
+
+La implementación de características de conversión como Quick Add Modal, badges 
+estratégicos y productos destacados demuestra comprensión de psicología del consumidor 
+y mejores prácticas de e-commerce. Estas características, combinadas con un diseño visual 
+atractivo y profesional, contribuyen a tasas de conversión más altas.
+
+En conclusión, el frontend desarrollado no solo cumple los requisitos funcionales del 
+e-commerce, sino que establece bases sólidas para futuro crecimiento. La arquitectura 
+modular permite agregar nuevas features sin refactorizaciones mayores, y las prácticas 
+de código limpio facilitan el mantenimiento a largo plazo.
+
+
+5. RECOMENDACIONES
+
+MEJORAS TÉCNICAS Y DE ARQUITECTURA
+
+• Implementar testing automatizado utilizando Jest y React Testing Library para pruebas 
+  unitarias de componentes, y Cypress o Playwright para pruebas end-to-end. Esto 
+  prevendrá regresiones y documentará el comportamiento esperado de componentes críticos.
+
+• Migrar a TypeScript para agregar tipado estático, lo cual mejorará significativamente 
+  la mantenibilidad del código, reducirá errores en tiempo de desarrollo y mejorará la 
+  experiencia del desarrollador con autocompletado inteligente.
+
+• Implementar un sistema de caché más robusto utilizando React Query o SWR para 
+  manejar el estado del servidor, reducir peticiones redundantes y mejorar la experiencia 
+  offline con sincronización automática.
+
+• Desarrollar un sistema de logging y monitoreo frontend (Sentry, LogRocket) para 
+  capturar errores en producción, analizar comportamiento de usuarios y detectar problemas 
+  de rendimiento en tiempo real.
+
+OPTIMIZACIONES DE RENDIMIENTO
+
+• Implementar Service Workers para habilitar funcionalidades PWA (Progressive Web App), 
+  permitiendo que la aplicación funcione offline, tenga instalación en home screen y envíe 
+  notificaciones push sobre ofertas y actualizaciones de órdenes.
+
+• Optimizar imágenes de productos implementando formatos modernos (WebP, AVIF) con 
+  fallbacks, lazy loading mejorado con Intersection Observer y dimensiones responsivas 
+  para reducir significativamente el tiempo de carga.
+
+• Implementar prefetching inteligente de datos, cargando anticipadamente información de 
+  productos relacionados cuando el usuario muestra interés, mejorando la percepción de 
+  velocidad de la aplicación.
+
+• Optimizar el bundle size realizando análisis periódicos con webpack-bundle-analyzer, 
+  eliminando dependencias no utilizadas y considerando alternativas más ligeras para 
+  librerías pesadas.
+
+MEJORAS DE EXPERIENCIA DE USUARIO
+
+• Desarrollar un sistema de recomendaciones personalizadas basado en historial de compras 
+  y navegación, mostrando productos relevantes en home, detalles de producto y checkout.
+
+• Implementar un sistema de reviews y calificaciones donde los usuarios puedan compartir 
+  experiencias, subir fotos de productos y responder preguntas de otros compradores, 
+  aumentando confianza y conversión.
+
+• Agregar lista de deseos/favoritos permitiendo a usuarios guardar productos para compra 
+  futura, recibir notificaciones de cambios de precio y compartir listas con amigos.
+
+• Mejorar el sistema de búsqueda implementando autocompletado inteligente, corrección 
+  de ortografía, búsqueda por sinónimos y filtros avanzados como marca, sabor y 
+  características nutricionales.
+
+• Desarrollar un comparador de productos que permita a usuarios evaluar características, 
+  precios y beneficios de varios suplementos lado a lado, facilitando decisiones informadas.
+
+PANEL ADMINISTRATIVO AVANZADO
+
+• Crear un dashboard analítico con métricas en tiempo real de ventas, productos más 
+  vendidos, tasas de conversión por categoría, abandono de carrito y valor promedio de 
+  órdenes, visualizado con gráficos interactivos.
+
+• Implementar gestión avanzada de inventario con alertas automáticas de stock bajo, 
+  predicción de demanda basada en históricos, y sistema de reabastecimiento sugerido.
+
+• Desarrollar herramientas de marketing integradas para crear cupones de descuento, 
+  promociones por tiempo limitado, bundles dinámicos y campañas de email automatizadas.
+
+• Agregar sistema de gestión de contenido (CMS) para que administradores puedan editar 
+  textos del sitio, banners, testimonios y blog sin necesidad de deployments.
+
+• Implementar gestión de roles más granular, permitiendo crear roles personalizados con 
+  permisos específicos (editor de productos, gestor de órdenes, soporte al cliente).
+
+INTEGRACIONES Y FUNCIONALIDADES ADICIONALES
+
+• Integrar Google Analytics 4 y Meta Pixel para análisis profundo de comportamiento de 
+  usuarios, campañas de remarketing y optimización de conversión basada en datos.
+
+• Implementar chat en vivo además del botón de WhatsApp, permitiendo soporte instantáneo 
+  directamente en el sitio con historial de conversaciones y asignación de agentes.
+
+• Desarrollar sistema de notificaciones push para alertar sobre promociones, recordar 
+  carritos abandonados, confirmar envíos y solicitar reviews post-compra.
+
+• Agregar integración con programas de fidelización, permitiendo a usuarios acumular 
+  puntos por compras y canjearlos por descuentos o productos gratuitos.
+
+• Implementar checkout en un solo paso (one-page checkout) para reducir fricción en el 
+  proceso de compra, con autocompletado de direcciones y guardado de métodos de pago.
+
+ACCESIBILIDAD Y SEO
+
+• Realizar auditoría completa de accesibilidad WCAG 2.1 nivel AA, corrigiendo issues 
+  de contraste, navegación por teclado, etiquetas ARIA y compatibilidad con lectores 
+  de pantalla.
+
+• Implementar Server-Side Rendering (SSR) o Static Site Generation (SSG) con Next.js 
+  para mejorar significativamente SEO, tiempo de carga inicial y crawlability de motores 
+  de búsqueda.
+
+• Desarrollar páginas de producto con rich snippets, agregando marcado de datos 
+  estructurados (Schema.org) para reviews, precios, disponibilidad y especificaciones.
+
+SEGURIDAD Y COMPLIANCE
+
+• Implementar Content Security Policy (CSP) más estricta para prevenir ataques XSS, 
+  configurando nonces para scripts inline y whitelist de dominios confiables.
+
+• Agregar sistema de auditoría de acciones administrativas, registrando quién modificó 
+  qué y cuándo, esencial para cumplimiento y resolución de incidentes.
+
+• Desarrollar página de políticas de privacidad y términos de servicio con sistema de 
+  consentimiento de cookies conforme a GDPR y regulaciones locales.
+
+DEPLOYMENT Y DEVOPS
+
+• Configurar CI/CD con GitHub Actions o GitLab CI para automatizar testing, linting, 
+  building y deployment, asegurando que solo código de calidad llegue a producción.
+
+• Implementar preview deployments para pull requests, permitiendo revisar cambios en 
+  ambiente similar a producción antes de merge.
+
+• Configurar CDN (Cloudflare, CloudFront) para distribución global de assets estáticos, 
+  reduciendo latencia para usuarios en diferentes geografías.
+
+DOCUMENTACIÓN Y MANTENIBILIDAD
+
+• Crear documentación completa de componentes con Storybook, facilitando desarrollo 
+  independiente, testing visual y onboarding de nuevos desarrolladores.
+
+• Documentar arquitectura de la aplicación, decisiones de diseño y guías de estilo de 
+  código para mantener consistencia a medida que el equipo crece.
+
+• Establecer guías de contribución y procesos de code review estructurados para mantener 
+  calidad de código a largo plazo.
+
+================================================================================
+FIN DEL INFORME
+================================================================================

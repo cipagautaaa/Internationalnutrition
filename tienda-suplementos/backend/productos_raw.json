@@ -1,0 +1,1487 @@
+[
+  {
+    "name": "ISO WHEY ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 140000,
+    "precio original": 168000,
+    "description": "es un suplemento a base de proteína de suero de leche aislada e hidrolizada de alta pureza, diseñada para favorecer el crecimiento y la recuperación muscular con un mínimo de grasas y carbohidrato"
+  },
+  {
+    "name": "ISO WHEY ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 350000,
+    "precio original": 420000,
+    "description": "es un suplemento a base de proteína de suero de leche aislada e hidrolizada de alta pureza, diseñada para favorecer el crecimiento y la recuperación muscular con un mínimo de grasas y carbohidrato"
+  },
+  {
+    "name": "ONE UP ISOLATE ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 130000,
+    "precio original": 156000,
+    "description": "es un suplemento de alta pureza a base de aislado de proteína de suero de leche, diseñado para una rápida absorción y digestión, ideal para el desarrollo de masa muscular magra y la recuperación post-entrenamiento"
+  },
+  {
+    "name": "BEST PROTEIN ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 215000,
+    "precio original": 258000,
+    "description": " es un suplemento innovador que combina proteína de suero de leche aislada para una absorción rápida y caseína micelar para una absorción sostenida, lo que la hace ideal tanto para la recuperación inmediata como para el mantenimiento muscular a largo plazo"
+  },
+  {
+    "name": "BEST PROTEIN ",
+    "size": "4LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 400000,
+    "precio original": 480000,
+    "description": " es un suplemento innovador que combina proteína de suero de leche aislada para una absorción rápida y caseína micelar para una absorción sostenida, lo que la hace ideal tanto para la recuperación inmediata como para el mantenimiento muscular a largo plazo"
+  },
+  {
+    "name": "BABY BEST PROTEIN ",
+    "size": "1LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 108000,
+    "precio original": 129600,
+    "description": "es un suplemento alimenticio que combina proteína aislada de suero y caseína micelar con L-leucina, diseñado para favorecer la recuperación muscular y el crecimiento de masa magra con una absorción dual"
+  },
+  {
+    "name": "BEST WHEY",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 160000,
+    "precio original": 192000,
+    "description": "es un suplemento alimenticio que combina proteína de suero concentrada y aislada para ofrecer un balance ideal de absorción rápida y valor biológico, optimizado para el desarrollo muscular y la recuperación"
+  },
+  {
+    "name": "ISO BEST ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 265000,
+    "precio original": 318000,
+    "description": "es un suplemento de alta pureza a base de proteína aislada de suero de leche 100%, diseñada para maximizar la absorción y la recuperación muscular con niveles mínimos de grasa, carbohidratos y lactosa."
+  },
+  {
+    "name": "CAJA SACHET BEST PROTEIN ",
+    "size": "X12",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 100000,
+    "precio original": 120000,
+    "description": "es una presentación práctica que contiene 12 sobres individuales del suplemento proteico, combinando proteína de suero aislada y caseína micelar para una absorción dual y sostenida, ideal para llevar y consumir en cualquier momento."
+  },
+  {
+    "name": "BEST WHEY ",
+    "size": "5LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 350000,
+    "precio original": 420000,
+    "description": "suplemento alimenticio en polvo de alto rendimiento que combina proteína de suero de leche concentrada y aislada para una absorción rápida y eficaz, ideal para el desarrollo muscular y la recuperación"
+  },
+  {
+    "name": "CAJA SACHET BEST WHEY ",
+    "size": "X12",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 70000,
+    "precio original": 84000,
+    "description": " es una presentación que contiene 12 sobres individuales del suplemento de proteína, ideal para la recuperación muscular y el desarrollo de masa magra, gracias a su combinación de proteínas de suero de leche concentrada y aislada."
+  },
+  {
+    "name": "WHEY PURE ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 140000,
+    "precio original": 168000,
+    "description": " es un suplemento a base de proteína concentrada de suero de leche de alta pureza, formulada para apoyar el crecimiento de masa muscular magra con un perfil nutricional limpio, bajo en grasas y sin azúcar añadida."
+  },
+  {
+    "name": "WHEY PURE ",
+    "size": "1LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 72000,
+    "precio original": 86400,
+    "description": " es un suplemento a base de proteína concentrada de suero de leche de alta pureza, formulada para apoyar el crecimiento de masa muscular magra con un perfil nutricional limpio, bajo en grasas y sin azúcar añadida."
+  },
+  {
+    "name": "WHEY PURE ",
+    "size": "5LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 285000,
+    "precio original": 342000,
+    "description": " es un suplemento a base de proteína concentrada de suero de leche de alta pureza, formulada para apoyar el crecimiento de masa muscular magra con un perfil nutricional limpio, bajo en grasas y sin azúcar añadida."
+  },
+  {
+    "name": "PROTON WHEY ",
+    "size": "4LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 300000,
+    "precio original": 360000,
+    "description": "es un suplemento alimenticio en polvo a base de una mezcla de proteína de suero de leche concentrada y aislada, enriquecida con probióticos para favorecer la digestión y el crecimiento de masa muscular magra."
+  },
+  {
+    "name": "PROTON WHEY ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 160000,
+    "precio original": 192000,
+    "description": "es un suplemento alimenticio en polvo a base de una mezcla de proteína de suero de leche concentrada y aislada, enriquecida con probióticos para favorecer la digestión y el crecimiento de masa muscular magra."
+  },
+  {
+    "name": "BIPRO ",
+    "size": "1LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 80000,
+    "precio original": 96000,
+    "description": "es un suplemento de proteína de suero de alta pureza y concentración, conocido por sus mínimos niveles de grasa y lactosa, diseñado para una rápida absorción y recuperación muscular"
+  },
+  {
+    "name": "BIPRO ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 165000,
+    "precio original": 198000,
+    "description": "es un suplemento de proteína de suero de alta pureza y concentración, conocido por sus mínimos niveles de grasa y lactosa, diseñado para una rápida absorción y recuperación muscular"
+  },
+  {
+    "name": "BIPRO 3LB",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 225000,
+    "precio original": 270000,
+    "description": "es un suplemento de proteína de suero de alta pureza y concentración, conocido por sus mínimos niveles de grasa y lactosa, diseñado para una rápida absorción y recuperación muscular"
+  },
+  {
+    "name": "BIPRO RIPPED",
+    "size": "2.4LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 165000,
+    "precio original": 198000,
+    "description": "es una fórmula nutricional avanzada diseñada para la definición muscular y el control de peso, que combina proteínas lácteas de alta calidad con ingredientes activos que favorecen la quema de grasa"
+  },
+  {
+    "name": "BIPRO LITE",
+    "size": "2.4LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 165000,
+    "precio original": 198000,
+    "description": "es un suplemento nutricional que combina proteínas lácteas (suero y caseína) con ingredientes funcionales como L-Carnitina, colágeno hidrolizado y picolinato de cromo, diseñada para la tonificación muscular y el control de peso"
+  },
+  {
+    "name": "BIPRO MASS",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 165000,
+    "precio original": 198000,
+    "description": "es un suplemento diseñado específicamente como ganador de masa muscular, que combina proteína de suero de leche de alta pureza con carbohidratos, HMB y BCAA, para apoyar el crecimiento muscular y la fuerza."
+  },
+  {
+    "name": "MEGAPLEX LITE",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 155000,
+    "precio original": 186000,
+    "description": "es un suplemento formulado para el control de peso y la definición muscular, que combina proteínas de tres fuentes diferentes con ingredientes activos como la L-Carnitina y el Picolinato de Cromo para ayudar en el metabolismo de las grasas"
+  },
+  {
+    "name": "ISOCLEAN ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 180000,
+    "precio original": 216000,
+    "description": "es un suplemento de alta pureza a base de proteína de suero de leche, adicionado con HMB y CLA, diseñado para apoyar la definición muscular, la pérdida de grasa y la recuperación"
+  },
+  {
+    "name": "BIPRO COMPLEX",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 165000,
+    "precio original": 198000,
+    "description": "es un suplemento innovador que combina una matriz de proteínas lácteas con 40% de proteína de suero (rápida absorción) y 60% de caseína (lenta digestión), diseñado para un suministro de aminoácidos estable y prolongado"
+  },
+  {
+    "name": "BIPRO CAJA ",
+    "size": "X18",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 85000,
+    "precio original": 102000,
+    "description": " es una presentación comercial que contiene 18 sobres individuales de proteína de suero de leche de alta pureza, diseñada para ofrecer comodidad y una nutrición de calidad en porciones controladas."
+  },
+  {
+    "name": "ISO WHEY ISOLATE ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 170000,
+    "precio original": 204000,
+    "description": "es un suplemento de alta gama a base de aislado de proteína de suero de leche, reconocido por su pureza, rápida absorción y mínimo contenido de grasas, carbohidratos y lactosa, ideal para la definición muscular y la recuperación."
+  },
+  {
+    "name": "ISO WHEY ISOLATE ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 430000,
+    "precio original": 516000,
+    "description": "es un suplemento de alta gama a base de aislado de proteína de suero de leche, reconocido por su pureza, rápida absorción y mínimo contenido de grasas, carbohidratos y lactosa, ideal para la definición muscular y la recuperación."
+  },
+  {
+    "name": "WHEY ESENCE ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 155000,
+    "precio original": 186000,
+    "description": "es un suplemento a base de concentrado de proteína de suero al 80% (WPC 80%), diseñado para el desarrollo muscular y la salud digestiva, gracias a la inclusión de fibra prebiótica GOS y enzimas digestivas. "
+  },
+  {
+    "name": "BE ONE ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 250000,
+    "precio original": 300000,
+    "description": "es un suplemento a base de proteína aislada de suero de leche de alta pureza, formulado para una absorción rápida y eficaz, ideal para el desarrollo de masa muscular magra sin aditivos innecesarios"
+  },
+  {
+    "name": "BE ONE ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 180000,
+    "precio original": 216000,
+    "description": "es un suplemento a base de proteína aislada de suero de leche de alta pureza, formulado para una absorción rápida y eficaz, ideal para el desarrollo de masa muscular magra sin aditivos innecesarios"
+  },
+  {
+    "name": "LA WEY ",
+    "size": "1.7LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 125000,
+    "precio original": 150000,
+    "description": "es un suplemento a base de proteína de suero de leche, diseñada para el rendimiento deportivo, la recuperación muscular y el aumento de la ingesta proteica diaria"
+  },
+  {
+    "name": "BODY RIPPED",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 105000,
+    "precio original": 126000,
+    "description": "es un suplemento en polvo que combina proteína aislada de suero de leche con fuentes de carbohidratos de calidad como la avena, diseñado como un snack proteico saludable para proteger la masa muscular y evitar el aumento de tejido graso."
+  },
+  {
+    "name": "ISO FIT ",
+    "size": "4LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 320000,
+    "precio original": 384000,
+    "description": "es un suplemento de alta pureza a base de proteína aislada de suero de leche, diseñado para maximizar el desarrollo muscular y apoyar dietas bajas en calorías, grasas y carbohidratos."
+  },
+  {
+    "name": "ISO FIT ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 170000,
+    "precio original": 204000,
+    "description": "es un suplemento de alta pureza a base de proteína aislada de suero de leche, diseñado para maximizar el desarrollo muscular y apoyar dietas bajas en calorías, grasas y carbohidratos."
+  },
+  {
+    "name": "HIGH STANDARD WHEY ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 215000,
+    "precio original": 258000,
+    "description": "es un suplemento de alto rendimiento que combina proteína aislada y concentrada de suero de leche con creatina monohidratada para potenciar el desarrollo muscular, la fuerza y la recuperación"
+  },
+  {
+    "name": "WHEY PLATINUM ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 150000,
+    "precio original": 180000,
+    "description": "es un suplemento en polvo a base de proteína de suero de leche de alta pureza, formulado para complementar la nutrición diaria y apoyar el crecimiento muscular magro"
+  },
+  {
+    "name": "WHEY PLATINUM ",
+    "size": "5LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 360000,
+    "precio original": 432000,
+    "description": "es un suplemento en polvo a base de proteína de suero de leche de alta pureza, formulado para complementar la nutrición diaria y apoyar el crecimiento muscular magro"
+  },
+  {
+    "name": "IMN SENIOR",
+    "size": "480G",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 70000,
+    "precio original": 84000,
+    "description": "es un alimento en polvo diseñado específicamente como complemento nutricional para adultos y personas mayores, que combina proteína de suero de leche con una mezcla de vitaminas, minerales, colágeno hidrolizado y omega-3 para promover el bienestar general y la salud muscular y ósea"
+  },
+  {
+    "name": "PURE ISO",
+    "size": "1LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas limpias",
+    "price": 75000,
+    "precio original": 90000,
+    "description": "es un suplemento de alta pureza a base de proteína de suero de leche aislada, diseñada para la definición muscular y la recuperación post-entrenamiento con un mínimo de grasas, carbohidratos y lactosa"
+  },
+  {
+    "name": "MASS GAINER SNP ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 75000,
+    "precio original": 90000,
+    "description": "es un ganador de peso o hipercalórico diseñado para personas que buscan maximizar la ganancia de masa muscular y peso corporal. Su fórmula combina proteínas de suero de leche con una alta proporción de carbohidratos, L-leucina y Omega 3 para lograr un excedente calórico y optimizar el rendimiento"
+  },
+  {
+    "name": "MASS GAINER SNP ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 190000,
+    "precio original": 228000,
+    "description": "es un ganador de peso o hipercalórico diseñado para personas que buscan maximizar la ganancia de masa muscular y peso corporal. Su fórmula combina proteínas de suero de leche con una alta proporción de carbohidratos, L-leucina y Omega 3 para lograr un excedente calórico y optimizar el rendimiento"
+  },
+  {
+    "name": "ISOLATE GAINER SNP ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 80000,
+    "precio original": 96000,
+    "description": "es un suplemento hipercalórico de alta pureza, diseñado específicamente para ciclos de volumen, que combina proteínas de máxima calidad con carbohidratos funcionales para promover la ganancia de masa muscular y peso de manera efectiva"
+  },
+  {
+    "name": "SMART GAINER ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 70000,
+    "precio original": 84000,
+    "description": "es un ganador de peso o hipercalórico diseñado para personas que buscan aumentar su masa muscular y peso corporal de forma efectiva. Combina proteínas de suero de leche con una alta proporción de carbohidratos complejos para asegurar un superávit calórico"
+  },
+  {
+    "name": "SMART GAINER ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 100000,
+    "precio original": 120000,
+    "description": "es un ganador de peso o hipercalórico diseñado para personas que buscan aumentar su masa muscular y peso corporal de forma efectiva. Combina proteínas de suero de leche con una alta proporción de carbohidratos complejos para asegurar un superávit calórico"
+  },
+  {
+    "name": "SMART GAINER ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 175000,
+    "precio original": 210000,
+    "description": "es un ganador de peso o hipercalórico diseñado para personas que buscan aumentar su masa muscular y peso corporal de forma efectiva. Combina proteínas de suero de leche con una alta proporción de carbohidratos complejos para asegurar un superávit calórico"
+  },
+  {
+    "name": "SMART GAINER ",
+    "size": "13LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 345000,
+    "precio original": 414000,
+    "description": "es un ganador de peso o hipercalórico diseñado para personas que buscan aumentar su masa muscular y peso corporal de forma efectiva. Combina proteínas de suero de leche con una alta proporción de carbohidratos complejos para asegurar un superávit calórico"
+  },
+  {
+    "name": "PROTON GAINER ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 85000,
+    "precio original": 102000,
+    "description": "es un ganador de peso hipercalórico que combina proteínas lácteas, carbohidratos de absorción lenta y rápida, creatina, HMB y Omega 3, diseñado para maximizar la ganancia de masa muscular y fuerza."
+  },
+  {
+    "name": "PROTON GAINER ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 160000,
+    "precio original": 192000,
+    "description": "es un ganador de peso hipercalórico que combina proteínas lácteas, carbohidratos de absorción lenta y rápida, creatina, HMB y Omega 3, diseñado para maximizar la ganancia de masa muscular y fuerza."
+  },
+  {
+    "name": "TNT MEGA GAINER ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 85000,
+    "precio original": 102000,
+    "description": "es un suplemento hipercalórico líder en el mercado, diseñado como una fórmula integral para maximizar la ganancia de peso y masa muscula"
+  },
+  {
+    "name": "TNT MEGA GAINER ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 160000,
+    "precio original": 192000,
+    "description": "es un suplemento hipercalórico líder en el mercado, diseñado como una fórmula integral para maximizar la ganancia de peso y masa muscula"
+  },
+  {
+    "name": "TNT MEGA GAINER ",
+    "size": "10LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 255000,
+    "precio original": 306000,
+    "description": "es un suplemento hipercalórico líder en el mercado, diseñado como una fórmula integral para maximizar la ganancia de peso y masa muscula"
+  },
+  {
+    "name": "CREATINE POWER ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es una proteína de suero hipercalórica con una fórmula avanzada que incluye creatina, HMB y BCAA, diseñada para un aumento extremo de masa muscular y ganancia de peso"
+  },
+  {
+    "name": "CREATINER POWER ",
+    "size": "10LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 240000,
+    "precio original": 288000,
+    "description": "es una proteína de suero hipercalórica con una fórmula avanzada que incluye creatina, HMB y BCAA, diseñada para un aumento extremo de masa muscular y ganancia de peso"
+  },
+  {
+    "name": "GAINZ ",
+    "size": "3.2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 100000,
+    "precio original": 120000,
+    "description": "es un ganador de peso hipercalórico diseñado para atletas de alto rendimiento o personas que buscan un aumento significativo de masa muscular y peso corporal. Su fórmula combina una alta cantidad de proteínas y carbohidratos con ingredientes clave como HMB y BCAA"
+  },
+  {
+    "name": "GAINZ ",
+    "size": "6.5LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 190000,
+    "precio original": 228000,
+    "description": "es un ganador de peso hipercalórico diseñado para atletas de alto rendimiento o personas que buscan un aumento significativo de masa muscular y peso corporal. Su fórmula combina una alta cantidad de proteínas y carbohidratos con ingredientes clave como HMB y BCAA"
+  },
+  {
+    "name": "THE WHEY OF GAIN ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 90000,
+    "precio original": 108000,
+    "description": "es un ganador de peso o hipercalórico diseñado para etapas de volumen y ganancia de masa muscular masiva, combinando una matriz de proteínas de alto valor biológico con carbohidratos complejos, BCAA y creatina."
+  },
+  {
+    "name": "THEY WHEY OF GAIN ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 170000,
+    "precio original": 204000,
+    "description": "es un ganador de peso o hipercalórico diseñado para etapas de volumen y ganancia de masa muscular masiva, combinando una matriz de proteínas de alto valor biológico con carbohidratos complejos, BCAA y creatina."
+  },
+  {
+    "name": "LA VIGA ",
+    "size": "1.9LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es un suplemento hipercalórico diseñado para la ganancia de masa muscular y peso. Su formulación está enfocada a personas que buscan un alto aporte calórico y proteico para complementar su entrenamiento de fuerza y lograr un excedente de calorías"
+  },
+  {
+    "name": "MASS EVOLUTION ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 46000,
+    "precio original": 55200,
+    "description": " es un suplemento hipercalórico diseñado para la ganancia de peso, fuerza y masa muscular, que combina proteínas de suero con carbohidratos, creatina y vitaminas esenciales"
+  },
+  {
+    "name": "MASS EVOLUTION ",
+    "size": "4LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 80000,
+    "precio original": 96000,
+    "description": " es un suplemento hipercalórico diseñado para la ganancia de peso, fuerza y masa muscular, que combina proteínas de suero con carbohidratos, creatina y vitaminas esenciales"
+  },
+  {
+    "name": "MASS EVOLUTION ",
+    "size": "10LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 170000,
+    "precio original": 204000,
+    "description": " es un suplemento hipercalórico diseñado para la ganancia de peso, fuerza y masa muscular, que combina proteínas de suero con carbohidratos, creatina y vitaminas esenciales"
+  },
+  {
+    "name": "MASS EVOLUTION ",
+    "size": "7LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 115000,
+    "precio original": 138000,
+    "description": " es un suplemento hipercalórico diseñado para la ganancia de peso, fuerza y masa muscular, que combina proteínas de suero con carbohidratos, creatina y vitaminas esenciales"
+  },
+  {
+    "name": "CREATINE POWER ",
+    "size": "3LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es una proteína de suero hipercalórica con una fórmula avanzada que incluye creatina, HMB y BCAA, diseñada para un aumento extremo de masa muscular y ganancia de peso"
+  },
+  {
+    "name": "SUPER MEGA GAINER ",
+    "size": "1LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 40000,
+    "precio original": 48000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento extremo de masa muscular y peso corporal, combinando una alta dosis de proteínas y carbohidratos con glutamina y aminoácidos esenciales"
+  },
+  {
+    "name": "LA VIGA ",
+    "size": "7LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 210000,
+    "precio original": 252000,
+    "description": "es un suplemento hipercalórico diseñado para la ganancia de masa muscular y peso. Su formulación está enfocada a personas que buscan un alto aporte calórico y proteico para complementar su entrenamiento de fuerza y lograr un excedente de calorías"
+  },
+  {
+    "name": "SUPER MEGA GAINER ",
+    "size": "5LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 140000,
+    "precio original": 168000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento extremo de masa muscular y peso corporal, combinando una alta dosis de proteínas y carbohidratos con glutamina y aminoácidos esenciales"
+  },
+  {
+    "name": "SUPER MEGA GAINER ",
+    "size": "10LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 240000,
+    "precio original": 288000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento extremo de masa muscular y peso corporal, combinando una alta dosis de proteínas y carbohidratos con glutamina y aminoácidos esenciales"
+  },
+  {
+    "name": "SUPER MEGA GAINER ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento extremo de masa muscular y peso corporal, combinando una alta dosis de proteínas y carbohidratos con glutamina y aminoácidos esenciales"
+  },
+  {
+    "name": "MEGA GAINER ",
+    "size": "1LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 45000,
+    "precio original": 54000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento de masa muscular y peso corporal, combinando proteínas y carbohidratos para lograr un excedente calórico."
+  },
+  {
+    "name": "MEGA GAINER ",
+    "size": "5LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 150000,
+    "precio original": 180000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento de masa muscular y peso corporal, combinando proteínas y carbohidratos para lograr un excedente calórico."
+  },
+  {
+    "name": "MEGA GAINER ",
+    "size": "10LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 265000,
+    "precio original": 318000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento de masa muscular y peso corporal, combinando proteínas y carbohidratos para lograr un excedente calórico."
+  },
+  {
+    "name": "MEGA GAINER ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 70000,
+    "precio original": 84000,
+    "description": "es un ganador de peso hipercalórico diseñado para personas que buscan un aumento de masa muscular y peso corporal, combinando proteínas y carbohidratos para lograr un excedente calórico."
+  },
+  {
+    "name": "NITRO MASS ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 110000,
+    "precio original": 132000,
+    "description": "es un suplemento en polvo que combina proteína aislada de suero de leche con carbohidratos de fuentes saludables, diseñado para aumentar la masa muscular y mejorar el rendimiento con un perfil nutricional equilibrado"
+  },
+  {
+    "name": "NITRO MASS ",
+    "size": "5LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 245000,
+    "precio original": 294000,
+    "description": "es un suplemento en polvo que combina proteína aislada de suero de leche con carbohidratos de fuentes saludables, diseñado para aumentar la masa muscular y mejorar el rendimiento con un perfil nutricional equilibrado"
+  },
+  {
+    "name": "KING PROTEIN ",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es un suplemento hipercalórico altamente concentrado, diseñado específicamente para la etapa de volumen y ganancia de masa muscular limpia. Combina la acción de dos proteínas con nutrientes de la avena y el banano. "
+  },
+  {
+    "name": "KING PROTEIN ",
+    "size": "4LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 125000,
+    "precio original": 150000,
+    "description": "es un suplemento hipercalórico altamente concentrado, diseñado específicamente para la etapa de volumen y ganancia de masa muscular limpia. Combina la acción de dos proteínas con nutrientes de la avena y el banano. "
+  },
+  {
+    "name": "KING PROTEIN ",
+    "size": "12LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 330000,
+    "precio original": 396000,
+    "description": "es un suplemento hipercalórico altamente concentrado, diseñado específicamente para la etapa de volumen y ganancia de masa muscular limpia. Combina la acción de dos proteínas con nutrientes de la avena y el banano. "
+  },
+  {
+    "name": "KING PROTEIN ",
+    "size": "6LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas hipercalóricas",
+    "price": 185000,
+    "precio original": 222000,
+    "description": "es un suplemento hipercalórico altamente concentrado, diseñado específicamente para la etapa de volumen y ganancia de masa muscular limpia. Combina la acción de dos proteínas con nutrientes de la avena y el banano. "
+  },
+  {
+    "name": "VEGAN PROTEIN",
+    "size": "400G",
+    "category": "Proteínas",
+    "tipo": "Proteínas veganas",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es un suplemento en polvo formulado exclusivamente con ingredientes de origen vegetal (como arveja, arroz, amaranto, alcachofa o soya). Es una opción ideal para veganos, vegetarianos, o personas que buscan una alternativa libre de lactosa, gluten y soya a las proteínas animales."
+  },
+  {
+    "name": "MEGA SOY",
+    "size": "750G",
+    "category": "Proteínas",
+    "tipo": "Proteínas veganas",
+    "price": 70000,
+    "precio original": 84000,
+    "description": "es un suplemento a base de aislado de proteína de soya, caracterizado por su alta pureza y calidad vegetal, diseñada para el desarrollo muscular y la suplementación vegana."
+  },
+  {
+    "name": "BEST VEGAN",
+    "size": "2LB",
+    "category": "Proteínas",
+    "tipo": "Proteínas veganas",
+    "price": 130000,
+    "precio original": 156000,
+    "description": "Las mejores proteínas veganas en presentación de 2 lb para el desarrollo muscular y la salud digestiva son productos como Best Vegan de Proscience y Vegan Protein de Healthy Sports, que combinan múltiples fuentes vegetales para un perfil completo de aminoácidos."
+  },
+  {
+    "name": "INTENZE ",
+    "size": "30 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 145000,
+    "precio original": 174000,
+    "description": "es un potente pre-entrenamiento diseñado para aumentar los niveles de energía, fuerza y rendimiento durante la actividad física, y retrasar la fatiga muscular. No es una proteína, sino un alimento en polvo a base de frutos rojos que contiene una combinación de aminoácidos y estimulantes."
+  },
+  {
+    "name": "INTENZE ",
+    "size": "14 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 75000,
+    "precio original": 90000,
+    "description": "es un potente pre-entrenamiento diseñado para aumentar los niveles de energía, fuerza y rendimiento durante la actividad física, y retrasar la fatiga muscular. No es una proteína, sino un alimento en polvo a base de frutos rojos que contiene una combinación de aminoácidos y estimulantes."
+  },
+  {
+    "name": "TWISTER",
+    "size": "30 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 110000,
+    "precio original": 132000,
+    "description": "es un potente pre-entrenamiento diseñado para optimizar el rendimiento físico, aumentando la energía, la concentración mental y la capacidad de resistencia durante los entrenamientos intensos"
+  },
+  {
+    "name": "ENERGY X",
+    "size": "25 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 30000,
+    "precio original": 36000,
+    "description": "es una bebida energizante en polvo diseñada como un pre-entrenamiento para proporcionar un impulso de energía, mejorar la concentración y retrasar la fatiga muscular durante la actividad física"
+  },
+  {
+    "name": "ULTIMATE",
+    "size": "30 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 120000,
+    "precio original": 144000,
+    "description": "es un pre-entrenamiento en polvo diseñado para potenciar la energía, el enfoque mental y la resistencia durante los entrenamientos intensos"
+  },
+  {
+    "name": "ELECTRON",
+    "size": "25 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 125000,
+    "precio original": 150000,
+    "description": "es una bebida en polvo diseñada para la hidratación avanzada y la reposición de electrolitos durante y después del ejercicio intenso"
+  },
+  {
+    "name": "PUMP NOX EDGE",
+    "size": "20 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 110000,
+    "precio original": 132000,
+    "description": "es un potente pre-entrenamiento diseñado para maximizar el rendimiento físico, la energía explosiva, la concentración mental y la vasodilatación durante los entrenamientos intensos"
+  },
+  {
+    "name": "NITROX",
+    "size": "20 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 50000,
+    "precio original": 60000,
+    "description": " es un pre-entrenamiento en polvo diseñado para activar el cuerpo y la mente, maximizar el rendimiento y potenciar el óxido nítrico durante la actividad física intensa"
+  },
+  {
+    "name": "PASE",
+    "size": "30 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 105000,
+    "precio original": 126000,
+    "description": "es una bebida energizante en polvo diseñada como un pre-entrenamiento para elevar el rendimiento, aumentar la energía y mejorar la concentración durante los entrenamientos."
+  },
+  {
+    "name": "CAJA SACHET INTENZE ",
+    "size": "X12",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 70000,
+    "precio original": 84000,
+    "description": "es una presentación práctica que contiene 12 sobres individuales del potente suplemento pre-entrenamiento Intenze. Cada sachet contiene una dosis completa y perfectamente medida de la fórmula, ideal para llevar a cualquier lugar y asegurar un rendimiento óptimo en cada entrenamiento."
+  },
+  {
+    "name": "CAJA SACHET PASE ",
+    "size": "X36",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 124000,
+    "precio original": 148800,
+    "description": "es una presentación práctica que contiene 36 sobres individuales del suplemento pre-entrenamiento Pase, diseñado para aumentar la energía, mejorar el rendimiento y potenciar el enfoque mental durante los entrenamientos. "
+  },
+  {
+    "name": "MICRODOSIS PASE ",
+    "size": "X15",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 63000,
+    "precio original": 75600,
+    "description": "es un práctico kit que incluye 15 sachets monodosis del suplemento pre-entrenamiento Pase, diseñados para proporcionar un impulso de energía y mejorar el enfoque durante el ejercicio físico"
+  },
+  {
+    "name": "FOCUS SNP",
+    "size": "30 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "PRE ENTRENO",
+    "price": 100000,
+    "precio original": 120000,
+    "description": "es un pre-entrenamiento en polvo diseñado para potenciar la energía, la concentración mental y la resistencia durante los entrenamientos, permitiendo a los usuarios maximizar su rendimiento en cada repetición"
+  },
+  {
+    "name": "LEGACY ",
+    "size": "50 SERV",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 130000,
+    "precio original": 156000,
+    "description": "es un producto alimenticio a base de creatina HCL y polvo de frutas, diseñado para mejorar la fuerza, el rendimiento muscular y la recuperación. No es una proteína ni un pre-entrenamiento tradicional con cafeína, sino un suplemento de creatina avanzada de alta absorción."
+  },
+  {
+    "name": "LEGACY ",
+    "size": "30 SERV",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 85000,
+    "precio original": 102000,
+    "description": "es un producto alimenticio a base de creatina HCL y polvo de frutas, diseñado para mejorar la fuerza, el rendimiento muscular y la recuperación. No es una proteína ni un pre-entrenamiento tradicional con cafeína, sino un suplemento de creatina avanzada de alta absorción."
+  },
+  {
+    "name": "CREATOMIC",
+    "size": "60 SERV",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 90000,
+    "precio original": 108000,
+    "description": "no es una proteína, sino un alimento en polvo que combina creatina HCL, glutamina y leucina en una fórmula avanzada diseñada para potenciar la fuerza, la recuperación muscular y el rendimiento físico."
+  },
+  {
+    "name": "BEAST IMN",
+    "size": "UNICO",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 100000,
+    "precio original": 120000,
+    "description": " es un alimento en polvo a base de creatina HCL, potenciado con aminoácidos clave como L-glutamina, L-leucina y betaína, diseñado para maximizar la fuerza, la resistencia y la recuperación muscular"
+  },
+  {
+    "name": "SMART A-TACK",
+    "size": "32 SERV",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 95000,
+    "precio original": 114000,
+    "description": "es una potente fórmula en polvo post-entrenamiento diseñada para una máxima recuperación muscular y optimización del rendimiento, combinando creatina HCL, beta-alanina, BCAA, y otros ingredientes funcionales. "
+  },
+  {
+    "name": "LEGACY PLUS ",
+    "size": "50 SERV",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 140000,
+    "precio original": 168000,
+    "description": "es un polvo para preparar bebida energizante que combina creatina HCL con aminoácidos clave como leucina, betaína y taurina, diseñado para potenciar la fuerza, el rendimiento y la recuperación muscular"
+  },
+  {
+    "name": "LEGACY PLUS",
+    "size": "30 SERV",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 105000,
+    "precio original": 126000,
+    "description": "es un polvo para preparar bebida energizante que combina creatina HCL con aminoácidos clave como leucina, betaína y taurina, diseñado para potenciar la fuerza, el rendimiento y la recuperación muscular"
+  },
+  {
+    "name": "CREATINA HCL SNP",
+    "size": "30 SERV",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 90000,
+    "precio original": 108000,
+    "description": "es un suplemento en polvo a base de clorhidrato de creatina, una forma de creatina reconocida por su alta solubilidad y rápida absorción, diseñada para mejorar la fuerza, el rendimiento y la recuperación muscular"
+  },
+  {
+    "name": "CAJA SACHET LEGACY ",
+    "size": "X32",
+    "category": "Creatinas",
+    "tipo": "HCL",
+    "price": 135000,
+    "precio original": 162000,
+    "description": "es una presentación práctica que contiene 32 sobres individuales del suplemento de creatina HCL (clorhidrato de creatina), diseñado para mejorar la fuerza, el rendimiento y la recuperación muscular de forma diaria."
+  },
+  {
+    "name": "CREATINA IMN ",
+    "size": "400G",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 120000,
+    "precio original": 144000,
+    "description": "es un suplemento en polvo de monohidrato de creatina micronizada 100% pura, diseñado para aumentar la fuerza, la potencia y la resistencia muscular durante los entrenamientos intensos."
+  },
+  {
+    "name": "CREATINA IMN ",
+    "size": "150G",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 50000,
+    "precio original": 60000,
+    "description": "es un suplemento en polvo de monohidrato de creatina micronizada 100% pura, diseñado para aumentar la fuerza, la potencia y la resistencia muscular durante los entrenamientos intensos."
+  },
+  {
+    "name": "CREATINA CREAPURE IMN",
+    "size": "68 SERV",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 110000,
+    "precio original": 132000,
+    "description": "es un suplemento de máxima calidad formulado con monohidrato de creatina Creapure® 100% pura, reconocida por su pureza excepcional (99,9%) y libre de impurezas."
+  },
+  {
+    "name": "CREATINA IRON",
+    "size": "100 SERV",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 130000,
+    "precio original": 156000,
+    "description": "es un suplemento en polvo de monohidrato de creatina 100% pura y micronizada, diseñado para aumentar la fuerza, la potencia y la resistencia muscular durante los entrenamientos intensos. "
+  },
+  {
+    "name": "CREA STACK ",
+    "size": "60 SERV",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 150000,
+    "precio original": 180000,
+    "description": "es una fórmula avanzada que combina diferentes tipos de creatina con otros ingredientes sinérgicos, diseñada para maximizar la fuerza, el rendimiento y el crecimiento muscular, con una mayor eficacia y absorción."
+  },
+  {
+    "name": "ATOMIC",
+    "size": "120 SERV",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 115000,
+    "precio original": 138000,
+    "description": " es un alimento en polvo a base de creatina monohidratada micronizada 100% pura, diseñado para potenciar el rendimiento físico, la fuerza y la recuperación muscular."
+  },
+  {
+    "name": "LEGEND",
+    "size": "30 SERV",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 80000,
+    "precio original": 96000,
+    "description": "es un polvo para preparar bebida energizante a base de creatina monohidratada de alta pureza (certificada con el sello Creapure®), diseñada para mejorar la fuerza, el rendimiento y la resistencia física. "
+  },
+  {
+    "name": "CREATINA GMN ",
+    "size": "300G",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 110000,
+    "precio original": 132000,
+    "description": "es un suplemento en polvo de monohidrato de creatina 100% pura, diseñado para potenciar la fuerza muscular, el rendimiento y la recuperación."
+  },
+  {
+    "name": "CREATINA GMN ",
+    "size": "100G",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 35000,
+    "precio original": 42000,
+    "description": "es un suplemento en polvo de monohidrato de creatina 100% pura, diseñado para potenciar la fuerza muscular, el rendimiento y la recuperación."
+  },
+  {
+    "name": "MICRODOSIS LEGEND ",
+    "size": "X15",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 56000,
+    "precio original": 67200,
+    "description": "es un kit práctico que incluye 15 sachets monodosis del suplemento pre-entrenamiento Legend, diseñado para proporcionar un impulso de energía, mejorar la concentración y potenciar la fuerza durante el ejercicio."
+  },
+  {
+    "name": "CAJA SACHET LEGEND ",
+    "size": "X36",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 126000,
+    "precio original": 151200,
+    "description": "es una presentación práctica que contiene 36 sobres individuales de un suplemento de creatina y bebida energizante, diseñado para mejorar la fuerza, el rendimiento y la resistencia física."
+  },
+  {
+    "name": "CREATINE  SNP",
+    "size": "60SERV",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 65000,
+    "precio original": 78000,
+    "description": " es un suplemento en polvo de monohidrato de creatina 100% puro y micronizado, diseñado para potenciar la fuerza, el rendimiento y la recuperación muscular durante entrenamientos intensos."
+  },
+  {
+    "name": "CREATINE  SNP",
+    "size": "100 SERV",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 95000,
+    "precio original": 114000,
+    "description": " es un suplemento en polvo de monohidrato de creatina 100% puro y micronizado, diseñado para potenciar la fuerza, el rendimiento y la recuperación muscular durante entrenamientos intensos."
+  },
+  {
+    "name": "CREABOLIC",
+    "size": "300G",
+    "category": "Creatinas",
+    "tipo": "Monohidratadas",
+    "price": 75000,
+    "precio original": 90000,
+    "description": "es un suplemento en polvo que combina creatina monohidratada con aminoácidos precursores (L-arginina, L-glicina y L-metionina) y, en algunas formulaciones, isomaltulosa, diseñado para potenciar la fuerza, el rendimiento muscular y la recuperación"
+  },
+  {
+    "name": "ARMY",
+    "size": "30 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 115000,
+    "precio original": 138000,
+    "description": "no es una proteína, sino un potente anticatabólico y recuperador a base de una mezcla completa de aminoácidos esenciales (EAA) y L-glutamina, diseñado para consumir durante el entrenamiento para mejorar la recuperación y retrasar la fatiga."
+  },
+  {
+    "name": "ALPHA BCAA",
+    "size": "30 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 120000,
+    "precio original": 144000,
+    "description": "es un alimento en polvo que combina aminoácidos esenciales de cadena ramificada (BCAA) veganos con L-glutamina y sales hidratantes, diseñado como un intra/post-entrenamiento para optimizar la recuperación, hidratación y rendimiento"
+  },
+  {
+    "name": "SMART STACK",
+    "size": "20 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 80000,
+    "precio original": 96000,
+    "description": "es un alimento en polvo a base de aminoácidos esenciales (EAA), incluyendo BCAA, glutamina, HMB y citrulina malato, diseñado para potenciar la recuperación muscular y el rendimiento físico. "
+  },
+  {
+    "name": "NITROSHOCK",
+    "size": "26 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 95000,
+    "precio original": 114000,
+    "description": "es una poderosa fórmula en polvo de aminoácidos ramificados (BCAA) y glutamina, diseñada para optimizar la recuperación muscular y prevenir el catabolismo durante y después de entrenamientos intensos."
+  },
+  {
+    "name": "BCAA 2.1.1",
+    "size": "30 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 115000,
+    "precio original": 138000,
+    "description": "es un alimento en polvo que proporciona aminoácidos esenciales de cadena ramificada (L-leucina, L-isoleucina y L-valina) en su proporción óptima para la recuperación y el desarrollo muscular"
+  },
+  {
+    "name": "MEGA CARBS",
+    "size": "15 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 80000,
+    "precio original": 96000,
+    "description": "es una bebida energética en polvo diseñada para la hidratación avanzada, la recuperación muscular y el aporte de energía sostenida durante entrenamientos intensos y de larga duración. "
+  },
+  {
+    "name": "GL SMART",
+    "size": "60 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 60000,
+    "precio original": 72000,
+    "description": "es un alimento en polvo a base de L-glutamina pura, diseñado para acelerar la recuperación muscular, reforzar el sistema inmunológico y mejorar la salud intestinal. "
+  },
+  {
+    "name": "GLUTASTACK",
+    "size": "30 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es una fórmula avanzada de L-glutamina diseñada para la máxima recuperación muscular, salud intestinal y refuerzo del sistema inmunológico, especialmente después de entrenamientos intensos."
+  },
+  {
+    "name": "BCAA 4.2.2",
+    "size": "40 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 75000,
+    "precio original": 90000,
+    "description": " es un alimento en polvo que proporciona aminoácidos esenciales de cadena ramificada (L-leucina, L-isoleucina y L-valina) en una proporción optimizada para la síntesis proteica muscular."
+  },
+  {
+    "name": "GLUTAMINA 4500",
+    "size": "40 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es un alimento en polvo a base de L-glutamina pura, diseñado para maximizar la recuperación muscular, reforzar el sistema inmunológico y mejorar la salud intestinal."
+  },
+  {
+    "name": "CAJA SACHET ARMY X20",
+    "size": "X20",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 90000,
+    "precio original": 108000,
+    "description": "es una presentación práctica que contiene 20 sobres individuales del potente suplemento de aminoácidos esenciales (EAA) y L-glutamina, diseñado para consumir durante el entrenamiento y optimizar la recuperación y el rendimiento."
+  },
+  {
+    "name": "COYOTE ",
+    "size": "50 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 60000,
+    "precio original": 72000,
+    "description": "es una bebida hidratante en polvo con electrolitos diseñada para reponer los minerales perdidos durante la actividad física y mantener una hidratación óptima. "
+  },
+  {
+    "name": "AMINOS EAA SNP",
+    "size": "30 SERV",
+    "category": "Aminoácidos y Recuperadores",
+    "tipo": "AMINOACIDOS",
+    "price": 80000,
+    "precio original": 96000,
+    "description": "es un alimento en polvo que proporciona los nueve aminoácidos esenciales (EAA), diseñados para estimular la síntesis de proteínas musculares, acelerar la recuperación y mejorar la resistencia física."
+  },
+  {
+    "name": "SMART BURNER",
+    "size": "60 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 140000,
+    "precio original": 168000,
+    "description": "es un suplemento en polvo diseñado para ayudar en la pérdida de peso, aumentar la energía y acelerar el metabolismo, ofreciendo 60 servicios por envase. Está disponible en varios minoristas en línea en Colombia."
+  },
+  {
+    "name": "REDUCTIONS ADVANCE",
+    "size": "90 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 130000,
+    "precio original": 156000,
+    "description": "es un suplemento en cápsulas diseñado para actuar como quemador de grasa y aumentar los niveles de energía, con un contenido de 90 servicios (cápsulas) por envase"
+  },
+  {
+    "name": "LIPOCORE",
+    "size": "90 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 150000,
+    "precio original": 180000,
+    "description": "es un suplemento en cápsulas, comúnmente de la marca Elitepharma o FA Core, diseñado como un potente reductor de grasa con una presentación de 90 servicios (cápsulas) por envase. "
+  },
+  {
+    "name": "LIPODRENE",
+    "size": "120 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 160000,
+    "precio original": 192000,
+    "description": " un popular y potente suplemento termogénico diseñado para la pérdida de peso, el control del apetito y el aumento de la energía."
+  },
+  {
+    "name": "LIPO 6 BLACK",
+    "size": "60 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 105000,
+    "precio original": 126000,
+    "description": "es un potente suplemento termogénico para la pérdida de peso. La presentación habitual es de 60 cápsulas, lo que equivale a 60 servicios si se toma la dosis ultraconcentrada de una cápsula al día"
+  },
+  {
+    "name": "HYDROXICUT",
+    "size": "50 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 120000,
+    "precio original": 144000,
+    "description": "es un suplemento termogénico para la pérdida de peso que se vende en presentaciones de 100 cápsulas, lo que equivale a 50 servicios según la dosis máxima recomendada por el fabricante"
+  },
+  {
+    "name": "BURNER STACK",
+    "size": "60 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 140000,
+    "precio original": 168000,
+    "description": "es un suplemento termogénico y estimulante que se vende en presentaciones de 100 cápsulas, lo que proporciona 50 servicios con la dosis máxima recomendada de dos cápsulas por servicio."
+  },
+  {
+    "name": "TURN ON FIRE",
+    "size": "60 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 75000,
+    "precio original": 90000,
+    "description": " un suplemento en tabletas diseñado para actuar como quemador de grasa, aumentar la energía y mejorar el rendimiento físico"
+  },
+  {
+    "name": "REACTION",
+    "size": "60 SERV",
+    "category": "Pre-entrenos y Quemadores",
+    "tipo": "Quemadores de grasa",
+    "price": 130000,
+    "precio original": 156000,
+    "description": " es un quemador de grasa en polvo que se comercializa en una presentación de 360 gramos con un rendimiento de 60 servicios (un scoop de 6g por servicio). "
+  },
+  {
+    "name": "OMEGA 3 PROSCIENCE",
+    "size": "60 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "SUPLEMENTOS PARA LA SALUD",
+    "price": 77000,
+    "precio original": 92400,
+    "description": "es un suplemento de ácidos grasos esenciales que se presenta en un envase con 120 cápsulas blandas, lo que proporciona 60 servicios si se toma la dosis recomendada de dos cápsulas al día."
+  },
+  {
+    "name": "COLLAGEN STACK",
+    "size": "45 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "SUPLEMENTOS PARA LA SALUD",
+    "price": 100000,
+    "precio original": 120000,
+    "description": "es un suplemento en polvo de colágeno hidrolizado que se presenta en un envase de 585 gramos, el cual rinde para 45 servicios (tomando 3 medidas/cucharadas por servicio). "
+  },
+  {
+    "name": "NUTRA C",
+    "size": "2220 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "SUPLEMENTOS PARA LA SALUD",
+    "price": 65000,
+    "precio original": 78000,
+    "description": " es un suplemento en polvo de vitamina C pura, también conocida como ácido ascórbico."
+  },
+  {
+    "name": "VITAMINA C IMN",
+    "size": "50 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "SUPLEMENTOS PARA LA SALUD",
+    "price": 55000,
+    "precio original": 66000,
+    "description": "Este producto está diseñado para proporcionar una dosis esencial de vitamina C, un micronutriente vital para diversas funciones corporales. "
+  },
+  {
+    "name": "KORAGEEM",
+    "size": "24 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "SUPLEMENTOS PARA LA SALUD",
+    "price": 80000,
+    "precio original": 96000,
+    "description": " es un suplemento alimenticio en polvo que combina proteína de suero con colágeno hidrolizado"
+  },
+  {
+    "name": "SHIELD ",
+    "size": "30 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "SUPLEMENTOS PARA LA SALUD",
+    "price": 100000,
+    "precio original": 120000,
+    "description": "es un suplemento alimenticio en polvo diseñado para complementar la dieta diaria con un alto contenido de vegetales, fibra y micronutrientes"
+  },
+  {
+    "name": "OMEGA 3 IMN",
+    "size": "120 CAPS",
+    "category": "Salud y Bienestar",
+    "tipo": "SUPLEMENTOS PARA LA SALUD",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "es un suplemento de aceite de pescado que se presenta en un envase de 120 cápsulas blandas."
+  },
+  {
+    "name": "THE ONE",
+    "size": "30 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "MULTIVITAMINICOS",
+    "price": 90000,
+    "precio original": 108000,
+    "description": "es un suplemento multivitamínico y multimineral en polvo, diseñado para aportar micronutrientes esenciales."
+  },
+  {
+    "name": "OPTIMUS",
+    "size": "90 CAPS",
+    "category": "Salud y Bienestar",
+    "tipo": "MULTIVITAMINICOS",
+    "price": 80000,
+    "precio original": 96000,
+    "description": "son multivitamínicos completos diseñados para suplir las carencias nutricionales y apoyar el funcionamiento general del organismo. "
+  },
+  {
+    "name": "MULTIMN",
+    "size": "30 SERV",
+    "category": "Salud y Bienestar",
+    "tipo": "MULTIVITAMINICOS",
+    "price": 65000,
+    "precio original": 78000,
+    "description": "un complemento nutricional completo para apoyar el bienestar general y el rendimiento físico, tanto para deportistas como para personas que buscan mejorar su salud diaria."
+  },
+  {
+    "name": "TESTABOLIC XTREME",
+    "size": "120 CAPS",
+    "category": "Salud y Bienestar",
+    "tipo": "PRECURSOR DE TESTOSTERONA",
+    "price": 150000,
+    "precio original": 180000,
+    "description": "es un suplemento comúnmente presentado en envases de 120 tabletas o cápsulas, que suelen equivaler a 30 servicios (tomando 4 tabletas por porción)."
+  },
+  {
+    "name": "MONSTER TEST",
+    "size": "120 CAPS",
+    "category": "Salud y Bienestar",
+    "tipo": "PRECURSOR DE TESTOSTERONA",
+    "price": 120000,
+    "precio original": 144000,
+    "description": " es un suplemento precursor natural de testosterona, de la marca Angry Supplements, diseñado para apoyar el desarrollo muscular, los niveles de energía y la libido"
+  },
+  {
+    "name": "TESTO ULTRA",
+    "size": "120 CAPS",
+    "category": "Salud y Bienestar",
+    "tipo": "PRECURSOR DE TESTOSTERONA",
+    "price": 90000,
+    "precio original": 108000,
+    "description": " es un suplemento precursor natural de testosterona"
+  },
+  {
+    "name": "TESTO X ",
+    "size": "90 CAPS",
+    "category": "Salud y Bienestar",
+    "tipo": "PRECURSOR DE TESTOSTERONA",
+    "price": 130000,
+    "precio original": 156000,
+    "description": " es un suplemento precursor natural de testosterona"
+  },
+  {
+    "name": "NOVA BOOST",
+    "size": "60 CAPS",
+    "category": "Salud y Bienestar",
+    "tipo": "PRECURSOR DE TESTOSTERONA",
+    "price": 55000,
+    "precio original": 66000,
+    "description": "es un suplemento en tabletas formulado con ingredientes naturales como maca, chontaduro, borojó y guaraná"
+  },
+  {
+    "name": "PROTEIN PANCAKE CON HUEVO",
+    "size": "14 SERV",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 55000,
+    "precio original": 66000,
+    "description": "Este producto está diseñado para preparar panqueques (hotcakes) nutritivos con un alto contenido de proteína y la comodidad de tener el huevo (albúmina) ya incluido en la mezcla, de modo que solo requiere la adición de agua u otro líquido."
+  },
+  {
+    "name": "PROTEIN PANCAKE SIN HUEVO",
+    "size": "20 SERV",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 45000,
+    "precio original": 54000,
+    "description": "Este producto está pensado para personas que buscan una opción de desayuno o snack saludable, con alto contenido de proteína, y que prefieren (o necesitan) evitar el consumo de huevo. "
+  },
+  {
+    "name": "CAJA FITBAR ",
+    "size": "X12",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 140000,
+    "precio original": 168000,
+    "description": "Cada barra de Fitbar es una opción nutritiva con un equilibrio entre sabor y macronutrientes, ideal para personas con un estilo de vida activo"
+  },
+  {
+    "name": "CAJA SMART BAR ",
+    "size": "X12",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 110000,
+    "precio original": 132000,
+    "description": "Estas barras son una opción práctica y nutritiva, a base de proteína de suero de leche, y están diseñadas para consumir en cualquier momento del día, especialmente antes o después de la actividad física."
+  },
+  {
+    "name": "BARRA INSIDE",
+    "size": "UNICO",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 8500,
+    "precio original": 10200,
+    "description": "es un snack saludable hiperproteico diseñado para complementar la dieta diaria y aportar nutrientes esenciales de manera práctica y deliciosa."
+  },
+  {
+    "name": "SMART BAR ",
+    "size": "UNICO",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 10000,
+    "precio original": 12000,
+    "description": " está diseñada para complementar la nutrición diaria, especialmente para personas con un estilo de vida activo."
+  },
+  {
+    "name": "FITBAR",
+    "size": "UNICO",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 12000,
+    "precio original": 14400,
+    "description": " está formulada con proteína de suero de leche y otros ingredientes que ofrecen un equilibrio nutricional para apoyar los objetivos de salud y fitness. "
+  },
+  {
+    "name": "PROTEIN BROWNIE",
+    "size": "UNICO",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 12500,
+    "precio original": 15000,
+    "description": "Este brownie es una opción práctica y deliciosa para complementar la ingesta diaria de proteínas."
+  },
+  {
+    "name": "PROTEIN COOKIE",
+    "size": "UNICO",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 11000,
+    "precio original": 13200,
+    "description": "Es una alternativa funcional a las galletas tradicionales, ideal para consumir en cualquier momento del día sin culpas"
+  },
+  {
+    "name": "MANI INSIDE",
+    "size": "UNICO",
+    "category": "Comidas con proteína",
+    "tipo": "ALIMENTACION SALUDABLE",
+    "price": 5000,
+    "precio original": 6000,
+    "description": "Este snack está diseñado como una opción saludable que combina la textura crujiente del maní japonés tradicional con un valor nutricional mejorado."
+  }
+]
