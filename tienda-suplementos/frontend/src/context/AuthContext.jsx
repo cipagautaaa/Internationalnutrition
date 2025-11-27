@@ -188,6 +188,13 @@ export const AuthProvider = ({ children }) => {
       if (response.data.success) {
         const data = response.data.data;
         console.log('📊 data:', data);
+        // Nuevo: si backend devuelve paso 'code' (usuario aún no verificado)
+        if (data?.step === 'code') {
+          console.log('📧 Paso CODE recibido (usuario no verificado). Avanzando a pantalla de verificación. emailSkipped=', data?.emailSkipped);
+          // Quitamos loading sin marcar error
+          dispatch({ type: 'LOGIN_FAILURE', payload: null }); // reutilizamos para soltar loading
+          return { success: true, requiresVerification: true, emailSkipped: Boolean(data?.emailSkipped), email: data?.email };
+        }
         if (data.step === 'ADMIN_PIN_REQUIRED') {
           console.log('🔑 Admin PIN required');
           dispatch({ type: 'ADMIN_PIN_PENDING', payload: { tempToken: data.tempToken, user: data.user } });
