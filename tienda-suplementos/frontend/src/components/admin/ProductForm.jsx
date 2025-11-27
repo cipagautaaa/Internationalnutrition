@@ -83,6 +83,28 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     }); 
   }, [initialValue]);
 
+  // Detectar pegado de imágenes desde el portapapeles
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const file = items[i].getAsFile();
+          if (file) {
+            handleImageUpload(file);
+          }
+          break;
+        }
+      }
+    };
+
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, []);
+
   const normalizeText = (val) => (val || '').toLowerCase()
     .normalize('NFD').replace(/\p{Diacritic}/gu, '');
   const isProteins = (val) => {
@@ -516,8 +538,11 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                 <svg className="w-10 h-10 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 font-medium">
                   Arrastra una imagen aquí
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  o pégala con Ctrl+V
                 </p>
               </div>
             )}

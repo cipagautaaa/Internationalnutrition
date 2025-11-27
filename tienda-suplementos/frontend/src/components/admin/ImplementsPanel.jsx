@@ -46,6 +46,28 @@ const ImplementsPanel = () => {
     loadImplements();
   }, []);
 
+  // Detectar pegado de imágenes desde el portapapeles
+  useEffect(() => {
+    const handlePaste = (e) => {
+      const items = e.clipboardData?.items;
+      if (!items) return;
+
+      for (let i = 0; i < items.length; i++) {
+        if (items[i].type.indexOf('image') !== -1) {
+          e.preventDefault();
+          const file = items[i].getAsFile();
+          if (file) {
+            handleImageUpload(file);
+          }
+          break;
+        }
+      }
+    };
+
+    document.addEventListener('paste', handlePaste);
+    return () => document.removeEventListener('paste', handlePaste);
+  }, []);
+
   const filtered = useMemo(() => {
     if (!search.trim()) {
       return implementsList;
@@ -308,7 +330,7 @@ const ImplementsPanel = () => {
                     Arrastra una imagen aquí
                   </p>
                   <p className="text-xs text-gray-500">
-                    o haz clic para seleccionar
+                    o pégala con Ctrl+V / Cmd+V
                   </p>
                 </div>
               )}
