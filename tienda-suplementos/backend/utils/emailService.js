@@ -32,21 +32,45 @@ const canSendEmails = () => {
 //  - gmail (recomendado con App Password)
 //  - custom (usa EMAIL_HOST/EMAIL_PORT)
 //  - ethereal (testing)
+//  - sendgrid (HTTP API, recomendado para Railway)
 // Devuelve un transporter. En desarrollo, si no hay provider configurado creamos
 // automáticamente una cuenta de prueba (Ethereal) para facilitar pruebas locales.
 const createTransporterAsync = async () => {
-  const provider = (process.env.EMAIL_PROVIDER || '').toLowerCase();
+  let provider = (process.env.EMAIL_PROVIDER || '').toLowerCase();
+
+  // Si está vacío, intentar auto-detect
+  if (!provider) {
+    if (process.env.SENDGRID_API_KEY) {
+      console.log('📧 AUTO-DETECT: Usando SendGrid (SENDGRID_API_KEY presente)');
+      provider = 'sendgrid';
+    } else if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      console.log('📧 AUTO-DETECT: Usando Gmail (EMAIL_USER/PASS presente)');
+      provider = 'gmail';
+    } else if (process.env.NODE_ENV === 'production') {
+      console.log('📧 AUTO-DETECT: Fallback a SendGrid en producción');
+      provider = 'sendgrid';
+    } else {
+      console.log('📧 AUTO-DETECT: Usando Ethereal para testing');
+      provider = 'ethereal';
+    }
+  }
 
   if (provider === 'gmail') {
-    return nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER, // tu correo @gmail.com
-        pass: process.env.EMAIL_PASS  // App Password (16 caracteres)
-      },
-      logger: String(process.env.EMAIL_DEBUG || 'false') === 'true',
-      debug: String(process.env.EMAIL_DEBUG || 'false') === 'true'
-    });
+    // Verificar que tiene credenciales válidas
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.warn('⚠️ EMAIL_PROVIDER=gmail pero sin EMAIL_USER/EMAIL_PASS. Fallback a SendGrid.');
+      provider = 'sendgrid';
+    } else {
+      return nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env.EMAIL_USER, // tu correo @gmail.com
+          pass: process.env.EMAIL_PASS  // App Password (16 caracteres)
+        },
+        logger: String(process.env.EMAIL_DEBUG || 'false') === 'true',
+        debug: String(process.env.EMAIL_DEBUG || 'false') === 'true'
+      });
+    }
   }
 
   // Proveedor Resend (HTTP API). Útil en Railway donde SMTP puede estar bloqueado.
@@ -74,10 +98,15 @@ const createTransporterAsync = async () => {
 
   // SendGrid (HTTP API). Gratuito hasta 100 emails/día, recomendado para Railway.
   if (provider === 'sendgrid') {
+    const apiKey = process.env.SENDGRID_API_KEY;
+    console.log(`📧 [createTransporter] SendGrid provider. API Key: ${apiKey ? '✅ PRESENTE' : '❌ FALTANTE'}`);
+    
     return {
       sendMail: async (opts) => {
-        const apiKey = process.env.SENDGRID_API_KEY;
-        if (!apiKey) throw new Error('SENDGRID_API_KEY faltante');
+        if (!apiKey) {
+          console.warn('⚠️ [SendGrid] SENDGRID_API_KEY faltante, devolviendo skip');
+          return { skipped: true, messageId: 'skipped' };
+        }
         const payload = {
           personalizations: [{ to: [{ email: Array.isArray(opts.to) ? opts.to[0] : opts.to }] }],
           from: { email: opts.from || process.env.EMAIL_FROM || 'noreply@example.com' },
@@ -125,7 +154,20 @@ const createTransporterAsync = async () => {
     });
   }
 
-  // Fallback a configuración custom
+  // En producción sin provider válido, devolver transporter que skipea silenciosamente
+  if (process.env.NODE_ENV === 'production') {
+    console.warn('⚠️ [Email] En producción sin provider válido. Emails se skipearán.');
+    return {
+      sendMail: async (opts) => {
+        console.warn('⚠️ [Email] Email skipped (no valid provider configured)');
+        return { skipped: true, messageId: 'skipped' };
+      },
+      verify: async () => true
+    };
+  }
+
+  // Fallback a configuración custom (solo en desarrollo)
+  console.warn('⚠️ [Email] Fallback a configuración custom');
   return nodemailer.createTransport({
     host: process.env.EMAIL_HOST,
     port: Number(process.env.EMAIL_PORT || 587),
