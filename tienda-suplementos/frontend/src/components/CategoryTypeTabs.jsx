@@ -6,7 +6,8 @@ const VISIBLE_TYPES = {
   // Creatina: agregamos "Todas" para mostrar sin filtrar
   'Creatina': ['Todas', 'Monohidrato', 'HCL', 'Complejos de creatina'],
   'Creatinas': ['Todas', 'Monohidrato', 'HCL', 'Complejos de creatina'],
-  'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa']
+  'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
+  'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa']
 };
 
 // Mapa de etiqueta visible/sinónimos -> forma canónica almacenada en BD
@@ -57,14 +58,14 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
       .filter(Boolean)
       .map(canonical)
   );
-  const types = baseTypes.filter(t => t === 'Todas' || availableCanonicalTypes.has(canonical(t)) || category === 'Pre-entrenos y Quemadores');
+  const types = baseTypes.filter(t => t === 'Todas' || availableCanonicalTypes.has(canonical(t)) || category === 'Pre-entrenos y Quemadores' || category === 'Pre-entrenos y Energía');
 
   const [selectedType, setSelectedType] = useState(types[0] || '');
 
   const getDefaultType = (cat) => {
     if (cat === 'Proteínas' || cat === 'Proteina' || cat === 'Proteinas') return 'Limpia';
     if (cat === 'Creatina' || cat === 'Creatinas') return 'Todas';
-    if (cat === 'Pre-entrenos y Quemadores') return 'Pre-entrenos';
+    if (cat === 'Pre-entrenos y Quemadores' || cat === 'Pre-entrenos y Energía') return 'Pre-entrenos';
     return null;
   };
 

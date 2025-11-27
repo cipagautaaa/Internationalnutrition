@@ -13,7 +13,7 @@ const ProductList = ({ category, search, showVariants = false }) => {
 	// Determinar si esta categoría usa pestañas de tipo/subcategoría
 	const proteinCategories = ['Proteínas', 'Proteinas', 'Proteina'];
 	const creatineCategories = ['Creatina', 'Creatinas'];
-	const preworkoutCategories = ['Pre-entrenos y Quemadores'];
+	const preworkoutCategories = ['Pre-entrenos y Quemadores', 'Pre-entrenos y Energía'];
 	const healthWellnessCategories = ['Salud y Bienestar'];
 	const showTypeTabs = proteinCategories.includes(category) || creatineCategories.includes(category) || preworkoutCategories.includes(category) || healthWellnessCategories.includes(category);
 
