@@ -110,7 +110,18 @@ router.post('/send-code', codeLimiter, validateEmail, async (req, res) => {
       });
     }
 
-    await sendVerificationEmail(email, verificationCode);
+    // Envío de email en background para no bloquear la respuesta
+    sendVerificationEmail(email, verificationCode)
+      .then((info) => {
+        if (info?.skipped) {
+          console.log(`[send-code] Email SKIPPED (config faltante)`);
+        } else {
+          console.log(`[send-code] Email ENVIADO OK`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[send-code] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+      });
 
     res.json({
       success: true,
@@ -220,7 +231,18 @@ router.post('/resend-code', async (req, res) => {
     user.emailVerificationExpires = verificationExpires;
     await user.save();
 
-    await sendVerificationEmail(email, verificationCode);
+    // Envío de email en background para no bloquear la respuesta
+    sendVerificationEmail(email, verificationCode)
+      .then((info) => {
+        if (info?.skipped) {
+          console.log(`[resend-code] Email SKIPPED (config faltante)`);
+        } else {
+          console.log(`[resend-code] Email ENVIADO OK`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[resend-code] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+      });
 
     res.json({
       success: true,

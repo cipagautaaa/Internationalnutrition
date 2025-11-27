@@ -2,6 +2,9 @@ const nodemailer = require('nodemailer');
 const axios = require('axios');
 
 console.log('📧 EmailService v2 con SendGrid cargado');
+console.log(`📧 EMAIL_PROVIDER=${process.env.EMAIL_PROVIDER || 'NO_CONFIGURADO'}`);
+console.log(`📧 SENDGRID_API_KEY=${process.env.SENDGRID_API_KEY ? '✅ PRESENTE' : '❌ FALTANTE'}`);
+console.log(`📧 EMAIL_FROM=${process.env.EMAIL_FROM || 'no configurado'}`);
 
 // Helper: detect if email creds are properly configured
 const canSendEmails = () => {
@@ -142,7 +145,12 @@ const sendVerificationEmail = async (email, verificationCode) => {
     console.warn('[Email] Configuración de correo faltante en producción. Saltando envío y respondiendo ok.');
     return { skipped: true };
   }
+  
+  console.log(`📧 [sendVerificationEmail] Iniciando envío a ${email}`);
+  console.log(`📧 [sendVerificationEmail] Provider=${process.env.EMAIL_PROVIDER || 'NONE'}`);
+  
   const transporter = await createTransporterAsync();
+  console.log(`📧 [sendVerificationEmail] Transporter creado, intentando sendMail`);
   
   const mailOptions = {
     from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
