@@ -3,7 +3,12 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-require('dotenv').config({ override: true });
+
+// Solo cargar .env en desarrollo, no en producción
+// En producción, las variables vienen del dashboard de Railway/etc
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ override: true });
+}
 
 const app = express();
 
