@@ -64,20 +64,23 @@ router.post('/login', validateEmail, async (req, res) => {
     await user.save();
     console.log(`[login:${requestId}] Código generado=${verificationCode}`);
 
-    let emailResult;
-    try {
-      emailResult = await sendVerificationEmail(email, verificationCode);
-      console.log(`[login:${requestId}] Resultado envío email:`, emailResult?.skipped ? 'SKIPPED' : 'ENVIADO');
-    } catch (sendErr) {
-      console.error(`[login:${requestId}] ⚠️ Error enviando email:`, sendErr.message);
-      // No bloquear: continuar flujo igualmente
-      emailResult = { skippedDueToError: true, error: sendErr.message };
-    }
+    // Envío de email en background para no bloquear la respuesta
+    sendVerificationEmail(email, verificationCode)
+      .then((info) => {
+        if (info?.skipped) {
+          console.log(`[login:${requestId}] Email SKIPPED (config faltante)`);
+        } else {
+          console.log(`[login:${requestId}] Email ENVIADO OK`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[login:${requestId}] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+      });
 
     return res.json({
       success: true,
-      message: emailResult?.skipped || emailResult?.skippedDueToError ? 'Código generado (email omitido)' : 'Código de verificación enviado a tu email',
-      data: { step: 'code', email: user.email, emailSkipped: Boolean(emailResult?.skipped || emailResult?.skippedDueToError) }
+      message: 'Código generado. Revisa tu correo en un momento',
+      data: { step: 'code', email: user.email }
     });
   } catch (error) {
     console.error(`[login:${requestId}] Error inesperado:`, error);
