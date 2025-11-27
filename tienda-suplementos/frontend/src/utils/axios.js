@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Configura la URL base de la API desde Vite env o fallback
 // Normalizar: agregar /api si no está presente
-const rawApi = import.meta.env?.VITE_API_URL || 'http://localhost:5000';
+const rawApi = import.meta.env?.VITE_API_BASE_URL || import.meta.env?.VITE_API_URL || 'http://localhost:5000';
 const API_URL = rawApi.endsWith('/api') ? rawApi : rawApi.replace(/\/$/, '') + '/api';
 
 axios.defaults.baseURL = API_URL;

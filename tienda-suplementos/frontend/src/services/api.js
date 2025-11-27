@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Normalize API URL: allow VITE_API_URL to be either with or without the trailing `/api`.
+// Normalize API URL: allow VITE_API_BASE_URL or VITE_API_URL to be either with or without the trailing `/api`.
 // If not provided, default to http://localhost:5000 and append /api.
-const rawApi = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const rawApi = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const API_URL = rawApi.endsWith('/api') ? rawApi : rawApi.replace(/\/$/, '') + '/api';
 
 const api = axios.create({
