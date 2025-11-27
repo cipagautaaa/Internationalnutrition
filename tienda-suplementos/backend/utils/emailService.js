@@ -1,10 +1,14 @@
 const nodemailer = require('nodemailer');
+const axios = require('axios');
 
 // Helper: detect if email creds are properly configured
 const canSendEmails = () => {
   const provider = (process.env.EMAIL_PROVIDER || '').toLowerCase();
   if (provider === 'gmail') {
     return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  }
+  if (provider === 'resend') {
+    return Boolean(process.env.RESEND_API_KEY || process.env.EMAIL_API_KEY);
   }
   if (provider === 'ethereal') {
     return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
@@ -35,6 +39,29 @@ const createTransporterAsync = async () => {
       logger: String(process.env.EMAIL_DEBUG || 'false') === 'true',
       debug: String(process.env.EMAIL_DEBUG || 'false') === 'true'
     });
+  }
+
+  // Proveedor Resend (HTTP API). Útil en Railway donde SMTP puede estar bloqueado.
+  if (provider === 'resend') {
+    return {
+      sendMail: async (opts) => {
+        const apiKey = process.env.RESEND_API_KEY || process.env.EMAIL_API_KEY;
+        if (!apiKey) throw new Error('RESEND_API_KEY faltante');
+        const payload = {
+          from: opts.from || process.env.EMAIL_FROM || 'onboarding@resend.dev',
+          to: Array.isArray(opts.to) ? opts.to : [opts.to],
+          subject: opts.subject,
+          html: opts.html
+        };
+        const res = await axios.post('https://api.resend.com/emails', payload, {
+          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          timeout: 15000
+        });
+        return { messageId: res.data?.id, accepted: payload.to, rejected: [] };
+      },
+      // Compat nodemailer.verify
+      verify: async () => true
+    };
   }
 
   if (provider === 'ethereal') {
