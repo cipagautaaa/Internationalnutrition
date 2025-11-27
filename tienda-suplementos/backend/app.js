@@ -11,6 +11,10 @@ const app = express();
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(morgan('combined'));
 
+// Detrás de proxy (Railway/Vercel/etc.) para que express-rate-limit lea X-Forwarded-For
+// y no lance errores/invalidaciones
+app.set('trust proxy', 1);
+
 // Rate limiting
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 1000, message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.' });
 app.use('/api/', limiter);
