@@ -27,6 +27,7 @@ app.use('/api/', limiter);
 // CORS - Configurar orígenes permitidos
 const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
 console.log('[CORS] Allowed origins:', allowedOrigins);
+console.log('[Server] Starting with CORS configuration...');
 
 app.use(cors({
   origin: (origin, callback) => {
