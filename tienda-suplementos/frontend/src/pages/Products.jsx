@@ -69,10 +69,12 @@ export default function Products() {
 	if (rawCategory) {
 		const slug = decodeURIComponent(rawCategory).trim().toLowerCase();
 		normalizedCategory = CATEGORY_SLUG_MAP[slug];
+		console.log('🔍 Products.jsx - slug:', slug, '→ normalizedCategory:', normalizedCategory);
 	}
 
   // category que usaremos para las llamadas a la API (coincidente con BD)
   const apiCategory = normalizedCategory ? (BACKEND_CATEGORY_MAP[normalizedCategory] || normalizedCategory) : undefined;
+  console.log('🎯 Products.jsx - apiCategory final:', apiCategory);
 
 	const search = query.q || undefined;
 
