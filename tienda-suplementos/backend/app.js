@@ -24,8 +24,25 @@ app.set('trust proxy', 1);
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 1000, message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.' });
 app.use('/api/', limiter);
 
-// CORS
-app.use(cors({ origin: (origin, callback) => { if (!origin) return callback(null, true); return callback(null, true); }, credentials: true }));
+// CORS - Configurar orígenes permitidos
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
+console.log('[CORS] Allowed origins:', allowedOrigins);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Permitir sin origin (requests desde el mismo servidor, Postman, etc.)
+    if (!origin) return callback(null, true);
+    // Permitir si está en la lista blanca
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    // Si no hay lista configurada, permitir todo (fallback)
+    if (allowedOrigins.length === 0) return callback(null, true);
+    // Si no está en la lista, rechazar
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Body parser
 app.use(express.json({ limit: '10mb' }));
