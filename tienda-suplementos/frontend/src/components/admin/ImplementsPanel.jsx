@@ -25,6 +25,7 @@ const ImplementsPanel = () => {
   const [form, setForm] = useState(emptyImplement);
   const [editing, setEditing] = useState(null);
   const [search, setSearch] = useState('');
+  const [dragActive, setDragActive] = useState(false);
 
   const loadImplements = async () => {
     try {
@@ -60,8 +61,8 @@ const ImplementsPanel = () => {
     setEditing(null);
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files?.[0];
+  const handleImageUpload = async (fileOrEvent) => {
+    const file = fileOrEvent instanceof File ? fileOrEvent : fileOrEvent.target?.files?.[0];
     if (!file) return;
 
     if (!file.type.startsWith('image/')) {
@@ -248,34 +249,89 @@ const ImplementsPanel = () => {
           {/* Imagen */}
           <label className="flex flex-col gap-1 text-sm text-gray-700">
             <span>Imagen del Implemento</span>
-            <div className="flex items-center gap-2">
-              <input
-                type="file"
-                id="imageUpload"
-                accept="image/*"
-                onChange={handleImageUpload}
-                disabled={uploadingImage}
-                className="hidden"
-              />
-              <label 
-                htmlFor="imageUpload" 
-                className="flex-1 h-10 px-3 rounded-lg border border-gray-300 flex items-center cursor-pointer hover:bg-gray-50 disabled:opacity-50"
-              >
-                {uploadingImage ? 'Subiendo...' : form.image ? '✓ Imagen subida' : 'Seleccionar imagen'}
-              </label>
+            
+            {/* Zona de arrastrar y soltar */}
+            <div
+              onDragOver={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                setDragActive(true);
+              }}
+              onDragLeave={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                setDragActive(false);
+              }}
+              onDrop={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                setDragActive(false);
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                  handleImageUpload(e.dataTransfer.files[0]);
+                }
+              }}
+              className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg px-4 py-6 mb-2 transition-all cursor-pointer ${
+                dragActive
+                  ? 'border-red-700 bg-red-50'
+                  : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+              }`}
+            >
+              {uploadingImage ? (
+                <div className="text-center">
+                  <svg className="w-10 h-10 mx-auto mb-2 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  <p className="text-sm font-semibold text-blue-700">Subiendo imagen...</p>
+                </div>
+              ) : form.image ? (
+                <div className="text-center">
+                  <img src={form.image} alt="preview" className="w-24 h-24 rounded-lg object-cover border-4 border-white shadow-lg mb-2" />
+                  <p className="text-sm font-semibold text-green-700">✓ Imagen cargada</p>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setForm((prev) => ({ ...prev, image: '' }));
+                    }}
+                    className="text-xs text-red-700 hover:underline mt-1"
+                  >
+                    Remover imagen
+                  </button>
+                </div>
+              ) : (
+                <div className="text-center">
+                  <svg className="w-10 h-10 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  </svg>
+                  <p className="text-sm text-gray-600 font-medium mb-1">
+                    Arrastra una imagen aquí
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    o haz clic para seleccionar
+                  </p>
+                </div>
+              )}
             </div>
-            {form.image && (
-              <div className="flex items-center gap-2">
-                <img src={form.image} alt="preview" className="w-12 h-12 rounded object-cover" />
-                <button
-                  type="button"
-                  onClick={() => setForm((prev) => ({ ...prev, image: '' }))}
-                  className="text-xs text-red-700 hover:underline"
-                >
-                  Remover
-                </button>
-              </div>
-            )}
+
+            {/* Input oculto */}
+            <input
+              type="file"
+              id="imageUpload"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={uploadingImage}
+              className="hidden"
+            />
+            <label 
+              htmlFor="imageUpload" 
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border-2 border-red-700 text-sm font-medium bg-white hover:bg-red-50 transition-all cursor-pointer disabled:opacity-50"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              {uploadingImage ? 'Subiendo...' : 'Seleccionar archivo'}
+            </label>
           </label>
 
           {/* Tallas */}

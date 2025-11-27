@@ -69,6 +69,8 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
   const [imageError, setImageError] = useState('');
   const [uploadingVariantImage, setUploadingVariantImage] = useState(null);
   const [variantImageError, setVariantImageError] = useState({});
+  const [dragActive, setDragActive] = useState(false);
+  const [dragActiveVariant, setDragActiveVariant] = useState(null);
 
   useEffect(() => { 
     setForm({ 
@@ -122,8 +124,8 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     setForm(f => ({ ...f, [k]: v }));
   };
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleImageUpload = async (fileOrEvent) => {
+    const file = fileOrEvent instanceof File ? fileOrEvent : fileOrEvent.target.files[0];
     if (!file) return;
 
     // Validar tipo de archivo
@@ -156,8 +158,8 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     }
   };
 
-  const handleVariantImageUpload = async (idx, e) => {
-    const file = e.target.files[0];
+  const handleVariantImageUpload = async (idx, fileOrEvent) => {
+    const file = fileOrEvent instanceof File ? fileOrEvent : fileOrEvent.target.files[0];
     if (!file) return;
 
     // Validar tipo de archivo
@@ -465,8 +467,65 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
             required 
           />
           
+          {/* Zona de arrastrar y soltar */}
+          <div
+            onDragOver={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(true);
+            }}
+            onDragLeave={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(false);
+            }}
+            onDrop={e => {
+              e.preventDefault();
+              e.stopPropagation();
+              setDragActive(false);
+              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleImageUpload(e.dataTransfer.files[0]);
+              }
+            }}
+            className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg px-4 py-6 mb-3 transition-all ${
+              dragActive
+                ? 'border-red-700 bg-red-50'
+                : 'border-gray-300 bg-gray-50'
+            }`}
+          >
+            {uploadingImage ? (
+              <div className="text-center">
+                <svg className="w-10 h-10 mx-auto mb-2 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p className="text-sm font-semibold text-blue-700">Subiendo imagen...</p>
+              </div>
+            ) : form.image ? (
+              <div className="text-center">
+                <img 
+                  src={form.image} 
+                  alt="Preview" 
+                  className="h-32 w-32 object-cover rounded-lg border-4 border-white shadow-lg mb-2"
+                  onError={(e) => { e.target.style.display = 'none'; }}
+                />
+                <p className="text-sm font-semibold text-green-700">✓ Imagen cargada</p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <svg className="w-10 h-10 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p className="text-sm text-gray-600">
+                  Arrastra una imagen aquí
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Botón de selección tradicional */}
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500 font-medium">o subir archivo:</span>
+            <span className="text-xs text-gray-500 font-medium">o seleccionar archivo:</span>
             <label className="flex-1">
               <input 
                 type="file" 
@@ -478,7 +537,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
               />
               <label 
                 htmlFor="imageUpload" 
-                className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-700 rounded-lg text-sm font-medium bg-white hover:bg-gray-300 transition-all shadow-sm"
+                className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-700 rounded-lg text-sm font-medium bg-white hover:bg-red-50 transition-all shadow-sm"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
@@ -489,7 +548,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
           </div>
           
           {imageError && (
-            <div className="flex items-center gap-2 text-xs text-red-700 bg-red-700 px-3 py-2 rounded-lg">
+            <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
@@ -694,6 +753,61 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                     className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
                     placeholder="URL de la imagen" 
                   />
+                  
+                  {/* Zona de arrastrar y soltar para variante */}
+                  <div
+                    onDragOver={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setDragActiveVariant(idx);
+                    }}
+                    onDragLeave={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setDragActiveVariant(null);
+                    }}
+                    onDrop={e => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setDragActiveVariant(null);
+                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                        handleVariantImageUpload(idx, e.dataTransfer.files[0]);
+                      }
+                    }}
+                    className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg px-4 py-4 transition-all ${
+                      dragActiveVariant === idx
+                        ? 'border-red-700 bg-red-50'
+                        : 'border-gray-300 bg-gray-50'
+                    }`}
+                  >
+                    {uploadingVariantImage === idx ? (
+                      <div className="text-center">
+                        <svg className="w-8 h-8 mx-auto mb-1 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p className="text-xs font-semibold text-blue-700">Subiendo...</p>
+                      </div>
+                    ) : v.image ? (
+                      <div className="text-center">
+                        <img 
+                          src={v.image} 
+                          alt="Preview" 
+                          className="h-20 w-20 object-cover rounded-lg border-2 border-white shadow mb-1"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                        <p className="text-xs font-semibold text-green-700">✓ Imagen cargada</p>
+                      </div>
+                    ) : (
+                      <div className="text-center">
+                        <svg className="w-8 h-8 mx-auto mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <p className="text-xs text-gray-600">Arrastra aquí</p>
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex items-center gap-2">
                     <input 
                       type="file" 
@@ -705,21 +819,16 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                     />
                     <label 
                       htmlFor={`variantImageUpload-${idx}`}
-                      className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 border-2 border-red-700 rounded-lg text-xs font-medium bg-white hover:bg-red-700 transition-all"
+                      className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 border-2 border-red-700 rounded-lg text-xs font-medium bg-white hover:bg-red-50 transition-all"
                     >
-                      {uploadingVariantImage === idx ? '? Subiendo...' : '?? Subir'}
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      {uploadingVariantImage === idx ? 'Subiendo...' : 'Seleccionar'}
                     </label>
-                    {v.image && (
-                      <img 
-                        src={v.image} 
-                        alt="Preview" 
-                        className="h-12 w-12 object-cover rounded-lg border-2 border-white shadow"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
-                    )}
                   </div>
                   {variantImageError[idx] && (
-                    <p className="text-xs text-red-700 bg-red-700 px-2 py-1 rounded">{variantImageError[idx]}</p>
+                    <p className="text-xs text-red-700 bg-red-50 px-2 py-1 rounded border border-red-200">{variantImageError[idx]}</p>
                   )}
                 </div>
                 
