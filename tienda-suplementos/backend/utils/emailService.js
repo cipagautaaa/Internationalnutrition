@@ -5,6 +5,11 @@ console.log('📧 EmailService v2 con SendGrid cargado');
 console.log(`📧 EMAIL_PROVIDER=${process.env.EMAIL_PROVIDER || 'NO_CONFIGURADO'}`);
 console.log(`📧 SENDGRID_API_KEY=${process.env.SENDGRID_API_KEY ? '✅ PRESENTE' : '❌ FALTANTE'}`);
 console.log(`📧 EMAIL_FROM=${process.env.EMAIL_FROM || 'no configurado'}`);
+try {
+  const envKeys = Object.keys(process.env || {});
+  const relevant = envKeys.filter(k => /SENDGRID|EMAIL_PROVIDER|EMAIL_FROM/i.test(k));
+  console.log('📧 Env keys presentes (parciales):', relevant);
+} catch {}
 
 // Helper: detect if email creds are properly configured
 const canSendEmails = () => {
