@@ -9,11 +9,7 @@ import ProcessSection from '../components/ProcessSection';
 import HomeComboSection from '../components/HomeComboSection';
 import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
-
-import heroVideo from '../assets/images/video portada.mp4';
-import foto2 from '../assets/images/foto2.jpg';
-import foto1 from '../assets/images/1.jpg';
-import videoDuitama from '../assets/images/videoduitama.mp4';
+import { CLOUDINARY_ASSETS } from '../config/cloudinaryAssets';
 
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
@@ -26,8 +22,8 @@ const Home = () => {
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const stores = [
-    { name: 'Sede Tunja', image: foto1, type: 'image' },
-    { name: 'Sede Duitama', video: videoDuitama, type: 'video' }
+    { name: 'Sede Tunja', image: CLOUDINARY_ASSETS.images.foto1, type: 'image' },
+    { name: 'Sede Duitama', video: CLOUDINARY_ASSETS.videos.videoDuitama, type: 'video' }
   ];
 
   const faqs = [
@@ -182,7 +178,7 @@ const Home = () => {
           playsInline
           preload="auto"
         >
-          <source src={heroVideo} type="video/mp4" />
+          <source src={CLOUDINARY_ASSETS.videos.heroVideo} type="video/mp4" />
         </video>
 
         {/* Overlay para mejorar contraste y empujar el foco visual */}
@@ -362,7 +358,7 @@ const Home = () => {
       
       {/* Imagen foto2 */}
       <section className="w-full">
-        <img src={foto2} alt="Banner promocional" className="w-full h-auto object-cover" />
+        <img src={CLOUDINARY_ASSETS.images.foto2} alt="Banner promocional" className="w-full h-auto object-cover" />
       </section>
       
       {/* Carrusel de Categorías */}
