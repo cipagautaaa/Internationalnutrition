@@ -4,7 +4,9 @@ import { FAQ_DATA } from '../../data/faqData';
 // Importa desde pages/categoryConfigs.js (al mismo nivel de pages/)
 import { CATEGORY_META } from '../categoryConfigs';
 
-export default function CategoryPageBase({ title }) {
+// title: nombre mostrado en UI
+// apiCategory: nombre canónico que existe en BD para filtrar en la API
+export default function CategoryPageBase({ title, apiCategory }) {
   const meta = title && CATEGORY_META ? CATEGORY_META[title] : undefined;
 
   return (
@@ -44,7 +46,7 @@ export default function CategoryPageBase({ title }) {
           <h1 className="text-4xl font-bold text-gray-900">{title}</h1>
           <p className="mt-2 text-gray-600">Explora nuestro catálogo de {title?.toLowerCase?.()}</p>
         </div>
-        <ProductList category={title} />
+        <ProductList category={apiCategory || title} />
         <LegacyCategoryFAQ title={title} />
       </div>
     </div>

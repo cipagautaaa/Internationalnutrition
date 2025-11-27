@@ -5,7 +5,7 @@ const PreEntrenos = () => {
   return (
     <CategoryPageBase
       title="Pre-entrenos y Quemadores"
-      apiCategory="Pre-entrenos y Quemadores"
+      apiCategory="Pre-entrenos y Energía"
       pageTitle="Pre-entrenos y Quemadores - Tienda Suplementos"
       showVariants={true}
       hero={{
