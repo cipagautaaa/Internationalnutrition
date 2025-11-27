@@ -21,12 +21,12 @@ export const CLOUDINARY_ASSETS = {
 
   // IMÁGENES DE CATEGORÍAS (CategoryConfigs)
   categoryHeroes: {
-    proteinas: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/suplementos/categorias/proteinas.jpg',
-    creatina: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/suplementos/categorias/creatinas.jpg',
-    preentrenos: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/suplementos/categorias/preentrenos.jpg',
-    aminoacidos: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/suplementos/categorias/aminoacidos.jpg',
-    vitaminas: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/suplementos/categorias/vitaminas.jpg',
-    comidas: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/suplementos/categorias/comidas.jpg',
+    proteinas: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/v1764226210/p0rpqpx3xlhw9p1tw6jj.png',
+    creatina: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/v1764226293/sxgo7pofw7ismftbqmdg.png',
+    preentrenos: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/v1764226119/nfd2pmmofhvfxa9bubzm.png',
+    aminoacidos: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/v1764214864/prhxvunhfn1qwuptqk2m.png',
+    vitaminas: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/v1764219856/oivqdvcf30xynjlpt2vc.png',
+    comidas: 'https://res.cloudinary.com/dlopfk5uj/image/upload/f_auto,q_auto,w_1920,h_600,c_fill/v1764226210/p0rpqpx3xlhw9p1tw6jj.png',
   }
 };
 
