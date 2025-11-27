@@ -1,5 +1,21 @@
 const nodemailer = require('nodemailer');
 
+// Helper: detect if email creds are properly configured
+const canSendEmails = () => {
+  const provider = (process.env.EMAIL_PROVIDER || '').toLowerCase();
+  if (provider === 'gmail') {
+    return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  }
+  if (provider === 'ethereal') {
+    return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  }
+  // custom SMTP
+  if (provider === 'custom' || provider === '') {
+    return Boolean(process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  }
+  return false;
+};
+
 // EMAIL_PROVIDER options:
 //  - gmail (recomendado con App Password)
 //  - custom (usa EMAIL_HOST/EMAIL_PORT)
@@ -67,6 +83,11 @@ const createTransporterAsync = async () => {
 };
 
 const sendVerificationEmail = async (email, verificationCode) => {
+  // In producción, si no hay configuración de email, no bloquear el flujo.
+  if (process.env.NODE_ENV === 'production' && !canSendEmails()) {
+    console.warn('[Email] Configuración de correo faltante en producción. Saltando envío y respondiendo ok.');
+    return { skipped: true };
+  }
   const transporter = await createTransporterAsync();
   
   const mailOptions = {
@@ -104,6 +125,11 @@ const sendVerificationEmail = async (email, verificationCode) => {
     return info;
   } catch (error) {
     console.error('❌ Error enviando email:', error);
+    // En producción, no bloquear el login/registro por fallo de correo. Devolver skip.
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('[Email] Fallo enviando correo en producción. Continuando sin bloquear.');
+      return { skipped: true, error: error.message || String(error) };
+    }
     throw new Error(`Error enviando email de verificación: ${error.message || error}`);
   }
 };
