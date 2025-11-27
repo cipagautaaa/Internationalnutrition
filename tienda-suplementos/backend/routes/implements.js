@@ -10,19 +10,25 @@ const upload = require('../middleware/uploadCloudinary');
 // POST /api/implements/upload-image - subir imagen a Cloudinary
 router.post('/upload-image', protect, isAdmin, upload.single('image'), async (req, res) => {
   try {
+    console.log('📸 [upload-image] Iniciando upload...');
+    console.log('   user:', req.user?.id);
+    console.log('   file:', req.file?.originalname);
+    
     if (!req.file) {
+      console.warn('⚠️ [upload-image] No file received');
       return res.status(400).json({ success: false, message: 'No se proporciono imagen' });
     }
     
     const imageUrl = req.file.path;
-    console.log('✅ Imagen subida a Cloudinary:', imageUrl);
+    console.log('✅ [upload-image] Imagen subida a Cloudinary:', imageUrl);
+    
     res.json({
       success: true,
       imageUrl: imageUrl,
       message: 'Imagen subida exitosamente a Cloudinary'
     });
   } catch (error) {
-    console.error('❌ Error al subir imagen:', error);
+    console.error('❌ [upload-image] Error:', error.message || error);
     res.status(500).json({ success: false, message: error.message || 'Error al subir la imagen' });
   }
 });
