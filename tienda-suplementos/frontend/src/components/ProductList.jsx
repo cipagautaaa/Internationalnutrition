@@ -30,13 +30,16 @@ const ProductList = ({ category, search, showVariants = false }) => {
 			setLoading(true);
 			setError('');
 			try {
+				console.log('🔍 ProductList - Categoría recibida:', category);
 				const params = {};
 				if (category) {
 					params.category = category;
 					params.limit = 200; // ampliar límite al filtrar por categoría
 				}
 				if (search) params.search = search;
+				console.log('📡 Llamando API con params:', params);
 				const res = await api.get('/products', { params });
+				console.log('✅ Respuesta API:', res.data);
 				if (!cancelled) {
 					const serverData = Array.isArray(res.data?.data) ? res.data.data : [];
 					const aggregated = serverData.filter(Boolean).map(p => ({ id: p._id, ...p }));
