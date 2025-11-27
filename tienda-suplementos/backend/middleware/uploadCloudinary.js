@@ -11,7 +11,7 @@ const storage = new CloudinaryStorage({
   transformation: [{ width: 800, height: 800, crop: 'fill', quality: 'auto' }],
 });
 
-const upload = multer({
+const multerUpload = multer({
   storage: storage,
   limits: {
     fileSize: 5 * 1024 * 1024, // 5MB
@@ -33,16 +33,22 @@ const upload = multer({
 });
 
 // Wrapper para capturar errores de Cloudinary
-module.exports = (req, res, next) => {
-  upload.single('image')(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      console.error('❌ Multer error:', err.message);
-      return res.status(400).json({ success: false, message: err.message });
-    } else if (err) {
-      console.error('❌ Upload error:', err.message);
-      return res.status(400).json({ success: false, message: err.message });
-    }
-    // Si todo bien, continuar
-    next();
-  });
+const upload = {
+  single: (fieldName) => {
+    return (req, res, next) => {
+      multerUpload.single(fieldName)(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+          console.error('❌ Multer error:', err.message);
+          return res.status(400).json({ success: false, message: err.message });
+        } else if (err) {
+          console.error('❌ Upload error:', err.message);
+          return res.status(400).json({ success: false, message: err.message });
+        }
+        // Si todo bien, continuar
+        next();
+      });
+    };
+  }
 };
+
+module.exports = upload;
