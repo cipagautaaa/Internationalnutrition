@@ -12,28 +12,21 @@ const bcrypt = require('bcryptjs');
 
 // Login directo para usuarios verificados o admins con PIN
 router.post('/login', validateEmail, async (req, res) => {
+  const requestId = Math.random().toString(36).slice(2);
   try {
     const { email } = req.body;
-    
-    // Buscar usuario
+    console.log(`[login:${requestId}] INICIO email=${email}`);
     let user = await User.findOne({ email });
 
     if (!user) {
-      console.log('❌ Usuario no encontrado:', email);
-      return res.status(401).json({
-        success: false,
-        message: 'Usuario no encontrado'
-      });
+      console.log(`[login:${requestId}] ❌ Usuario no encontrado`);
+      return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
     }
 
-    console.log('✅ Usuario encontrado:', email);
-    console.log('   - isEmailVerified:', user.isEmailVerified);
-    console.log('   - role:', user.role);
-    console.log('   - adminPinEnabled:', user.adminPinEnabled);
+    console.log(`[login:${requestId}] ✅ Usuario encontrado role=${user.role} verified=${user.isEmailVerified} pinEnabled=${user.adminPinEnabled}`);
 
-    // Si es admin con PIN habilitado -> pedir PIN directamente (sin código de verificación)
     if (user.role === 'admin' && user.adminPinEnabled && user.adminPinHash) {
-      console.log('🔑 Admin con PIN detectado');
+      console.log(`[login:${requestId}] 🔑 Admin requiere PIN`);
       const tempToken = jwt.sign(
         { id: user._id, email: user.email, role: user.role, pendingAdminPin: true },
         process.env.JWT_SECRET,
@@ -42,72 +35,53 @@ router.post('/login', validateEmail, async (req, res) => {
       return res.json({
         success: true,
         message: 'Ingresa tu PIN de administrador',
-        data: {
-          step: 'ADMIN_PIN_REQUIRED',
-          tempToken,
-          user: { id: user._id, email: user.email, role: user.role }
-        }
+        data: { step: 'ADMIN_PIN_REQUIRED', tempToken, user: { id: user._id, email: user.email, role: user.role } }
       });
     }
 
-    // Si el usuario ya está verificado, devolver token directamente (NO pedir código)
     if (user.isEmailVerified) {
-      console.log('✅ Usuario verificado, generando token...');
+      console.log(`[login:${requestId}] Usuario verificado, generando token`);
       const token = jwt.sign(
         { id: user._id, email: user.email, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: process.env.JWT_EXPIRE }
       );
-      
       user.lastLogin = new Date();
       await user.save();
-
-      console.log('✅ LOGIN EXITOSO - Token generado para:', user.email);
-      console.log('📋 Token:', token.substring(0, 30) + '...');
-
+      console.log(`[login:${requestId}] ✅ Token emitido`);
       return res.json({
         success: true,
         message: 'Login exitoso',
-        data: {
-          token,
-          user: {
-            id: user._id,
-            email: user.email,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            isEmailVerified: user.isEmailVerified,
-            lastLogin: user.lastLogin,
-            role: user.role
-          }
-        }
+        data: { token, user: { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, isEmailVerified: user.isEmailVerified, lastLogin: user.lastLogin, role: user.role } }
       });
     }
 
-    console.log('📧 Usuario NO verificado, enviando código...');
-    // Para usuarios NO verificados, enviar código de verificación por email
+    console.log(`[login:${requestId}] Usuario NO verificado, generando código`);
     const verificationCode = generateVerificationCode();
     const verificationExpires = new Date(Date.now() + 10 * 60 * 1000);
-    
     user.emailVerificationCode = verificationCode;
     user.emailVerificationExpires = verificationExpires;
     await user.save();
-    
-    await sendVerificationEmail(email, verificationCode);
+    console.log(`[login:${requestId}] Código generado=${verificationCode}`);
 
-    res.json({
+    let emailResult;
+    try {
+      emailResult = await sendVerificationEmail(email, verificationCode);
+      console.log(`[login:${requestId}] Resultado envío email:`, emailResult?.skipped ? 'SKIPPED' : 'ENVIADO');
+    } catch (sendErr) {
+      console.error(`[login:${requestId}] ⚠️ Error enviando email:`, sendErr.message);
+      // No bloquear: continuar flujo igualmente
+      emailResult = { skippedDueToError: true, error: sendErr.message };
+    }
+
+    return res.json({
       success: true,
-      message: 'Código de verificación enviado a tu email',
-      data: {
-        step: 'code',
-        email: user.email
-      }
+      message: emailResult?.skipped || emailResult?.skippedDueToError ? 'Código generado (email omitido)' : 'Código de verificación enviado a tu email',
+      data: { step: 'code', email: user.email, emailSkipped: Boolean(emailResult?.skipped || emailResult?.skippedDueToError) }
     });
   } catch (error) {
-    console.error('Error en login:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor'
-    });
+    console.error(`[login:${requestId}] Error inesperado:`, error);
+    return res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 });
 
