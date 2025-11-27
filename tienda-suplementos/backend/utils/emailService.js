@@ -10,6 +10,9 @@ const canSendEmails = () => {
   if (provider === 'resend') {
     return Boolean(process.env.RESEND_API_KEY || process.env.EMAIL_API_KEY);
   }
+  if (provider === 'sendgrid') {
+    return Boolean(process.env.SENDGRID_API_KEY);
+  }
   if (provider === 'ethereal') {
     return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
   }
@@ -60,6 +63,28 @@ const createTransporterAsync = async () => {
         return { messageId: res.data?.id, accepted: payload.to, rejected: [] };
       },
       // Compat nodemailer.verify
+      verify: async () => true
+    };
+  }
+
+  // SendGrid (HTTP API). Gratuito hasta 100 emails/día, recomendado para Railway.
+  if (provider === 'sendgrid') {
+    return {
+      sendMail: async (opts) => {
+        const apiKey = process.env.SENDGRID_API_KEY;
+        if (!apiKey) throw new Error('SENDGRID_API_KEY faltante');
+        const payload = {
+          personalizations: [{ to: [{ email: Array.isArray(opts.to) ? opts.to[0] : opts.to }] }],
+          from: { email: opts.from || process.env.EMAIL_FROM || 'noreply@example.com' },
+          subject: opts.subject,
+          content: [{ type: 'text/html', value: opts.html }]
+        };
+        const res = await axios.post('https://api.sendgrid.com/v3/mail/send', payload, {
+          headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+          timeout: 15000
+        });
+        return { messageId: res.headers['x-message-id'] || 'ok', accepted: [opts.to], rejected: [] };
+      },
       verify: async () => true
     };
   }
