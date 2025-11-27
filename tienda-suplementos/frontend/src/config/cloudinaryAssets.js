@@ -8,7 +8,8 @@ export const CLOUDINARY_ASSETS = {
   // VIDEOS
   videos: {
     heroVideo: 'https://res.cloudinary.com/dlopfk5uj/video/upload/v1764283011/video_portada_zpsjqf.mp4',
-    videoDuitama: 'https://res.cloudinary.com/dlopfk5uj/video/upload/f_auto,q_auto,w_1920/suplementos/videos/video-duitama.mp4',
+    videoTunja: 'https://res.cloudinary.com/dlopfk5uj/video/upload/v1764283756/videotunja_pst8hl.mp4',
+    videoDuitama: 'https://res.cloudinary.com/dlopfk5uj/video/upload/v1764283600/videoduitama_j8wknh.mp4',
   },
 
   // IMÁGENES ESTÁTICAS (Home y tiendas)

@@ -22,7 +22,7 @@ const Home = () => {
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
 
   const stores = [
-    { name: 'Sede Tunja', image: CLOUDINARY_ASSETS.images.foto1, type: 'image' },
+    { name: 'Sede Tunja', video: CLOUDINARY_ASSETS.videos.videoTunja, type: 'video' },
     { name: 'Sede Duitama', video: CLOUDINARY_ASSETS.videos.videoDuitama, type: 'video' }
   ];
 
