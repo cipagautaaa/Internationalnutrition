@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 
+console.log('📧 EmailService v2 con SendGrid cargado');
+
 // Helper: detect if email creds are properly configured
 const canSendEmails = () => {
   const provider = (process.env.EMAIL_PROVIDER || '').toLowerCase();
