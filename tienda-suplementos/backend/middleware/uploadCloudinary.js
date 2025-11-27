@@ -2,6 +2,8 @@ const multer = require('multer');
 const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const cloudinary = require('../config/cloudinary');
 
+console.log('📤 uploadCloudinary middleware: initializing...');
+
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   folder: 'suplementos/productos',
@@ -15,6 +17,7 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024, // 5MB
   },
   fileFilter: function (req, file, cb) {
+    console.log('🔍 fileFilter:', file.originalname);
     const allowedTypes = /jpeg|jpg|png|gif|webp/;
     const extname = allowedTypes.test(file.originalname.split('.').pop().toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
@@ -22,9 +25,24 @@ const upload = multer({
     if (mimetype && extname) {
       return cb(null, true);
     } else {
-      cb(new Error('Solo se permiten imágenes (jpeg, jpg, png, gif, webp)'));
+      const err = new Error('Solo se permiten imágenes (jpeg, jpg, png, gif, webp)');
+      console.error('❌ fileFilter error:', err.message);
+      cb(err);
     }
   },
 });
 
-module.exports = upload;
+// Wrapper para capturar errores de Cloudinary
+module.exports = (req, res, next) => {
+  upload.single('image')(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      console.error('❌ Multer error:', err.message);
+      return res.status(400).json({ success: false, message: err.message });
+    } else if (err) {
+      console.error('❌ Upload error:', err.message);
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    // Si todo bien, continuar
+    next();
+  });
+};
