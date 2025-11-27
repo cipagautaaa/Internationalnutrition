@@ -6,11 +6,7 @@ const isAdmin = require('../middleware/isAdmin');
 const implementsController = require('../controllers/implementController');
 const upload = require('../middleware/uploadCloudinary');
 
-router.get('/', implementsController.getImplements);
-router.post('/', protect, isAdmin, upload.single('image'), implementsController.createImplement);
-router.put('/:id', protect, isAdmin, upload.single('image'), implementsController.updateImplement);
-router.delete('/:id', protect, isAdmin, implementsController.deleteImplement);
-
+// IMPORTANTE: Rutas específicas ANTES que rutas parametrizadas
 // POST /api/implements/upload-image - subir imagen a Cloudinary
 router.post('/upload-image', protect, isAdmin, upload.single('image'), async (req, res) => {
   try {
@@ -19,15 +15,22 @@ router.post('/upload-image', protect, isAdmin, upload.single('image'), async (re
     }
     
     const imageUrl = req.file.path;
+    console.log('✅ Imagen subida a Cloudinary:', imageUrl);
     res.json({
       success: true,
       imageUrl: imageUrl,
       message: 'Imagen subida exitosamente a Cloudinary'
     });
   } catch (error) {
-    console.error('Error al subir imagen:', error);
+    console.error('❌ Error al subir imagen:', error);
     res.status(500).json({ success: false, message: error.message || 'Error al subir la imagen' });
   }
 });
+
+// Rutas generales
+router.get('/', implementsController.getImplements);
+router.post('/', protect, isAdmin, upload.single('image'), implementsController.createImplement);
+router.put('/:id', protect, isAdmin, upload.single('image'), implementsController.updateImplement);
+router.delete('/:id', protect, isAdmin, implementsController.deleteImplement);
 
 module.exports = router;
