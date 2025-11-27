@@ -131,7 +131,7 @@ const ProductCard = ({ product }) => {
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
         <img
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 relative z-10"
+          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 relative z-10 p-4"
           src={displayImage || '/placeholder-product.png'}
           alt={product.name}
         />
