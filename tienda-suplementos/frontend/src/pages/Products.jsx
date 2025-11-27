@@ -13,9 +13,9 @@ const CATEGORY_SLUG_MAP = {
 	proteinas: 'Proteínas',
 	'proteinas-limpias': 'Proteínas Limpias',
 	'proteinas-hipercaloricas': 'Proteínas Hipercalóricas',
-	'pre-entrenos': 'Pre-entrenos y Quemadores',
-	energia: 'Pre-entrenos y Quemadores',
-	preworkout: 'Pre-entrenos y Quemadores', // alias legacy al fusionado
+	'pre-entrenos': 'Pre-entrenos y Energía',
+	energia: 'Pre-entrenos y Energía',
+	preworkout: 'Pre-entrenos y Energía', // Mapeo directo a BD
 	creatinas: 'Creatinas',
 	creatina: 'Creatina', // legacy
 	aminoacidos: 'Aminoácidos y Recuperadores',
