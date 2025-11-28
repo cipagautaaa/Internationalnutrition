@@ -23,7 +23,7 @@ const Header = () => {
   const navbarRef = useRef(null);
   const [solidBg, setSolidBg] = useState(false);
   const { openCart } = useCart();
-  const { openSearch } = useUI();
+  const { openSearch, isMobileMenuOpen, openMobileMenu: showMobileMenu, closeMobileMenu } = useUI();
   const { isAuthenticated, user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -33,13 +33,11 @@ const Header = () => {
   const closeTimerRef = useRef(null);
   const nosotrosCloseTimerRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-
   const openMobileMenu = (event) => {
     if (event?.type === 'touchstart') {
       event.preventDefault();
     }
-    setMobileNavOpen(true);
+    showMobileMenu();
   };
 
   const handleUserClick = () => {
@@ -108,7 +106,7 @@ const Header = () => {
               className="text-white p-2 rounded-full bg-white/10"
               style={{ touchAction: 'manipulation' }}
               aria-label="Abrir menú"
-              aria-expanded={mobileNavOpen}
+              aria-expanded={isMobileMenuOpen}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path>
@@ -408,8 +406,8 @@ const Header = () => {
 
       </div>
       <MobileNav
-        isOpen={mobileNavOpen}
-        onClose={() => setMobileNavOpen(false)}
+        isOpen={isMobileMenuOpen}
+        onClose={closeMobileMenu}
         isAuthenticated={isAuthenticated}
         user={user}
         onLogout={() => { logout(); navigate('/'); }}

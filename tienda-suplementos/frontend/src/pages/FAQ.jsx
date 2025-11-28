@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { getWhatsappUrl } from '../utils/whatsapp';
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(null);
+  const whatsappSupportLink = useMemo(
+    () => getWhatsappUrl('Hola, tengo una pregunta sobre los productos y necesito asesoría.'),
+    []
+  );
 
   const faqSections = [
     {
@@ -189,7 +194,7 @@ const FAQ = () => {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://wa.me/573208247497"
+                href={whatsappSupportLink}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors"

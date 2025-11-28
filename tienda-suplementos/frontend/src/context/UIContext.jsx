@@ -6,6 +6,7 @@ const UIContext = createContext();
 export const UIProvider = ({ children }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const openSearch = () => setIsSearchOpen(true);
   const closeSearch = () => setIsSearchOpen(false);
@@ -15,17 +16,27 @@ export const UIProvider = ({ children }) => {
   const closeLogin = () => setIsLoginOpen(false);
   const toggleLogin = () => setIsLoginOpen((v) => !v);
 
+  const openMobileMenu = () => setIsMobileMenuOpen(true);
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+  const toggleMobileMenu = () => setIsMobileMenuOpen((prev) => !prev);
+
   return (
-    <UIContext.Provider value={{
-      isSearchOpen,
-      openSearch,
-      closeSearch,
-      toggleSearch,
-  isLoginOpen,
-  openLogin,
-  closeLogin,
-  toggleLogin,
-    }}>
+    <UIContext.Provider
+      value={{
+        isSearchOpen,
+        openSearch,
+        closeSearch,
+        toggleSearch,
+        isLoginOpen,
+        openLogin,
+        closeLogin,
+        toggleLogin,
+        isMobileMenuOpen,
+        openMobileMenu,
+        closeMobileMenu,
+        toggleMobileMenu,
+      }}
+    >
       {children}
     </UIContext.Provider>
   );

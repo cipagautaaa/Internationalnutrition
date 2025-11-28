@@ -32,11 +32,11 @@ export default function AdminProfile() {
 
     try {
       setLoading(true);
-      await axios.post('/auth/change-admin-pin', {
-        currentPin,
+      const { data } = await axios.post('/auth/admin/change-pin', {
+        oldPin: currentPin,
         newPin
       });
-      setMessage({ type: 'success', text: 'PIN actualizado correctamente' });
+      setMessage({ type: 'success', text: data?.message || 'PIN actualizado correctamente' });
       setCurrentPin('');
       setNewPin('');
       setConfirmPin('');

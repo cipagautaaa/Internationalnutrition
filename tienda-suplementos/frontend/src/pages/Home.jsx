@@ -1,6 +1,6 @@
 ﻿import { Link } from 'react-router-dom';
 import { ArrowRight, Star, Truck, Shield, RotateCcw, CheckCircle, ChevronDown } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import FeaturedProductCard from '../components/FeaturedProductCard';
 import SelectProductModal from '../components/SelectProductModal';
 import FeaturedTypeTabs from '../components/FeaturedTypeTabs';
@@ -11,10 +11,12 @@ import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 import { CLOUDINARY_ASSETS } from '../config/cloudinaryAssets';
 import bannerPromoFallback from '../assets/images/foto2.jpg';
+import { getWhatsappUrl } from '../utils/whatsapp';
 
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
   const isAdmin = isAuthenticated && user?.role === 'admin';
+  const heroVideoRef = useRef(null);
   
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -28,6 +30,10 @@ const Home = () => {
   ];
 
   const promoImageSrc = CLOUDINARY_ASSETS.images?.foto2 || bannerPromoFallback;
+  const advisoryWhatsappLink = useMemo(
+    () => getWhatsappUrl('Hola, necesito asesoría para elegir mis suplementos.'),
+    []
+  );
 
   const faqs = [
     {
@@ -59,6 +65,33 @@ const Home = () => {
   useEffect(() => {
     fetchFeaturedProducts();
   }, []);
+
+  const ensureHeroVideoPlays = useCallback(() => {
+    const videoEl = heroVideoRef.current;
+    if (!videoEl) return;
+    const attemptPlay = videoEl.play();
+    if (attemptPlay?.catch) {
+      attemptPlay.catch(() => {
+        videoEl.muted = true;
+        videoEl.setAttribute('muted', '');
+        videoEl.play().catch(() => {});
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    ensureHeroVideoPlays();
+  }, [ensureHeroVideoPlays]);
+
+  useEffect(() => {
+    const resumeOnInteraction = () => ensureHeroVideoPlays();
+    window.addEventListener('pointerdown', resumeOnInteraction, { once: true });
+    document.addEventListener('visibilitychange', resumeOnInteraction);
+    return () => {
+      window.removeEventListener('pointerdown', resumeOnInteraction);
+      document.removeEventListener('visibilitychange', resumeOnInteraction);
+    };
+  }, [ensureHeroVideoPlays]);
 
   const fetchFeaturedProducts = async () => {
     setLoading(true);
@@ -174,12 +207,18 @@ const Home = () => {
         }}
       >
         <video
+          ref={heroVideoRef}
           className="absolute inset-0 w-full h-full object-cover lg:opacity-90"
           autoPlay
           loop
           muted
+          defaultMuted
           playsInline
           preload="auto"
+          onLoadedData={ensureHeroVideoPlays}
+          playsinline="true"
+          webkit-playsinline="true"
+          aria-hidden="true"
         >
           <source src={CLOUDINARY_ASSETS.videos.heroVideo} type="video/mp4" />
         </video>
@@ -215,7 +254,7 @@ const Home = () => {
                 </button>
                 
                 <a
-                  href="https://wa.me/573006851794"
+                  href={advisoryWhatsappLink}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold border border-white/20 rounded-lg px-8 py-3 sm:px-10 sm:py-3 transition-all backdrop-blur-md text-sm sm:text-base"

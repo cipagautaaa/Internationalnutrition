@@ -1,11 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useUI } from '../context/UIContext';
+import { getWhatsappUrl } from '../utils/whatsapp';
 
-const whatsappNumber = '573006851794'; // Reemplaza con tu número
 const defaultMessage = '¡Hola! Necesito asesoría.';
 
 const WhatsappFloatButton = () => {
   const [showMessage, setShowMessage] = useState(false);
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(defaultMessage)}`;
+  const { isMobileMenuOpen } = useUI();
+  const whatsappUrl = useMemo(() => getWhatsappUrl(defaultMessage), []);
+  const containerStyle = useMemo(() => ({
+    position: 'fixed',
+    bottom: '24px',
+    right: '24px',
+    zIndex: 1000,
+    display: isMobileMenuOpen ? 'none' : 'block',
+  }), [isMobileMenuOpen]);
 
   // Abrir automáticamente después de 5 segundos
   useEffect(() => {
@@ -31,7 +40,7 @@ const WhatsappFloatButton = () => {
   };
 
   return (
-    <div style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 1000 }}>
+    <div style={containerStyle}>
       {/* Mensaje popup */}
       {showMessage && (
         <div

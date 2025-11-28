@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
@@ -21,20 +21,31 @@ export default function CategoryCarouselClean() {
   const ref = useRef(null);
   const [adjusting, setAdjusting] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
-  const items = [...BASE, ...BASE, ...BASE];
+  const [isMobile, setIsMobile] = useState(false);
+  const desktopItems = useMemo(() => [...BASE, ...BASE, ...BASE], []);
+  const items = isMobile ? BASE : desktopItems;
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Centrar scroll inicial
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const itemWidth = 240;
-    el.scrollLeft = BASE.length * itemWidth;
-  }, []);
+    el.scrollLeft = isMobile ? 0 : BASE.length * itemWidth;
+  }, [isMobile]);
 
   // Autoscroll suave y continuo
   useEffect(() => {
     const el = ref.current;
-    if (!el || isPaused) return;
+    if (!el || isPaused || isMobile) return;
 
     const scrollSpeed = 1; // Pixels por frame (ajusta para velocidad)
     let animationFrameId;
@@ -53,9 +64,10 @@ export default function CategoryCarouselClean() {
         cancelAnimationFrame(animationFrameId);
       }
     };
-  }, [adjusting, isPaused]);
+  }, [adjusting, isPaused, isMobile]);
 
   const onScroll = () => {
+    if (isMobile) return;
     const el = ref.current;
     if (!el || adjusting) return;
     const itemWidth = 240;
@@ -92,12 +104,14 @@ export default function CategoryCarouselClean() {
           onScroll={onScroll}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
-          className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-4 sm:px-6 lg:px-8" 
+          className={`flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth px-4 sm:px-6 lg:px-8 ${
+            isMobile ? 'snap-x snap-mandatory touch-pan-x' : ''
+          }`} 
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {items.map((cat, idx) => (
-            <Link key={`${cat.id}-${idx}`} to={cat.link} className="flex-shrink-0 w-40 sm:w-48 group cursor-pointer">
-              <div className="relative overflow-hidden rounded-lg bg-gray-100 aspect-[3/4]">
+            <Link key={`${cat.id}-${idx}`} to={cat.link} className={`flex-shrink-0 ${isMobile ? 'w-44' : 'w-40 sm:w-48'} group cursor-pointer snap-center`}>
+              <div className="relative overflow-hidden rounded-2xl bg-gray-100 aspect-[3/4]">
                 <img src={cat.image} alt={cat.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-100" loading="lazy" />
                 {/* Gradiente y texto superpuesto */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />

@@ -1,11 +1,13 @@
 ﻿import React from 'react';
 import { Facebook, Instagram, MessageCircle, Mail, Phone, MapPin, Clock, Shield, Truck, Award, Heart } from 'lucide-react';
+import { getWhatsappUrl } from '../utils/whatsapp';
 // Importamos el SVG correcto solicitado
 import logoImage from '../assets/images/image.png';
 // Icono adicional (corrige la ruta al archivo existente en /images)
 import icono from '../assets/images/Captura_de_pantalla_2025-08-09_192459-removebg-preview.png';       
 
 const Footer = () => {
+  const whatsappLink = getWhatsappUrl('Hola, necesito más información sobre International Nutrition.');
   return (
     <footer className="relative bg-gradient-to-br from-gray-900 via-black to-red-950 text-white overflow-hidden">
       {/* Patrón de fondo animado */}
@@ -150,7 +152,7 @@ const Footer = () => {
                 <a href="#" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 p-2 rounded transition-all duration-300 transform hover:scale-110">
                   <Instagram className="h-6 w-6 text-white" />
                 </a>
-                <a href="https://wa.me/573006851794" target="_blank" rel="noopener noreferrer" className="bg-green-600 hover:bg-green-700 p-2 rounded transition-all duration-300 transform hover:scale-110">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="bg-green-600 hover:bg-green-700 p-2 rounded transition-all duration-300 transform hover:scale-110">
                   <MessageCircle className="h-6 w-6 text-white" />
                 </a>
               </div>

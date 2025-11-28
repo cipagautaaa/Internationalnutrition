@@ -1,12 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
 import { formatPrice } from '../utils/formatPrice';
+import { buildOrderSummaryMessage, getWhatsappUrl } from '../utils/whatsapp';
 
 const PaymentPending = () => {
   const [searchParams] = useSearchParams();
   const [paymentInfo, setPaymentInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  const whatsappSupportLink = useMemo(() => {
+    if (paymentInfo?.items) {
+      return getWhatsappUrl(
+        buildOrderSummaryMessage(paymentInfo, 'Hola, quiero confirmar mi pago pendiente.')
+      );
+    }
+
+    const id = paymentInfo?.id || paymentInfo?._id;
+    const amount = paymentInfo?.transaction_amount || paymentInfo?.totalAmount;
+    const method = getPaymentMethodName(paymentInfo?.payment_method_id || paymentInfo?.paymentMethod);
+    const summary = `Hola, necesito ayuda con un pago pendiente${id ? ` (ID ${id})` : ''} por ${amount ? `$${formatPrice(amount)}` : 'monto desconocido'} mediante ${method}.`;
+    return getWhatsappUrl(summary);
+  }, [paymentInfo]);
 
   useEffect(() => {
     const getPaymentInfo = async () => {
@@ -209,7 +223,7 @@ const PaymentPending = () => {
             <p className="text-gray-500 text-sm">
               ¿Necesitas ayuda con tu pago? 
               <a 
-                href="https://wa.me/1234567890" 
+                href={whatsappSupportLink} 
                 className="text-blue-600 hover:text-blue-800 ml-1"
                 target="_blank"
                 rel="noopener noreferrer"

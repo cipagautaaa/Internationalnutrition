@@ -1,12 +1,17 @@
-﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../services/api';
+import { buildOrderSummaryMessage, getWhatsappUrl } from '../utils/whatsapp';
 
 const OrderConfirmation = () => {
   const { orderId } = useParams();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const whatsappSupportLink = useMemo(
+    () => getWhatsappUrl(buildOrderSummaryMessage(order, 'Hola, necesito ayuda con mi pedido.')),
+    [order]
+  );
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -286,7 +291,7 @@ const OrderConfirmation = () => {
             <p className="text-gray-500 text-sm">
               ¿Necesitas ayuda con tu pedido? 
               <a 
-                href="https://wa.me/1234567890" 
+                href={whatsappSupportLink} 
                 className="text-blue-600 hover:text-blue-800 ml-1"
                 target="_blank"
                 rel="noopener noreferrer"

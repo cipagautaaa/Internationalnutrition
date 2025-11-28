@@ -1,46 +1,49 @@
-﻿import { useAuth } from '../context/AuthContext';
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
-import Alert from '../components/Alert';
-import { 
-  UserCircle, 
-  MapPin, 
-  ShoppingBag, 
-  ShoppingCart,
-  LogOut,
-  PenSquare,
+import {
   CheckCircle,
+  LogOut,
+  MapPin,
+  PenSquare,
+  ShoppingBag,
+  ShoppingCart,
+  UserCircle,
   XCircle,
-  Clock,
-  Mail,
-  Phone,
-  Home,
-  Building,
-  Globe
 } from 'lucide-react';
+import Alert from '../components/Alert';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
+
+const cardBase = 'rounded-[32px] border border-white/10 bg-[#0b0b0b]/90 p-6 sm:p-8 shadow-[0_25px_70px_rgba(0,0,0,0.45)] backdrop-blur';
+const labelBase = 'flex items-center gap-2 text-xs tracking-[0.35em] uppercase text-white/50 mb-3';
+const inputBase = 'w-full rounded-2xl border border-white/10 bg-[#131313] px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-red-500/70';
+
+const regions = [
+  'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá',
+  'Casanare', 'Cauca', 'Cesar', 'Chocó', 'Córdoba', 'Cundinamarca', 'Guainía', 'Guaviare',
+  'Huila', 'La Guajira', 'Magdalena', 'Meta', 'Nariño', 'Norte de Santander', 'Putumayo',
+  'Quindío', 'Risaralda', 'San Andrés y Providencia', 'Santander', 'Sucre', 'Tolima',
+  'Valle del Cauca', 'Vaupés', 'Vichada',
+];
 
 export default function Profile() {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [alert, setAlert] = useState({ show: false, message: '', type: 'info' });
-  
-  // Datos del perfil
+
   const [profile, setProfile] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editingShipping, setEditingShipping] = useState(false);
-  
-  // Formulario de perfil básico
+
   const [profileForm, setProfileForm] = useState({
     firstName: '',
     lastName: '',
-    phone: ''
+    phone: '',
   });
-  
-  // Formulario de información de envío
+
   const [shippingForm, setShippingForm] = useState({
     fullName: '',
     phoneNumber: '',
@@ -49,23 +52,15 @@ export default function Profile() {
     city: '',
     region: '',
     zipCode: '',
-    country: 'Colombia'
+    country: 'Colombia',
   });
-
-  const regions = [
-    'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá', 
-    'Casanare', 'Cauca', 'Cesar', 'Chocó', 'Córdoba', 'Cundinamarca', 'Guainía', 'Guaviare', 
-    'Huila', 'La Guajira', 'Magdalena', 'Meta', 'Nariño', 'Norte de Santander', 'Putumayo', 
-    'Quindío', 'Risaralda', 'San Andrés y Providencia', 'Santander', 'Sucre', 'Tolima', 
-    'Valle del Cauca', 'Vaupés', 'Vichada'
-  ];
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login');
       return;
     }
-    
+
     fetchProfile();
   }, [isAuthenticated]);
 
@@ -73,19 +68,16 @@ export default function Profile() {
     try {
       setLoading(true);
       const response = await api.get('/users/profile');
-      
+
       if (response.data.success) {
         const userData = response.data.user;
         setProfile(userData);
-        
-        // Llenar formulario de perfil básico
         setProfileForm({
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
-          phone: userData.phone || ''
+          phone: userData.phone || '',
         });
-        
-        // Llenar formulario de información de envío
+
         const shipping = userData.shippingInfo || {};
         setShippingForm({
           fullName: shipping.fullName || '',
@@ -95,16 +87,12 @@ export default function Profile() {
           city: shipping.city || '',
           region: shipping.region || '',
           zipCode: shipping.zipCode || '',
-          country: shipping.country || 'Colombia'
+          country: shipping.country || 'Colombia',
         });
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      setAlert({
-        show: true,
-        message: 'Error cargando el perfil',
-        type: 'error'
-      });
+      setAlert({ show: true, message: 'Error cargando el perfil', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -115,22 +103,17 @@ export default function Profile() {
     try {
       setSaving(true);
       const response = await api.put('/users/profile', profileForm);
-      
       if (response.data.success) {
         setProfile(response.data.user);
         setEditing(false);
-        setAlert({
-          show: true,
-          message: 'Perfil actualizado exitosamente',
-          type: 'success'
-        });
+        setAlert({ show: true, message: 'Perfil actualizado', type: 'success' });
       }
     } catch (error) {
       console.error('Error updating profile:', error);
       setAlert({
         show: true,
-        message: error.response?.data?.message || 'Error actualizando el perfil',
-        type: 'error'
+        message: error.response?.data?.message || 'No pudimos guardar los cambios',
+        type: 'error',
       });
     } finally {
       setSaving(false);
@@ -142,25 +125,20 @@ export default function Profile() {
     try {
       setSaving(true);
       const response = await api.put('/users/shipping-info', shippingForm);
-      
       if (response.data.success) {
-        setProfile(prev => ({
+        setProfile((prev) => ({
           ...prev,
-          shippingInfo: response.data.shippingInfo
+          shippingInfo: response.data.shippingInfo,
         }));
         setEditingShipping(false);
-        setAlert({
-          show: true,
-          message: 'Información de envío actualizada exitosamente',
-          type: 'success'
-        });
+        setAlert({ show: true, message: 'Dirección actualizada', type: 'success' });
       }
     } catch (error) {
       console.error('Error updating shipping info:', error);
       setAlert({
         show: true,
-        message: error.response?.data?.message || 'Error actualizando la información de envío',
-        type: 'error'
+        message: error.response?.data?.message || 'No pudimos guardar la dirección',
+        type: 'error',
       });
     } finally {
       setSaving(false);
@@ -172,117 +150,121 @@ export default function Profile() {
     navigate('/');
   };
 
+  const quickActions = [
+    {
+      label: 'Mis pedidos',
+      hint: 'Historial completo',
+      icon: ShoppingBag,
+      action: () => navigate('/orders'),
+    },
+    {
+      label: 'Ver productos',
+      hint: 'Explorar catálogo',
+      icon: ShoppingBag,
+      action: () => navigate('/products'),
+    },
+    {
+      label: 'Mi carrito',
+      hint: 'Resumen de compra',
+      icon: ShoppingCart,
+      action: () => navigate('/cart'),
+    },
+  ];
+
+  const joinDate = profile?.createdAt
+    ? new Date(profile.createdAt).toLocaleDateString('es-CO', { month: 'short', year: 'numeric' })
+    : null;
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center py-20">
-            <div className="relative inline-block">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-blue-200 border-t-blue-600 mx-auto"></div>
-              <UserCircle className="w-8 h-8 text-blue-600 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
-            </div>
-            <p className="text-gray-600 mt-6 text-lg font-medium">Cargando tu perfil...</p>
-          </div>
+      <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-16 w-16 rounded-full border-4 border-white/10 border-t-red-500 animate-spin" />
+          <p className="text-xs tracking-[0.4em] uppercase text-white/40">Cargando perfil</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <Alert 
-          show={alert.show} 
-          message={alert.message} 
+    <div className="min-h-screen bg-[#050505] pt-28 pb-20 px-4 sm:px-6 text-white">
+      <div className="mx-auto max-w-6xl space-y-8">
+        <Alert
+          show={alert.show}
+          message={alert.message}
           type={alert.type}
           onClose={() => setAlert({ show: false, message: '', type: 'info' })}
         />
 
-        {/* Header con avatar */}
-        <div className="mb-8 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+        <section className={`${cardBase} flex flex-col gap-6 md:flex-row md:items-center`}>
+          <div className="flex flex-1 items-center gap-5">
             <div className="relative">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-xl">
-                <UserCircle className="w-16 h-16 text-white" />
+              <div className="h-20 w-20 rounded-full bg-gradient-to-b from-red-600 to-red-900 flex items-center justify-center shadow-[0_20px_45px_rgba(255,0,63,0.5)]">
+                <UserCircle className="h-12 w-12" />
               </div>
               {profile?.isEmailVerified && (
-                <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1.5 shadow-lg">
-                  <CheckCircle className="w-4 h-4 text-white" />
-                </div>
+                <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 p-1.5">
+                  <CheckCircle className="h-4 w-4" />
+                </span>
               )}
             </div>
-            <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                {profile?.firstName && profile?.lastName 
+            <div>
+              <p className="text-xs uppercase tracking-[0.5em] text-white/50 mb-1">Perfil</p>
+              <h1 className="text-3xl font-black">
+                {profile?.firstName && profile?.lastName
                   ? `${profile.firstName} ${profile.lastName}`
-                  : 'Mi Perfil'}
+                  : 'Mi perfil'}
               </h1>
-              <p className="text-gray-600 mb-3 flex items-center justify-center md:justify-start gap-2">
-                <Mail className="w-4 h-4" />
-                {profile?.email}
-              </p>
-              <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                  profile?.isEmailVerified 
-                    ? 'bg-green-100 text-green-800' 
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {profile?.isEmailVerified ? (
-                    <>
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      Email verificado
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="w-4 h-4 mr-1" />
-                      Verificación pendiente
-                    </>
-                  )}
-                </span>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                  <Clock className="w-4 h-4 mr-1" />
-                  Miembro desde {profile?.createdAt ? new Date(profile.createdAt).toLocaleDateString('es-CO', { month: 'short', year: 'numeric' }) : 'N/A'}
-                </span>
+              <div className="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.35em] text-white/50">
+                {profile?.email && <span className="text-white/70">{profile.email}</span>}
+                {joinDate && (
+                  <span className="rounded-full border border-white/10 px-3 py-1">
+                    Miembro · {joinDate}
+                  </span>
+                )}
               </div>
             </div>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <span
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm uppercase tracking-[0.35em] ${
+                profile?.isEmailVerified
+                  ? 'border-emerald-500/40 text-emerald-400'
+                  : 'border-amber-500/40 text-amber-300'
+              }`}
+            >
+              {profile?.isEmailVerified ? 'Email verificado' : 'Verificación pendiente'}
+            </span>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 rounded-2xl bg-red-600 px-6 py-3 text-sm font-semibold uppercase tracking-[0.35em] hover:bg-red-500"
             >
-              <LogOut className="w-5 h-5" />
-              Cerrar Sesión
+              <LogOut className="h-4 w-4" />
+              Salir
             </button>
           </div>
-        </div>
+        </section>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Información básica */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Perfil básico */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-blue-100 rounded-lg">
-                    <UserCircle className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-800">Información Personal</h2>
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <section className={cardBase}>
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.4em] text-white/40">Datos</p>
+                  <h2 className="text-2xl font-black">Información personal</h2>
                 </div>
                 <button
-                  onClick={() => setEditing(!editing)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    editing 
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                      : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
-                  }`}
+                  onClick={() => setEditing((prev) => !prev)}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.35em] text-white/70 hover:text-white"
                 >
                   {editing ? (
                     <>
-                      <XCircle className="w-5 h-5" />
+                      <XCircle className="h-4 w-4" />
                       Cancelar
                     </>
                   ) : (
                     <>
-                      <PenSquare className="w-5 h-5" />
+                      <PenSquare className="h-4 w-4" />
                       Editar
                     </>
                   )}
@@ -290,134 +272,103 @@ export default function Profile() {
               </div>
 
               {editing ? (
-                <form onSubmit={handleProfileSubmit} className="space-y-5">
-                  <div className="grid md:grid-cols-2 gap-5">
+                <form onSubmit={handleProfileSubmit} className="mt-6 space-y-5">
+                  <div className="grid gap-5 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Nombre
-                      </label>
+                      <label className={labelBase}>Nombre</label>
                       <input
                         type="text"
                         value={profileForm.firstName}
-                        onChange={(e) => setProfileForm(prev => ({
-                          ...prev,
-                          firstName: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                        placeholder="Ingresa tu nombre"
+                        onChange={(e) => setProfileForm((prev) => ({ ...prev, firstName: e.target.value }))}
+                        className={inputBase}
+                        placeholder="Nombre"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Apellido
-                      </label>
+                      <label className={labelBase}>Apellido</label>
                       <input
                         type="text"
                         value={profileForm.lastName}
-                        onChange={(e) => setProfileForm(prev => ({
-                          ...prev,
-                          lastName: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                        placeholder="Ingresa tu apellido"
+                        onChange={(e) => setProfileForm((prev) => ({ ...prev, lastName: e.target.value }))}
+                        className={inputBase}
+                        placeholder="Apellido"
                         required
                       />
                     </div>
                   </div>
-                  
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                      <Phone className="w-4 h-4" />
-                      Teléfono
-                    </label>
+                    <label className={labelBase}>Teléfono</label>
                     <input
                       type="tel"
                       value={profileForm.phone}
-                      onChange={(e) => setProfileForm(prev => ({
-                        ...prev,
-                        phone: e.target.value
-                      }))}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
-                      placeholder="Ej: +57 300 123 4567"
+                      onChange={(e) => setProfileForm((prev) => ({ ...prev, phone: e.target.value }))}
+                      className={inputBase}
+                      placeholder="+57 300 123 4567"
                       required
                     />
                   </div>
-
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex flex-wrap gap-3 pt-2">
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2 rounded-2xl bg-red-600/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.35em] hover:bg-red-600 disabled:opacity-50"
                     >
-                      <CheckCircle className="w-5 h-5" />
-                      {saving ? 'Guardando...' : 'Guardar Cambios'}
+                      <CheckCircle className="h-4 w-4" />
+                      {saving ? 'Guardando' : 'Guardar cambios'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditing(false)}
-                      className="flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition-all duration-200 font-semibold"
+                      className="inline-flex items-center gap-2 rounded-2xl border border-white/10 px-6 py-3 text-sm uppercase tracking-[0.35em] text-white/60 hover:text-white"
                     >
-                      <XCircle className="w-5 h-5" />
+                      <XCircle className="h-4 w-4" />
                       Cancelar
                     </button>
                   </div>
                 </form>
               ) : (
-                <div className="space-y-5">
-                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-100">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Mail className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm font-semibold text-gray-700">Email</span>
-                    </div>
-                    <p className="font-medium text-gray-900 text-lg">{profile?.email}</p>
+                <div className="mt-6 space-y-4">
+                  <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
+                    <p className="text-xs uppercase tracking-[0.3em] text-white/40">Email</p>
+                    <p className="text-lg font-semibold">{profile?.email}</p>
                   </div>
-                  <div className="grid md:grid-cols-2 gap-5">
-                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                      <span className="text-sm font-semibold text-gray-600 block mb-2">Nombre</span>
-                      <p className="font-medium text-gray-900 text-lg">{profile?.firstName || 'No especificado'}</p>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="rounded-2xl border border-white/5 bg-[#0f0f0f] p-4">
+                      <p className="text-xs uppercase tracking-[0.3em] text-white/40">Nombre</p>
+                      <p className="text-lg font-semibold">{profile?.firstName || 'No especificado'}</p>
                     </div>
-                    <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                      <span className="text-sm font-semibold text-gray-600 block mb-2">Apellido</span>
-                      <p className="font-medium text-gray-900 text-lg">{profile?.lastName || 'No especificado'}</p>
+                    <div className="rounded-2xl border border-white/5 bg-[#0f0f0f] p-4">
+                      <p className="text-xs uppercase tracking-[0.3em] text-white/40">Apellido</p>
+                      <p className="text-lg font-semibold">{profile?.lastName || 'No especificado'}</p>
                     </div>
                   </div>
-                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Phone className="w-5 h-5 text-gray-600" />
-                      <span className="text-sm font-semibold text-gray-600">Teléfono</span>
-                    </div>
-                    <p className="font-medium text-gray-900 text-lg">{profile?.phone || 'No especificado'}</p>
+                  <div className="rounded-2xl border border-white/5 bg-[#0f0f0f] p-4">
+                    <p className="text-xs uppercase tracking-[0.3em] text-white/40">Teléfono</p>
+                    <p className="text-lg font-semibold">{profile?.phone || 'No especificado'}</p>
                   </div>
                 </div>
               )}
-            </div>
+            </section>
 
-            {/* Información de envío */}
-            <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <div className="flex justify-between items-center mb-6">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 bg-green-100 rounded-lg">
-                    <MapPin className="w-6 h-6 text-green-600" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-gray-800">Información de Envío</h2>
+            <section className={cardBase}>
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.4em] text-white/40">Direcciones</p>
+                  <h2 className="text-2xl font-black">Información de envío</h2>
                 </div>
                 <button
-                  onClick={() => setEditingShipping(!editingShipping)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    editingShipping 
-                      ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' 
-                      : 'bg-green-50 text-green-600 hover:bg-green-100'
-                  }`}
+                  onClick={() => setEditingShipping((prev) => !prev)}
+                  className="inline-flex items-center gap-2 rounded-2xl border border-white/10 px-4 py-2 text-xs uppercase tracking-[0.35em] text-white/70 hover:text-white"
                 >
                   {editingShipping ? (
                     <>
-                      <XCircle className="w-5 h-5" />
+                      <XCircle className="h-4 w-4" />
                       Cancelar
                     </>
                   ) : (
                     <>
-                      <PenSquare className="w-5 h-5" />
+                      <PenSquare className="h-4 w-4" />
                       Editar
                     </>
                   )}
@@ -425,329 +376,229 @@ export default function Profile() {
               </div>
 
               {editingShipping ? (
-                <form onSubmit={handleShippingSubmit} className="space-y-5">
-                  <div className="grid md:grid-cols-2 gap-5">
+                <form onSubmit={handleShippingSubmit} className="mt-6 space-y-5">
+                  <div className="grid gap-5 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <UserCircle className="w-4 h-4" />
-                        Nombre completo *
-                      </label>
+                      <label className={labelBase}>Nombre completo</label>
                       <input
                         type="text"
                         value={shippingForm.fullName}
-                        onChange={(e) => setShippingForm(prev => ({
-                          ...prev,
-                          fullName: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                        onChange={(e) => setShippingForm((prev) => ({ ...prev, fullName: e.target.value }))}
+                        className={inputBase}
                         placeholder="Nombre de quien recibe"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <Phone className="w-4 h-4" />
-                        Teléfono *
-                      </label>
+                      <label className={labelBase}>Teléfono</label>
                       <input
                         type="tel"
                         value={shippingForm.phoneNumber}
-                        onChange={(e) => setShippingForm(prev => ({
-                          ...prev,
-                          phoneNumber: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                        onChange={(e) => setShippingForm((prev) => ({ ...prev, phoneNumber: e.target.value }))}
+                        className={inputBase}
                         placeholder="+57 300 123 4567"
                         required
                       />
                     </div>
                   </div>
-
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                      <Home className="w-4 h-4" />
-                      Dirección principal *
-                    </label>
+                    <label className={labelBase}>Dirección principal</label>
                     <input
                       type="text"
                       value={shippingForm.street}
-                      onChange={(e) => setShippingForm(prev => ({
-                        ...prev,
-                        street: e.target.value
-                      }))}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                      placeholder="Calle 123 #45-67, Barrio Centro"
+                      onChange={(e) => setShippingForm((prev) => ({ ...prev, street: e.target.value }))}
+                      className={inputBase}
+                      placeholder="Calle 123 #45-67"
                       required
                     />
                   </div>
-
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                      <Building className="w-4 h-4" />
-                      Complemento de dirección
-                    </label>
+                    <label className={labelBase}>Complemento</label>
                     <input
                       type="text"
                       value={shippingForm.addressLine2}
-                      onChange={(e) => setShippingForm(prev => ({
-                        ...prev,
-                        addressLine2: e.target.value
-                      }))}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                      placeholder="Apartamento 301, Torre A (opcional)"
+                      onChange={(e) => setShippingForm((prev) => ({ ...prev, addressLine2: e.target.value }))}
+                      className={inputBase}
+                      placeholder="Apartamento, torre, referencia"
                     />
                   </div>
-
-                  <div className="grid md:grid-cols-2 gap-5">
+                  <div className="grid gap-5 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Ciudad *
-                      </label>
+                      <label className={labelBase}>Ciudad</label>
                       <input
                         type="text"
                         value={shippingForm.city}
-                        onChange={(e) => setShippingForm(prev => ({
-                          ...prev,
-                          city: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
-                        placeholder="Ej: Bogotá"
+                        onChange={(e) => setShippingForm((prev) => ({ ...prev, city: e.target.value }))}
+                        className={inputBase}
+                        placeholder="Bogotá"
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Departamento *
-                      </label>
+                      <label className={labelBase}>Departamento</label>
                       <select
                         value={shippingForm.region}
-                        onChange={(e) => setShippingForm(prev => ({
-                          ...prev,
-                          region: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 bg-white"
+                        onChange={(e) => setShippingForm((prev) => ({ ...prev, region: e.target.value }))}
+                        className={`${inputBase} bg-[#131313]`}
                         required
                       >
-                        <option value="">Seleccionar departamento</option>
-                        {regions.map(region => (
-                          <option key={region} value={region}>{region}</option>
+                        <option value="">Selecciona un departamento</option>
+                        {regions.map((region) => (
+                          <option key={region} value={region}>
+                            {region}
+                          </option>
                         ))}
                       </select>
                     </div>
                   </div>
-
-                  <div className="grid md:grid-cols-2 gap-5">
+                  <div className="grid gap-5 md:grid-cols-2">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Código postal
-                      </label>
+                      <label className={labelBase}>Código postal</label>
                       <input
                         type="text"
                         value={shippingForm.zipCode}
-                        onChange={(e) => setShippingForm(prev => ({
-                          ...prev,
-                          zipCode: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                        onChange={(e) => setShippingForm((prev) => ({ ...prev, zipCode: e.target.value }))}
+                        className={inputBase}
                         placeholder="110111"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                        <Globe className="w-4 h-4" />
-                        País *
-                      </label>
+                      <label className={labelBase}>País</label>
                       <input
                         type="text"
                         value={shippingForm.country}
-                        onChange={(e) => setShippingForm(prev => ({
-                          ...prev,
-                          country: e.target.value
-                        }))}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200"
+                        onChange={(e) => setShippingForm((prev) => ({ ...prev, country: e.target.value }))}
+                        className={inputBase}
                         placeholder="Colombia"
                         required
                       />
                     </div>
                   </div>
-
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex flex-wrap gap-3 pt-2">
                     <button
                       type="submit"
                       disabled={saving}
-                      className="flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      className="inline-flex items-center gap-2 rounded-2xl bg-red-600/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.35em] hover:bg-red-600 disabled:opacity-50"
                     >
-                      <CheckCircle className="w-5 h-5" />
-                      {saving ? 'Guardando...' : 'Guardar Información'}
+                      <CheckCircle className="h-4 w-4" />
+                      {saving ? 'Guardando' : 'Guardar información'}
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditingShipping(false)}
-                      className="flex items-center gap-2 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-300 transition-all duration-200 font-semibold"
+                      className="inline-flex items-center gap-2 rounded-2xl border border-white/10 px-6 py-3 text-sm uppercase tracking-[0.35em] text-white/60 hover:text-white"
                     >
-                      <XCircle className="w-5 h-5" />
+                      <XCircle className="h-4 w-4" />
                       Cancelar
                     </button>
                   </div>
                 </form>
               ) : (
-                <div className="space-y-5">
+                <div className="mt-6 space-y-5">
                   {profile?.shippingInfo?.fullName ? (
                     <>
-                      <div className="grid md:grid-cols-2 gap-5">
-                        <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
-                          <div className="flex items-center gap-2 mb-2">
-                            <UserCircle className="w-5 h-5 text-green-600" />
-                            <span className="text-sm font-semibold text-gray-700">Nombre completo</span>
-                          </div>
-                          <p className="font-medium text-gray-900 text-lg">{profile.shippingInfo.fullName}</p>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
+                          <p className="text-xs uppercase tracking-[0.3em] text-white/40">Nombre completo</p>
+                          <p className="text-lg font-semibold">{profile.shippingInfo.fullName}</p>
                         </div>
-                        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Phone className="w-5 h-5 text-blue-600" />
-                            <span className="text-sm font-semibold text-gray-700">Teléfono</span>
-                          </div>
-                          <p className="font-medium text-gray-900 text-lg">{profile.shippingInfo.phoneNumber}</p>
+                        <div className="rounded-2xl border border-white/5 bg-white/5 p-4">
+                          <p className="text-xs uppercase tracking-[0.3em] text-white/40">Teléfono</p>
+                          <p className="text-lg font-semibold">{profile.shippingInfo.phoneNumber}</p>
                         </div>
                       </div>
-                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-5 border border-purple-200">
-                        <div className="flex items-center gap-2 mb-3">
-                          <MapPin className="w-6 h-6 text-purple-600" />
-                          <span className="text-sm font-semibold text-gray-700">Dirección completa</span>
+                      <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-[#111111] to-[#080808] p-5">
+                        <div className="mb-3 flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/50">
+                          <MapPin className="h-4 w-4" /> Dirección completa
                         </div>
-                        <p className="font-medium text-gray-900 text-base mb-1">{profile.shippingInfo.street}</p>
+                        <p className="text-lg font-semibold">{profile.shippingInfo.street}</p>
                         {profile.shippingInfo.addressLine2 && (
-                          <p className="text-gray-600 text-sm">{profile.shippingInfo.addressLine2}</p>
+                          <p className="text-sm text-white/70">{profile.shippingInfo.addressLine2}</p>
                         )}
-                        <div className="flex flex-wrap gap-2 mt-3">
-                          <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
-                            {profile.shippingInfo.city}
-                          </span>
-                          <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
-                            {profile.shippingInfo.region}
-                          </span>
-                          {profile.shippingInfo.zipCode && (
-                            <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
-                              CP: {profile.shippingInfo.zipCode}
-                            </span>
-                          )}
-                          <span className="px-3 py-1 bg-white rounded-full text-sm font-medium text-gray-700 border border-gray-200">
-                            {profile.shippingInfo.country || 'Colombia'}
-                          </span>
+                        <div className="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.2em] text-white/60">
+                          {[profile.shippingInfo.city, profile.shippingInfo.region, profile.shippingInfo.zipCode ? `CP ${profile.shippingInfo.zipCode}` : null, profile.shippingInfo.country || 'Colombia']
+                            .filter(Boolean)
+                            .map((pill) => (
+                              <span key={pill} className="rounded-full border border-white/10 px-3 py-1">
+                                {pill}
+                              </span>
+                            ))}
                         </div>
                       </div>
                     </>
                   ) : (
-                    <div className="text-center py-12">
-                      <div className="inline-flex p-4 bg-gray-100 rounded-full mb-4">
-                        <MapPin className="w-12 h-12 text-gray-400" />
+                    <div className="py-10 text-center">
+                      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-white/20">
+                        <MapPin className="h-6 w-6 text-white/40" />
                       </div>
-                      <h3 className="text-xl font-bold text-gray-800 mb-2">Sin dirección de envío</h3>
-                      <p className="text-gray-600 mb-6 max-w-md mx-auto">Agrega tu información de envío para facilitar tus compras futuras</p>
+                      <p className="text-sm text-white/60">Aún no has registrado una dirección de envío.</p>
                       <button
                         onClick={() => setEditingShipping(true)}
-                        className="inline-flex items-center gap-2 bg-gradient-to-r from-green-600 to-green-700 text-white px-8 py-3 rounded-xl hover:from-green-700 hover:to-green-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                        className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-white/10 px-5 py-3 text-xs uppercase tracking-[0.35em] text-white hover:bg-white/5"
                       >
-                        <MapPin className="w-5 h-5" />
-                        Agregar Información de Envío
+                        <MapPin className="h-4 w-4" />
+                        Agregar información
                       </button>
                     </div>
                   )}
                 </div>
               )}
-            </div>
+            </section>
           </div>
 
-          {/* Panel lateral */}
-          <div className="space-y-6">
-            {/* Accesos rápidos */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-              <h3 className="text-xl font-bold text-gray-800 mb-5 flex items-center gap-2">
-                <div className="p-1.5 bg-purple-100 rounded-lg">
-                  <ShoppingBag className="w-5 h-5 text-purple-600" />
-                </div>
-                Accesos Rápidos
-              </h3>
-              <div className="space-y-3">
-                <button
-                  onClick={() => navigate('/orders')}
-                  className="w-full group p-4 hover:bg-gradient-to-r hover:from-blue-50 hover:to-blue-100 rounded-xl transition-all duration-200 flex items-center justify-between border-2 border-transparent hover:border-blue-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
-                      <ShoppingBag className="w-5 h-5 text-blue-600" />
+          <aside className="space-y-6">
+            <section className={cardBase}>
+              <p className="text-xs uppercase tracking-[0.4em] text-white/40">Accesos</p>
+              <div className="mt-4 space-y-3">
+                {quickActions.map(({ label, hint, icon: Icon, action }) => (
+                  <button
+                    key={label}
+                    onClick={action}
+                    className="flex w-full items-center justify-between rounded-2xl border border-white/5 bg-white/0 px-4 py-3 text-left transition hover:bg-white/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <div>
+                        <p className="text-base font-semibold">{label}</p>
+                        <p className="text-xs text-white/50">{hint}</p>
+                      </div>
                     </div>
-                    <span className="font-semibold text-gray-700 group-hover:text-blue-700">Mis Pedidos</span>
-                  </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => navigate('/products')}
-                  className="w-full group p-4 hover:bg-gradient-to-r hover:from-green-50 hover:to-green-100 rounded-xl transition-all duration-200 flex items-center justify-between border-2 border-transparent hover:border-green-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-100 rounded-lg group-hover:bg-green-200 transition-colors">
-                      <ShoppingBag className="w-5 h-5 text-green-600" />
-                    </div>
-                    <span className="font-semibold text-gray-700 group-hover:text-green-700">Ver Productos</span>
-                  </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-green-600 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => navigate('/cart')}
-                  className="w-full group p-4 hover:bg-gradient-to-r hover:from-purple-50 hover:to-purple-100 rounded-xl transition-all duration-200 flex items-center justify-between border-2 border-transparent hover:border-purple-200"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-100 rounded-lg group-hover:bg-purple-200 transition-colors">
-                      <ShoppingCart className="w-5 h-5 text-purple-600" />
-                    </div>
-                    <span className="font-semibold text-gray-700 group-hover:text-purple-700">Mi Carrito</span>
-                  </div>
-                  <svg className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transform group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
+                    <svg className="h-4 w-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                ))}
               </div>
-            </div>
+            </section>
 
-            {/* Estadísticas de usuario (nueva sección) */}
-            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg p-6 text-white">
-              <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                <div className="p-1.5 bg-white/20 rounded-lg">
-                  <ShoppingBag className="w-5 h-5" />
+            <section className={`${cardBase} bg-gradient-to-br from-[#111111] to-[#070707]`}>
+              <p className="text-xs uppercase tracking-[0.4em] text-white/40">Actividad</p>
+              <div className="mt-4 grid grid-cols-2 gap-4">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-3xl font-black">0</p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.3em] text-white/50">Pedidos</p>
                 </div>
-                Tu Actividad
-              </h3>
-              <div className="space-y-4">
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <div className="text-3xl font-bold mb-1">0</div>
-                  <div className="text-sm opacity-90">Pedidos realizados</div>
-                </div>
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                  <div className="text-3xl font-bold mb-1">$0</div>
-                  <div className="text-sm opacity-90">Total comprado</div>
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                  <p className="text-3xl font-black">$0</p>
+                  <p className="mt-2 text-xs uppercase tracking-[0.3em] text-white/50">Total</p>
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* Ayuda y soporte */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4">¿Necesitas ayuda?</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Estamos aquí para ayudarte con cualquier pregunta o problema que tengas.
-              </p>
+            <section className={cardBase}>
+              <p className="text-xs uppercase tracking-[0.4em] text-white/40">Soporte</p>
+              <h3 className="mt-3 text-2xl font-black">¿Necesitas ayuda?</h3>
+              <p className="mt-2 text-sm text-white/60">Escríbenos y te guiamos en minutos.</p>
               <button
                 onClick={() => navigate('/contact')}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                className="mt-6 w-full rounded-2xl border border-white/10 px-5 py-3 text-sm uppercase tracking-[0.35em] text-white hover:bg-white/5"
               >
-                Contactar Soporte
+                Contactar soporte
               </button>
-            </div>
-          </div>
+            </section>
+          </aside>
         </div>
       </div>
     </div>

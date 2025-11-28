@@ -10,85 +10,57 @@ function ComboCard({ combo }) {
   const imageSrc = combo?.image || combo?.imageUrl || combo?.cover || combo?.images?.[0] || '';
 
   return (
-    <div className="group relative flex flex-col h-full bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_20px_60px_rgba(220,38,38,0.3)] hover:border-red-700 transition-all duration-500 hover:-translate-y-2">
+    <div className="group relative flex flex-col h-full bg-white border-2 border-gray-300 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:border-red-700 transition-all duration-300 hover:-translate-y-1">
       <Link to={`/combo/${combo._id || combo.id}`} className="flex-1 flex flex-col">
-        {/* Imagen */}
         <div className={`relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center`}>
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_55%)] pointer-events-none" />
           <img
-            className={`${PRODUCT_IMAGE_BASE} p-4 sm:p-6 group-hover:scale-110 transition-transform duration-500 relative z-10 drop-shadow-md`}
+            className={`${PRODUCT_IMAGE_BASE} p-3 sm:p-5 group-hover:scale-105 transition-transform duration-500 relative z-10 drop-shadow-md`}
             src={imageSrc || '/placeholder-product.png'}
             alt={combo.name}
+            loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 hidden sm:flex items-center justify-center">
-            <span className="transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl shadow-xl">
-              Ver Detalle
-            </span>
-          </div>
         </div>
 
-        <div className="h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent relative">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent"></div>
-        </div>
-
-        <div className="flex flex-col flex-1 p-4 sm:p-5 bg-gradient-to-b from-white to-gray-50/30 gap-4">
-          <div className="flex items-center gap-2 mb-2">
-            <div className="h-0.5 w-6 bg-gradient-to-r from-red-700 to-red-700 rounded-full"></div>
-            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">Combo {combo.category}</p>
+        <div className="flex flex-col flex-1 p-3 sm:p-5 gap-3 bg-gradient-to-b from-white to-gray-50/40">
+          <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+            <span className="inline-flex h-1 w-6 rounded-full bg-gradient-to-r from-red-700 to-red-700" />
+            <span>Combo {combo.category}</span>
           </div>
 
-          <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 group-hover:text-red-700 transition-colors min-h-[2.4rem] sm:min-h-[2.8rem] leading-tight">
+          <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 group-hover:text-red-700 transition-colors">
             {combo.name}
           </h3>
 
-          <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">{combo.description}</p>
+          <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
+            {combo.description}
+          </p>
 
-          <div className="flex items-baseline gap-2 flex-wrap mt-auto">
-            {combo.originalPrice && combo.originalPrice > combo.price ? (
-              <>
-                <span className="text-xl sm:text-2xl font-black bg-gradient-to-r from-red-700 to-red-700 bg-clip-text text-transparent">
-                  ${formatPrice(combo.price)}
-                </span>
+          <div className="flex items-center justify-between mt-auto pt-2">
+            <div className="flex items-baseline gap-1.5 flex-wrap">
+              <span className="text-xl font-black text-gray-900">${formatPrice(combo.price)}</span>
+              {combo.originalPrice && combo.originalPrice > combo.price && (
                 <span className="text-xs text-gray-400 line-through font-medium">${formatPrice(combo.originalPrice)}</span>
-                <span className="bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-lg shadow-sm">
-                  -{Math.round(((combo.originalPrice - combo.price) / combo.originalPrice) * 100)}%
-                </span>
-              </>
-            ) : (
-              <span className="text-xl sm:text-2xl font-black text-gray-900">${formatPrice(combo.price)}</span>
-            )}
+              )}
+            </div>
+            <button
+              type="button"
+              disabled={!combo.inStock}
+              className={`w-11 h-11 flex items-center justify-center rounded-xl border text-sm font-semibold transition-all ${
+                combo.inStock
+                  ? 'border-gray-300 text-red-700 hover:bg-red-50'
+                  : 'border-gray-200 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              <ShoppingCart className="w-5 h-5" />
+            </button>
           </div>
 
           {!combo.inStock && (
-            <div className="px-3 py-1.5 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-xs font-semibold text-red-700">Sin stock disponible</p>
-            </div>
+            <p className="text-[11px] font-semibold text-red-600">Sin stock disponible</p>
           )}
         </div>
       </Link>
-
-      <button
-        disabled={!combo.inStock}
-        className={`w-full flex items-center justify-center gap-2 font-bold text-sm py-2.5 px-4 rounded-none border-t transition-all duration-300 ${
-          combo.inStock
-            ? 'bg-gradient-to-r from-red-700 to-red-700 hover:from-red-700 hover:to-red-700 text-white shadow-inner'
-            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-        }`}
-      >
-        {combo.inStock ? (
-          <>
-            <ShoppingCart className="w-5 h-5" />
-            Agregar al Carrito
-          </>
-        ) : (
-          <>
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Agotado
-          </>
-        )}
-      </button>
     </div>
   );
 }

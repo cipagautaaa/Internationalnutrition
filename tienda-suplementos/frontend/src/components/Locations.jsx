@@ -5,6 +5,7 @@ import tiendaTunja from '../assets/images/tiendatunja.jpg';
 import entradaTunja from '../assets/images/entradatunja.jpg';
 import tiendaDuitama from '../assets/images/tiendaduitama.jpg';
 import entradaDuitama from '../assets/images/entradaduitama.jpg';
+import { getWhatsappUrl } from '../utils/whatsapp';
 
 const Locations = () => {
   const [selectedLocation, setSelectedLocation] = useState(0);
@@ -71,7 +72,8 @@ const Locations = () => {
   }
 
   const openWhatsApp = () => {
-    window.open(`https://wa.me/${currentLocation.whatsapp.replace(/\D/g, '')}?text=Hola! Me interesa conocer más sobre sus productos.`, '_blank');
+    const message = 'Hola, me interesa conocer más sobre sus productos.';
+    window.open(getWhatsappUrl(message, currentLocation.whatsapp), '_blank');
   };
 
   const openMaps = () => {

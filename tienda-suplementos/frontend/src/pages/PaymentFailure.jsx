@@ -1,11 +1,18 @@
-﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import api from '../services/api';
+import { getWhatsappUrl } from '../utils/whatsapp';
 
 const PaymentFailure = () => {
   const [searchParams] = useSearchParams();
   const [errorDetails, setErrorDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const whatsappSupportLink = useMemo(() => {
+    const id = errorDetails?.id;
+    const reason = errorDetails?.status_detail ? getErrorMessage(errorDetails.status_detail) : '';
+    const summary = `Hola, mi pago fue rechazado${id ? ` (ID ${id})` : ''}${reason ? ` (${reason})` : ''}. ¿Me ayudas a completarlo por WhatsApp?`;
+    return getWhatsappUrl(summary);
+  }, [errorDetails]);
 
   useEffect(() => {
     const getErrorDetails = async () => {
@@ -144,7 +151,7 @@ const PaymentFailure = () => {
             <p className="text-gray-500 text-sm">
               ¿Sigues teniendo problemas? 
               <a 
-                href="https://wa.me/1234567890" 
+                href={whatsappSupportLink} 
                 className="text-blue-600 hover:text-blue-800 ml-1"
                 target="_blank"
                 rel="noopener noreferrer"
