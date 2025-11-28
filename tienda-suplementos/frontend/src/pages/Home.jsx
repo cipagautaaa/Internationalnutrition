@@ -10,6 +10,7 @@ import HomeComboSection from '../components/HomeComboSection';
 import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 import { CLOUDINARY_ASSETS } from '../config/cloudinaryAssets';
+import bannerPromoFallback from '../assets/images/foto2.jpg';
 
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
@@ -25,6 +26,8 @@ const Home = () => {
     { name: 'Sede Tunja', video: CLOUDINARY_ASSETS.videos.videoTunja, type: 'video' },
     { name: 'Sede Duitama', video: CLOUDINARY_ASSETS.videos.videoDuitama, type: 'video' }
   ];
+
+  const promoImageSrc = CLOUDINARY_ASSETS.images?.foto2 || bannerPromoFallback;
 
   const faqs = [
     {
@@ -358,7 +361,17 @@ const Home = () => {
       
       {/* Imagen foto2 */}
       <section className="w-full">
-        <img src={CLOUDINARY_ASSETS.images.foto2} alt="Banner promocional" className="w-full h-auto object-cover" />
+        <img
+          src={promoImageSrc}
+          onError={(event) => {
+            if (event.currentTarget.src !== bannerPromoFallback) {
+              event.currentTarget.src = bannerPromoFallback;
+            }
+          }}
+          alt="Banner promocional"
+          className="w-full h-auto object-cover"
+          loading="lazy"
+        />
       </section>
       
       {/* Carrusel de Categorías */}
