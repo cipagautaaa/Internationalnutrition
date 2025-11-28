@@ -5,6 +5,10 @@ import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '../utils/formatPrice';
 import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 
+// Tarjeta individual de combo en el listado.
+function ComboCard({ combo }) {
+  const imageSrc = combo?.image || combo?.imageUrl || combo?.cover || combo?.images?.[0] || '';
+
   return (
     <div className="group relative flex flex-col h-full bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:shadow-[0_20px_60px_rgba(220,38,38,0.3)] hover:border-red-700 transition-all duration-500 hover:-translate-y-2">
       <Link to={`/combo/${combo._id || combo.id}`} className="flex-1 flex flex-col">
@@ -87,12 +91,7 @@ import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses
       </button>
     </div>
   );
-          )}
-        </button>
-      </div>
-    </div>
-  );
-};
+}
 
 export default function ComboList({ category }) {
   const [combos, setCombos] = useState([]);
