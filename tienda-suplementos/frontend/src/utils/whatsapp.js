@@ -1,4 +1,5 @@
 const DEFAULT_WHATSAPP_NUMBER = '573006851794';
+const WHATSAPP_BASE_URL = 'https://wa.me';
 
 const sanitizeNumber = (number) => {
   if (!number) return DEFAULT_WHATSAPP_NUMBER;
@@ -6,15 +7,12 @@ const sanitizeNumber = (number) => {
 };
 
 export const getWhatsappUrl = (message, number = DEFAULT_WHATSAPP_NUMBER) => {
-  // Asegurar que el mensaje tenga contenido
   const text = message && message.trim() ? message.trim() : 'Hola, necesito asesoría.';
   const phone = sanitizeNumber(number);
-  
-  // Usar api.whatsapp.com para mejor compatibilidad con mensajes largos
-  // Formato: https://api.whatsapp.com/send?phone=NUMERO&text=MENSAJE
-  const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
-  
-  return url;
+  const encoded = encodeURIComponent(text);
+
+  // type=phone_number y app_absent forzan apertura correcta en móviles y escritorio
+  return `${WHATSAPP_BASE_URL}/${phone}?text=${encoded}&type=phone_number&app_absent=0`;
 };
 
 export const buildOrderSummaryMessage = (order, prefix = 'Hola, necesito ayuda con mi pedido') => {
