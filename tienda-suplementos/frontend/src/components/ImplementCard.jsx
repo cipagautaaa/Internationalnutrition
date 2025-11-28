@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
+import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 
 const ImplementCard = ({ implement }) => {
   const [selectedSize, setSelectedSize] = useState(implement.sizes?.[0] || null);
@@ -44,12 +45,12 @@ const ImplementCard = ({ implement }) => {
     <div className="group relative bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-[0_2px_8px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_12px_rgba(220,38,38,0.15)] hover:border-red-700 transition-all duration-500 hover:-translate-y-2 flex flex-col h-full">
       
       {/* Imagen del implemento */}
-      <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 aspect-square overflow-hidden">
+      <div className={`relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center overflow-hidden`}>
         {optimizedImage && !imageError ? (
           <img 
             src={optimizedImage} 
             alt={implement.name}
-            className={`w-full h-full object-contain p-2 sm:p-4 transition-all duration-300 ${imageLoaded ? 'group-hover:scale-105' : ''}`}
+            className={`${PRODUCT_IMAGE_BASE} p-2 sm:p-4 transition-all duration-300 ${imageLoaded ? 'group-hover:scale-105' : ''}`}
             onLoad={() => setImageLoaded(true)}
             onError={() => {
               setImageError(true);

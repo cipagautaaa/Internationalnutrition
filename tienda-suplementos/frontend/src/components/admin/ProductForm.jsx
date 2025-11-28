@@ -28,13 +28,13 @@ const CATEGORY_TYPES = {
 };
 
 // editingMode: boolean indica si estamos editando un producto existente.
-// categoryLocked: boolean indica si la categor�a est� pre-seleccionada y no debe ser editable (desde panel de categor�a/subcategor�a)
+// categoryLocked: boolean indica si la categoría está preseleccionada y no debe ser editable (desde panel de categoría/subcategoría)
 export default function ProductForm({ initialValue, onCancel, onSave, saving, editingMode, categoryLocked = false }) {
   const shapeVariants = (variants) => {
     if (!Array.isArray(variants)) return [];
     
     return variants.map(v => {
-      // Asegurar que TODAS las propiedades necesarias est�n presentes
+      // Asegurar que TODAS las propiedades necesarias estén presentes
       const shaped = {
         _id: v._id || v.id, // Algunos pueden venir como 'id'
         name: v.name || '',
@@ -153,11 +153,11 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     // Validar tipo de archivo
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      setImageError('Solo se permiten im�genes (jpeg, jpg, png, gif, webp)');
+      setImageError('Solo se permiten imágenes (jpeg, jpg, png, gif, webp)');
       return;
     }
 
-    // Validar tama�o (5MB)
+    // Validar tamaño (5MB)
     if (file.size > 5 * 1024 * 1024) {
       setImageError('La imagen no debe superar los 5MB');
       return;
@@ -187,11 +187,11 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     // Validar tipo de archivo
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
     if (!validTypes.includes(file.type)) {
-      setVariantImageError({ ...variantImageError, [idx]: 'Solo se permiten im�genes (jpeg, jpg, png, gif, webp)' });
+      setVariantImageError({ ...variantImageError, [idx]: 'Solo se permiten imágenes (jpeg, jpg, png, gif, webp)' });
       return;
     }
 
-    // Validar tama�o (5MB)
+    // Validar tamaño (5MB)
     if (file.size > 5 * 1024 * 1024) {
       setVariantImageError({ ...variantImageError, [idx]: 'La imagen no debe superar los 5MB' });
       return;
@@ -246,8 +246,8 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     
     console.log('?? SUBMIT - Form.variants original:', JSON.parse(JSON.stringify(form.variants)));
     
-    // CR�TICO: Mantener TODAS las variantes que tienen _id (existentes en BD)
-    // Solo filtrar las nuevas que no tienen datos v�lidos
+    // CRÍTICO: Mantener TODAS las variantes que tienen _id (existentes en BD)
+    // Solo filtrar las nuevas que no tienen datos válidos
     const cleanVariants = (form.variants || [])
       .map(v => {
         const cleaned = {
@@ -256,7 +256,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
           name: (v.name || '').trim(),
           description: (v.description || '').trim(),
           image: (v.image || '').trim(),
-          // Asegurar que price sea un n�mero v�lido
+          // Asegurar que price sea un número válido
           price: (v.price !== undefined && v.price !== null && v.price !== '') ? Number(v.price) : 0,
           originalPrice: (v.originalPrice !== undefined && v.originalPrice !== null && v.originalPrice !== '') ? v.originalPrice : '',
           inStock: v.inStock !== false
@@ -267,7 +267,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
       .filter(v => {
         // Si tiene _id (existe en BD), SIEMPRE incluirla
         if (v._id) {
-          // Validar que tenga los campos m�nimos requeridos
+          // Validar que tenga los campos mínimos requeridos
           const hasRequiredFields = v.size && !isNaN(Number(v.price));
           if (!hasRequiredFields) {
             console.error(`? ERROR: Variante existente ${v._id} no tiene campos requeridos:`, v);
@@ -279,9 +279,9 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
         // Para variantes nuevas (sin _id), validar que tengan datos completos
         const isValid = v.size && v.price !== undefined && v.price !== null && !isNaN(Number(v.price));
         if (isValid) {
-          console.log(`? Incluyendo variante nueva v�lida:`, v);
+          console.log(`? Incluyendo variante nueva válida:`, v);
         } else {
-          console.log(`?? Excluyendo variante nueva sin datos v�lidos:`, v);
+          console.log(`?? Excluyendo variante nueva sin datos válidos:`, v);
         }
         return isValid;
       });
@@ -320,13 +320,13 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      {/* Informaci�n B�sica */}
+      {/* Información Básica */}
       <div className=" rounded-lg p-4 space-y-4">
         <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          Informaci�n B�sica
+          Información Básica
         </h3>
         
         <div className="grid md:grid-cols-2 gap-4">
@@ -375,12 +375,12 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                 placeholder="Precio anterior para mostrar descuento"
               />
             </div>
-            <p className="text-[11px] text-gray-500 mt-1">Si estableces un precio original mayor que el actual, se mostrar� el descuento autom�ticamente.</p>
+            <p className="text-[11px] text-gray-500 mt-1">Si estableces un precio original mayor que el actual, se mostrará el descuento automáticamente.</p>
           </label>
         </div>
         
         <label className="block">
-          <span className="text-xs font-semibold text-gray-700 mb-1 block">Tama�o *</span>
+          <span className="text-xs font-semibold text-gray-700 mb-1 block">Tamaño *</span>
           <input 
             value={form.size} 
             onChange={e=>update('size', e.target.value)} 
@@ -391,17 +391,17 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
         </label>
       </div>
 
-      {/* Categor�a y Tipo */}
+      {/* Categoría y Tipo */}
       <div className=" p-4 space-y-4">
         <h3 className="text-sm font-bold text-rose-900 flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
           </svg>
-          Clasificaci�n
+          Clasificación
         </h3>
         
         <label className="block">
-          <span className="text-xs font-semibold text-gray-700 mb-1 block">Categor�a *</span>
+          <span className="text-xs font-semibold text-gray-700 mb-1 block">Categoría *</span>
           {editingMode ? (
             <select 
               value={form.category} 
@@ -415,7 +415,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
               value={form.category}
               readOnly
               className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-              title="Categor�a preseleccionada seg�n el panel"
+              title="Categoría preseleccionada según el panel"
             />
           ) : (
             <select 
@@ -424,7 +424,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
               className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
               required
             >
-              <option value="">Selecciona una categor�a</option>
+              <option value="">Selecciona una categoría</option>
               {categories.map(c => <option key={c}>{c}</option>)}
             </select>
           )}
@@ -614,10 +614,10 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
             />
             <div className="flex-1">
               <span className="text-sm font-semibold text-gray-800">Hay stock disponible</span>
-              <p className="text-xs text-gray-500">El producto est� disponible para la venta</p>
+              <p className="text-xs text-gray-500">El producto está disponible para la venta</p>
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-bold ${form.inStock !== false ? 'bg-green-100 text-green-700' : 'bg-red-700 text-red-700'}`}>
-              {form.inStock !== false ? '? Disponible' : '? Agotado'}
+              {form.inStock !== false ? '✓ Disponible' : '✕ Agotado'}
             </span>
           </label>
           
@@ -634,19 +634,19 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
               <p className="text-xs text-gray-500">Visible en la tienda</p>
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-bold ${form.isActive ? 'bg-red-700 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
-              {form.isActive ? '??? Visible' : '?? Oculto'}
+              {form.isActive ? '👁️ Visible' : '🙈 Oculto'}
             </span>
           </label>
         </div>
       </div>
 
-      {/* Descripci�n */}
+      {/* Descripción */}
       <div className=" p-4 space-y-3">
         <h3 className="text-sm font-bold text-pink-900 flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
           </svg>
-          Descripci�n
+          Descripción
         </h3>
         <textarea 
           value={form.description} 
@@ -664,7 +664,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
-            Variantes (Tama�os)
+            Variantes (Tamaños)
             <span className="text-xs font-normal text-gray-500">Opcional</span>
           </h3>
           <button 
@@ -675,13 +675,13 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            A�adir
+            Añadir
           </button>
         </div>
         
         {form.variants.length === 0 && (
           <p className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg border border-dashed border-gray-300">
-            ?? Si agregas m�s de una variante, el cliente ver� un selector de tama�o y se usar� el precio de la variante.
+            Nota: Si agregas más de una variante, el cliente verá un selector de tamaño y se usará el precio de la variante.
           </p>
         )}
         
@@ -732,7 +732,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                     </div>
                   </label>
                   <label className="block">
-                    <span className="text-xs font-semibold text-gray-700 mb-1 block">Tama�o *</span>
+                    <span className="text-xs font-semibold text-gray-700 mb-1 block">Tamaño *</span>
                     <input
                       value={v.size || ''}
                       onChange={e=>updateVariant(idx,'size', e.target.value)}
@@ -743,13 +743,13 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                 </div>
 
                 <label className="block">
-                  <span className="text-xs font-semibold text-gray-700 mb-1 block">Descripci�n de la variante</span>
+                  <span className="text-xs font-semibold text-gray-700 mb-1 block">Descripción de la variante</span>
                   <textarea
                     value={v.description || ''}
                     onChange={e=>updateVariant(idx,'description', e.target.value)}
                     rows={3}
                     className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-                    placeholder="Describe qu� diferencia a esta variante"
+                    placeholder="Describe qué diferencia a esta variante"
                   />
                 </label>
 
@@ -914,13 +914,13 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
-            A�adir
+            Añadir
           </button>
         </div>
         
         {form.flavors.length === 0 && (
           <p className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg border border-dashed border-gray-300">
-            ?? Si agregas m�s de un sabor, se mostrar� un selector de sabores al cliente.
+            Nota: Si agregas más de un sabor, se mostrará un selector de sabores al cliente.
           </p>
         )}
         
@@ -934,7 +934,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                   onClick={()=>removeFlavor(f)} 
                   className="text-rose-600 hover:text-rose-800 font-bold text-lg leading-none"
                 >
-                  �
+                  ×
                 </button>
               </span>
             ))}
@@ -942,7 +942,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
         )}
       </div>
 
-      {/* Botones de acci�n */}
+      {/* Botones de acción */}
       <div className="flex justify-end gap-3 pt-4 border-t-2 border-gray-200">
         <button 
           type="button" 

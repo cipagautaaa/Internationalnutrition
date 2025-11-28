@@ -6,7 +6,7 @@ import ProductForm from '../components/admin/ProductForm';
 import AdminPageManagement from '../components/AdminPageManagement';
 import ImplementsPanel from '../components/admin/ImplementsPanel';
 
-// Taxonom�a 2025 (7 categorías, nombres de visualización)
+// Taxonomía 2025 (7 categorías, nombres de visualización)
 const ALL_CATEGORIES = [
   'proteínas',
   'Pre-entrenos y Quemadores',
@@ -96,7 +96,7 @@ const CATEGORY_TYPES_LOOKUP = Object.entries(CATEGORY_TYPES).reduce((acc, [key, 
 
 const getCategoryTypes = (category) => CATEGORY_TYPES_LOOKUP[normalizeText(category)] || null;
 
-// P�gina administraci�n de productos con selecci�n previa de categoría
+// Página administración de productos con selección previa de categoría
 export default function AdminProducts() {
   const navigate = useNavigate();
   const { isAuthenticated, user, token } = useAuth();
@@ -108,7 +108,7 @@ export default function AdminProducts() {
   const [catSummaryLoading, setCatSummaryLoading] = useState(false);
   const [catSummaryError, setCatSummaryError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editing, setEditing] = useState(null); // producto en edici�n
+  const [editing, setEditing] = useState(null); // producto en edición
   const [saving, setSaving] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null); // nueva: categoría elegida
   const [selectedType, setSelectedType] = useState(null); // subcategoría/tipo elegido
@@ -316,7 +316,7 @@ export default function AdminProducts() {
     console.log('?? Variantes del producto desde lista:', product?.variants);
     
     try {
-      // CR�TICO: Cargar el producto completo con TODAS sus variantes desde el backend
+      // CRÍTICO: Cargar el producto completo con TODAS sus variantes desde el backend
       // porque la lista puede estar en modo "flat" donde cada variante es un item separado
       const { data } = await axios.get(`/products/${product._id}`);
       const fullProduct = data?.data || product;
@@ -333,7 +333,7 @@ export default function AdminProducts() {
         isActive: fullProduct?.isActive ?? true,
         size: fullProduct?.size || '',
         baseSize: fullProduct?.baseSize || '',
-        // CR�TICO: Usar las variantes del producto completo cargado desde la API
+        // CRÍTICO: Usar las variantes del producto completo cargado desde la API
         variants: Array.isArray(fullProduct?.variants) 
           ? fullProduct.variants.map(v => ({
               _id: v._id,
@@ -405,7 +405,7 @@ export default function AdminProducts() {
   };
 
   const deleteProduct = async (product) => {
-    if (!window.confirm('�Eliminar este producto definitivamente? Esta acci�n no se puede deshacer.')) {
+    if (!window.confirm('¿Eliminar este producto definitivamente? Esta acción no se puede deshacer.')) {
       return;
     }
     try {
@@ -456,7 +456,7 @@ export default function AdminProducts() {
     return (
       <div className={PANEL_WRAPPER}>
         <div className="max-w-7xl mx-auto space-y-12">
-          {/* Bot�n de perfil de administrador */}
+          {/* Botón de perfil de administrador */}
           <div className="flex justify-end">
             <button
               type="button"
@@ -510,7 +510,7 @@ export default function AdminProducts() {
 
             {!categoriesLoading && categories.length === 0 && (
               <div className="rounded-2xl border border-[#eadfcd] bg-white/70 px-4 py-6 text-center text-sm text-gray-500">
-                No hay productos a�n. Crea tu primer producto para comenzar.
+                No hay productos aún. Crea tu primer producto para comenzar.
               </div>
             )}
 
@@ -551,8 +551,8 @@ export default function AdminProducts() {
                           {total} producto{total !== 1 ? 's' : ''}
                           {total > 0 && (
                             <span>
-                              {' � '}{activos} activo{activos !== 1 ? 's' : ''}
-                              {sinStock > 0 && ` � ${sinStock} sin stock`}
+                              {' · '}{activos} activo{activos !== 1 ? 's' : ''}
+                              {sinStock > 0 && ` · ${sinStock} sin stock`}
                             </span>
                           )}
                         </p>
@@ -600,7 +600,7 @@ export default function AdminProducts() {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">Usuarios registrados</h2>
-                  <p className="text-xs text-gray-500">Solo lectura. No se permite editar ni eliminar desde aqu�.</p>
+                  <p className="text-xs text-gray-500">Solo lectura. No se permite editar ni eliminar desde aquí.</p>
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -638,13 +638,13 @@ export default function AdminProducts() {
                             <th className="px-3 py-2">Nombre</th>
                             <th className="px-3 py-2">Rol</th>
                             <th className="px-3 py-2">Verificado</th>
-                            <th className="px-3 py-2">�ltimo login</th>
+                            <th className="px-3 py-2">Último login</th>
                             <th className="px-3 py-2">Creado</th>
                           </tr>
                         </thead>
                         <tbody>
                           {users.map(u => {
-                            const fullName = [u.firstName, u.lastName].filter(Boolean).join(' ') || '�';
+                            const fullName = [u.firstName, u.lastName].filter(Boolean).join(' ') || '-';
                             return (
                               <tr key={u._id || u.id} className="border-b border-[#f1e7d6] text-xs last:border-b-0 hover:bg-[#fff8f0]">
                                 <td className="px-3 py-2 font-mono">{u.email}</td>
@@ -654,9 +654,9 @@ export default function AdminProducts() {
                                     {u.role}
                                   </span>
                                 </td>
-                                <td className="px-3 py-2">{u.isEmailVerified ? 'S�' : 'No'}</td>
-                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '�'}</td>
-                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '�'}</td>
+                                <td className="px-3 py-2">{u.isEmailVerified ? 'Sí' : 'No'}</td>
+                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '-'}</td>
+                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '-'}</td>
                               </tr>
                             );
                           })}
@@ -680,7 +680,7 @@ export default function AdminProducts() {
             <section className="space-y-6">
               <header className="flex flex-col gap-2">
                 <h2 className="text-2xl font-bold text-gray-900">Panel de combos</h2>
-                <p className="text-sm text-gray-600">Gestiona los combos de Volumen y Definici�n.</p>
+                <p className="text-sm text-gray-600">Gestiona los combos de Volumen y Definición.</p>
               </header>
 
               {combosLoading && <p className="text-sm text-gray-500">Cargando combos...</p>}
@@ -782,7 +782,7 @@ export default function AdminProducts() {
     );
   }
 
-  // Vista 2: Selecci�n de tipo/subcategoría (solo para proteínas y Creatina)
+  // Vista 2: Selección de tipo/subcategoría (solo para proteínas y Creatina)
   const categoryHasTypes = getCategoryTypes(selectedCategory);
   if (categoryHasTypes && !selectedType) {
     const normalizedSelectedCategoryKey = normalizeText(selectedCategory);
@@ -946,7 +946,7 @@ export default function AdminProducts() {
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold text-gray-900">
                   {selectedCategory}
-                  {selectedType && <span className="text-red-700"> � {selectedType}</span>}
+                  {selectedType && <span className="text-red-700"> · {selectedType}</span>}
                 </h1>
                 <span className="inline-flex items-center gap-2 rounded-full bg-red-700 px-3 py-1 text-sm font-semibold text-red-700">
                   {filteredProducts.length} {filteredProducts.length !== 1 ? 'productos' : 'producto'}

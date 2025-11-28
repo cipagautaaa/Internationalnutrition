@@ -3,6 +3,8 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 import { useState, useMemo, useEffect } from 'react';
+import { Truck, Clock, ShieldCheck, Sparkles } from 'lucide-react';
+import { formatPrice } from '../utils/formatPrice';
 
 // Nueva página de detalle totalmente integrada con backend
 // Características:
@@ -13,7 +15,26 @@ import { useState, useMemo, useEffect } from 'react';
 // - Botones "Agregar al carrito" y "Comprar ahora"
 // - Layout similar a e-commerce moderno (imagen grande izquierda, info derecha)
 
-const pillBase = 'px-4 py-2 rounded-full text-sm font-medium border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500';
+const pillBase = 'px-4 py-2 rounded-full text-sm font-medium border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8B1A]';
+const gradientPanel = 'bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl shadow-[0_20px_70px_rgba(3,4,16,0.65)]';
+
+const infoRows = [
+	{
+		title: '¿Cuánto tarda el envío?',
+		description: 'Envíos nacionales entre 24 y 72 horas hábiles.',
+		icon: Truck,
+	},
+	{
+		title: '¿Listos para consumir?',
+		description: 'Incluimos guía express y recomendación de consumo.',
+		icon: Sparkles,
+	},
+	{
+		title: 'Garantía y autenticidad',
+		description: 'Sellos intactos, soporte por WhatsApp y seguimiento.',
+		icon: ShieldCheck,
+	},
+];
 
 export default function ProductDetail() {
 	const { id } = useParams();
@@ -102,6 +123,13 @@ export default function ProductDetail() {
 
 	const displayPrice = selectedSize ? selectedSize.price : product?.price;
 	const displayImage = selectedSize && selectedSize.image ? selectedSize.image : product?.image;
+	const displayOriginalPrice = selectedSize?.originalPrice ?? product?.originalPrice;
+	const discountPercentage = displayOriginalPrice && displayOriginalPrice > displayPrice
+		? Math.round(((displayOriginalPrice - displayPrice) / displayOriginalPrice) * 100)
+		: null;
+	const savings = displayOriginalPrice && displayOriginalPrice > displayPrice
+		? displayOriginalPrice - displayPrice
+		: null;
 	const variantAvailable = selectedSize ? selectedSize.inStock !== false : true;
 	const canAdd = product && product.isActive !== false && product.inStock !== false && variantAvailable;
 
@@ -148,61 +176,60 @@ export default function ProductDetail() {
 	}
 
 	return (
-		<div className="pt-24 sm:pt-28 pb-12 sm:pb-16 bg-white">
-			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10">
-					{/* Columna imágenes */}
-					<div className="space-y-4">
-						<div className="aspect-[4/5] sm:aspect-square w-full bg-gray-50 border rounded-xl flex items-center justify-center overflow-hidden">
-							<img src={displayImage} alt={product.name} className="w-full h-full object-contain" />
+		<div className="min-h-screen bg-[#050507] text-white">
+			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+				<div className="mb-10 flex items-center justify-between gap-4 text-xs uppercase tracking-[0.35em] text-white/60">
+					<span>{product.category}</span>
+					<span>+1.500 envíos realizados en Colombia</span>
+				</div>
+
+				<div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-start">
+					<div className="space-y-6">
+						<div className={`${gradientPanel} p-6`}>
+							<div className="bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-2xl h-[520px] flex items-center justify-center">
+								<img src={displayImage} alt={product.name} className="max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.45)]" />
+							</div>
 						</div>
-						{/* Miniaturas (placeholder futuro para múltiples imágenes) */}
-						<div className="flex gap-3 overflow-x-auto pb-2">
-							{displayImage && (
-								<button className="border-2 border-indigo-500 rounded-lg p-1 bg-white h-20 w-20 flex items-center justify-center">
-									<img src={displayImage} alt="thumb" className="object-contain max-h-full" />
-								</button>
-							)}
+						<div className={`${gradientPanel} p-5`}>
+							<h3 className="text-sm font-semibold mb-2">Ingredientes clave</h3>
+							<p className="text-sm text-white/70 leading-relaxed whitespace-pre-line">{product.description}</p>
 						</div>
 					</div>
 
-					{/* Columna info */}
 					<div className="space-y-6">
-						<div className="space-y-2">
-							  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">{product.name}</h1>
-							<div className="flex items-center gap-2">
-								<span className="inline-block bg-indigo-100 text-indigo-700 text-xs font-semibold px-2 py-1 rounded">{product.category}</span>
-								{product.rating > 0 && <span className="text-amber-600 text-xs font-medium">★ {product.rating.toFixed(1)}</span>}
+						<div className="space-y-3">
+							<div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[11px] tracking-[0.3em] uppercase text-white/70">
+								<Sparkles className="w-4 h-4" />
+								<span>Rendimiento premium</span>
+							</div>
+							<h1 className="text-3xl sm:text-4xl font-black leading-tight">{product.name}</h1>
+							<div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/50">
+								<span>{product.category}</span>
+								{product.rating > 0 && <span>★ {product.rating.toFixed(1)}</span>}
 							</div>
 						</div>
 
-						<div className="text-gray-700 leading-relaxed text-sm whitespace-pre-line">
-							{product.description}
-						</div>
-
-						<div>
-							<div className="flex items-baseline gap-3 mb-1">
-								<span className="text-3xl font-bold text-gray-900">${displayPrice}</span>
-								{product?.originalPrice && product.originalPrice > displayPrice && (
-									<>
-										<span className="text-base text-gray-400 line-through">${product.originalPrice}</span>
-										<span className="text-sm font-semibold text-green-600">
-											-{Math.round(((product.originalPrice - displayPrice) / product.originalPrice) * 100)}%
-										</span>
-									</>
+						<div className="space-y-2">
+							<div className="flex items-baseline gap-3">
+								<span className="text-4xl font-black text-white">${formatPrice(displayPrice || 0)}</span>
+								{displayOriginalPrice && (
+									<span className="text-base text-white/40 line-through">${formatPrice(displayOriginalPrice)}</span>
 								)}
 							</div>
-							{selectedSize && !selectedSize.__isBase && product.size && (
-								<p className="text-xs text-gray-500">Precio para tamaño {selectedSize.size}</p>
+							{savings && (
+								<p className="text-sm text-emerald-300 font-semibold">Ahorra ${formatPrice(savings)} pesos</p>
 							)}
+							{selectedSize && !selectedSize.__isBase && (
+								<p className="text-xs text-white/60">Precio aplicado para {selectedSize.size}</p>
+							)}
+							<p className="text-xs text-white/60">Impuestos incluidos · Envío gratis desde $0</p>
 						</div>
 
-						{/* Selector tamaños */}
 						{sizeOptions.length > 0 && (
 							<div className="space-y-2">
-								<p className="text-xs font-medium tracking-wide text-gray-600">TAMAÑO</p>
+								<p className="text-xs font-medium tracking-wide text-white/60">TAMAÑO</p>
 								<div className="flex flex-wrap gap-2">
-									{sizeOptions.map(o => {
+									{sizeOptions.map((o) => {
 										const active = (o._id === 'BASE' && selectedSizeId === 'BASE') || String(o._id) === String(selectedSizeId);
 										const disabled = o.inStock === false;
 										return (
@@ -210,7 +237,7 @@ export default function ProductDetail() {
 												key={o._id}
 												disabled={disabled}
 												onClick={() => setSelectedSizeId(o._id)}
-												className={`${pillBase} ${active ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300 hover:border-gray-500'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+												className={`${pillBase} ${active ? 'bg-[#FF8B1A] text-black border-transparent' : 'bg-white/5 text-white border-white/10 hover:border-white/30'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
 											>
 												{o.size}
 											</button>
@@ -220,18 +247,17 @@ export default function ProductDetail() {
 							</div>
 						)}
 
-						{/* Selector sabores */}
 						{flavors.length > 0 && (
 							<div className="space-y-2">
-								<p className="text-xs font-medium tracking-wide text-gray-600">SABOR</p>
+								<p className="text-xs font-medium tracking-wide text-white/60">SABOR</p>
 								<div className="flex flex-wrap gap-2">
-									{flavors.map(f => {
+									{flavors.map((f) => {
 										const active = f === selectedFlavor;
 										return (
 											<button
 												key={f}
 												onClick={() => setSelectedFlavor(f)}
-												className={`${pillBase} ${active ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300 hover:border-gray-500'}`}
+												className={`${pillBase} ${active ? 'bg-white text-black border-white' : 'bg-white/5 text-white border-white/10 hover:border-white/30'}`}
 											>
 												{f}
 											</button>
@@ -241,39 +267,61 @@ export default function ProductDetail() {
 							</div>
 						)}
 
-						{/* Cantidad */}
 						{!isAdmin && (
 							<div className="flex items-center gap-4">
-								<div className="flex items-center border rounded-full overflow-hidden">
-									<button onClick={() => adjustQty(-1)} className="w-10 h-10 flex items-center justify-center text-lg font-medium hover:bg-gray-100" aria-label="Disminuir">−</button>
-									<div className="w-12 text-center font-semibold">{quantity}</div>
-									<button onClick={() => adjustQty(1)} className="w-10 h-10 flex items-center justify-center text-lg font-medium hover:bg-gray-100" aria-label="Aumentar">+</button>
+								<div className="flex items-center rounded-full bg-white/5 border border-white/10 overflow-hidden">
+									<button onClick={() => adjustQty(-1)} className="w-11 h-11 text-xl font-bold hover:bg-white/5" aria-label="Disminuir">−</button>
+									<div className="w-14 text-center font-semibold">{quantity}</div>
+									<button onClick={() => adjustQty(1)} className="w-11 h-11 text-xl font-bold hover:bg-white/5" aria-label="Aumentar">+</button>
 								</div>
+								<p className="text-xs text-white/60">Cantidad</p>
 							</div>
 						)}
 
-						{/* Botones acción - Ocultar si es admin */}
 						{!isAdmin && (
 							<div className="flex flex-col sm:flex-row gap-4 pt-2">
 								<button
 									onClick={handleAdd}
 									disabled={!canAdd}
-									className={`flex-1 h-12 rounded-full text-sm font-semibold tracking-wide transition shadow ${canAdd ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+									className={`flex-1 h-14 rounded-2xl text-sm font-black tracking-wide uppercase shadow-lg transition-all ${
+										canAdd ? 'bg-[#FF8B1A] text-black hover:translate-y-[1px]' : 'bg-white/10 text-white/40 cursor-not-allowed'
+									}`}
 								>
-									Agregar al carrito
+									Agregar al carrito — ${formatPrice(displayPrice || 0)}
 								</button>
 								<button
 									onClick={handleBuyNow}
 									disabled={!canAdd}
-									className={`flex-1 h-12 rounded-full text-sm font-semibold tracking-wide transition shadow ${canAdd ? 'bg-gray-900 hover:bg-black text-white' : 'bg-gray-300 text-gray-600 cursor-not-allowed'}`}
+									className={`flex-1 h-14 rounded-2xl text-sm font-semibold uppercase border border-white/40 shadow-inner transition-all ${
+										canAdd ? 'bg-white text-black hover:bg-white/90' : 'bg-white/5 text-white/40 cursor-not-allowed'
+									}`}
 								>
 									Comprar ahora
 								</button>
 							</div>
 						)}
 
-						<div className="pt-4 border-t text-xs text-gray-500 leading-relaxed">
-							<p>Ingredientes clave (placeholder): Proteína aislada de suero. Personaliza este bloque agregando campos en el modelo (ej: ingredients, highlights).</p>
+						<div className="grid gap-3">
+							<div className={`${gradientPanel} p-4 flex items-center justify-between`}>
+								<div>
+									<p className="text-xs text-white/50">Entrega aproximada</p>
+									<p className="text-sm font-semibold">Nov 29 - Dic 02</p>
+								</div>
+								<Clock className="w-5 h-5 text-white/60" />
+							</div>
+							{infoRows.map((row) => (
+								<div key={row.title} className={`${gradientPanel} p-4 flex items-center justify-between`}>
+									<div>
+										<p className="text-sm font-semibold">{row.title}</p>
+										<p className="text-xs text-white/60">{row.description}</p>
+									</div>
+									<row.icon className="w-5 h-5 text-white/60" />
+								</div>
+							))}
+						</div>
+
+						<div className="text-center text-xs text-white/40 pt-4">
+							<p>¿Necesitas acompañamiento? Escríbenos al WhatsApp flotante para recibir asesoría personalizada.</p>
 						</div>
 					</div>
 				</div>

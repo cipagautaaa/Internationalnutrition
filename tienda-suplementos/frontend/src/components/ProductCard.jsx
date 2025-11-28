@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import QuickAddModal from './QuickAddModal';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
+import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 
 // ProductCard optimizado con psicología de conversión
 // - Fondo blanco para percepción de limpieza
@@ -127,11 +128,11 @@ const ProductCard = ({ product }) => {
       {/* Imagen con hover zoom y Quick View */}
       <Link
         to={`/product/${product.id || product._id}`}
-        className="block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 h-[230px] xs:h-[260px] sm:h-[300px] flex items-center justify-center"
+        className={`block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center`}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
         <img
-          className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 relative z-10 p-4"
+          className={`${PRODUCT_IMAGE_BASE} group-hover:scale-105 transition-transform duration-500 relative z-10 px-3 py-3 sm:p-5`}
           src={displayImage || '/placeholder-product.png'}
           alt={product.name}
         />

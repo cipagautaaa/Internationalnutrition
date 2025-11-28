@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import QuickAddModal from './QuickAddModal';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
+import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 
 /**
  * ProductCard especial para productos destacados
@@ -105,11 +106,11 @@ const FeaturedProductCard = ({ product, onRemove, onAdd, isEmpty = false }) => {
       {/* Imagen con hover zoom y Quick View */}
       <Link
         to={`/product/${product.id || product._id}`}
-        className="block relative overflow-hidden aspect-[4/3] sm:aspect-square bg-gradient-to-br from-gray-50 via-white to-gray-100/50"
+        className={`block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center`}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
         <img
-          className="w-full h-full object-contain p-2 sm:p-4 group-hover:scale-110 transition-transform duration-500 relative z-10"
+          className={`${PRODUCT_IMAGE_BASE} p-2 sm:p-4 group-hover:scale-110 transition-transform duration-500 relative z-10`}
           src={displayImage || '/placeholder-product.png'}
           alt={product.name}
         />

@@ -7,6 +7,7 @@ import TextCarrousel from './components/TextCarrousel';
 import Home from './pages/Home';
 import Products from './pages/Products.jsx';
 import ProductDetail from './pages/ProductDetail';
+import ComboDetail from './pages/ComboDetail';
 import Cart from './pages/Cart';
 import CheckoutNew from './components/CheckoutNew';
 import WompiCheckout from './components/WompiCheckout';
@@ -115,6 +116,7 @@ function App() {
           <Route path="/implementos" element={<Implements />} />
           <Route path="/products/:category" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
+          <Route path="/combo/:id" element={<ComboDetail />} />
           <Route path="/cart" element={<RestrictAdmin><Cart /></RestrictAdmin>} />
           <Route path="/checkout" element={<RestrictAdmin><CheckoutNew /></RestrictAdmin>} />
           <Route path="/wompi-checkout" element={<RestrictAdmin><WompiCheckout /></RestrictAdmin>} />
