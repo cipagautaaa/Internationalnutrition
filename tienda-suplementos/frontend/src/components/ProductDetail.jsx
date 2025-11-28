@@ -15,8 +15,8 @@ import { formatPrice } from '../utils/formatPrice';
 // - Botones "Agregar al carrito" y "Comprar ahora"
 // - Layout similar a e-commerce moderno (imagen grande izquierda, info derecha)
 
-const pillBase = 'px-4 py-2 rounded-full text-sm font-medium border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF8B1A]';
-const gradientPanel = 'bg-white/5 border border-white/10 rounded-3xl backdrop-blur-xl shadow-[0_20px_70px_rgba(3,4,16,0.65)]';
+const pillBase = 'px-4 py-2 rounded-full text-sm font-medium border transition focus:outline-none focus-visible:ring-2 focus-visible:ring-red-700';
+const gradientPanel = 'bg-white border border-gray-200 rounded-3xl shadow-lg';
 
 const infoRows = [
 	{
@@ -176,9 +176,9 @@ export default function ProductDetail() {
 	}
 
 	return (
-		<div className="min-h-screen bg-[#050507] text-white">
+		<div className="min-h-screen bg-gray-50">
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-				<div className="mb-10 flex items-center justify-between gap-4 text-xs uppercase tracking-[0.35em] text-white/60">
+				<div className="mb-10 flex items-center justify-between gap-4 text-xs uppercase tracking-[0.35em] text-gray-500">
 					<span>{product.category}</span>
 					<span>+1.500 envíos realizados en Colombia</span>
 				</div>
@@ -186,48 +186,48 @@ export default function ProductDetail() {
 				<div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-start">
 					<div className="space-y-6">
 						<div className={`${gradientPanel} p-6`}>
-							<div className="bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-2xl h-[520px] flex items-center justify-center">
-								<img src={displayImage} alt={product.name} className="max-h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.45)]" />
+							<div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl h-[520px] flex items-center justify-center">
+								<img src={displayImage} alt={product.name} className="max-h-full object-contain drop-shadow-2xl" />
 							</div>
 						</div>
 						<div className={`${gradientPanel} p-5`}>
-							<h3 className="text-sm font-semibold mb-2">Ingredientes clave</h3>
-							<p className="text-sm text-white/70 leading-relaxed whitespace-pre-line">{product.description}</p>
+							<h3 className="text-sm font-semibold mb-2 text-gray-900">Ingredientes clave</h3>
+							<p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{product.description}</p>
 						</div>
 					</div>
 
 					<div className="space-y-6">
 						<div className="space-y-3">
-							<div className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[11px] tracking-[0.3em] uppercase text-white/70">
+							<div className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3 py-1 text-[11px] tracking-[0.3em] uppercase text-red-700">
 								<Sparkles className="w-4 h-4" />
 								<span>Rendimiento premium</span>
 							</div>
-							<h1 className="text-3xl sm:text-4xl font-black leading-tight">{product.name}</h1>
-							<div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-white/50">
+							<h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">{product.name}</h1>
+							<div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-gray-500">
 								<span>{product.category}</span>
-								{product.rating > 0 && <span>★ {product.rating.toFixed(1)}</span>}
+								{product.rating > 0 && <span className="text-amber-600">★ {product.rating.toFixed(1)}</span>}
 							</div>
 						</div>
 
 						<div className="space-y-2">
 							<div className="flex items-baseline gap-3">
-								<span className="text-4xl font-black text-white">${formatPrice(displayPrice || 0)}</span>
+								<span className="text-4xl font-black text-gray-900">${formatPrice(displayPrice || 0)}</span>
 								{displayOriginalPrice && (
-									<span className="text-base text-white/40 line-through">${formatPrice(displayOriginalPrice)}</span>
+									<span className="text-base text-gray-400 line-through">${formatPrice(displayOriginalPrice)}</span>
 								)}
 							</div>
 							{savings && (
-								<p className="text-sm text-emerald-300 font-semibold">Ahorra ${formatPrice(savings)} pesos</p>
+								<p className="text-sm text-emerald-600 font-semibold">Ahorra ${formatPrice(savings)} pesos</p>
 							)}
 							{selectedSize && !selectedSize.__isBase && (
-								<p className="text-xs text-white/60">Precio aplicado para {selectedSize.size}</p>
+								<p className="text-xs text-gray-600">Precio aplicado para {selectedSize.size}</p>
 							)}
-							<p className="text-xs text-white/60">Impuestos incluidos · Envío gratis desde $0</p>
+							<p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $0</p>
 						</div>
 
 						{sizeOptions.length > 0 && (
 							<div className="space-y-2">
-								<p className="text-xs font-medium tracking-wide text-white/60">TAMAÑO</p>
+								<p className="text-xs font-medium tracking-wide text-gray-600">TAMAÑO</p>
 								<div className="flex flex-wrap gap-2">
 									{sizeOptions.map((o) => {
 										const active = (o._id === 'BASE' && selectedSizeId === 'BASE') || String(o._id) === String(selectedSizeId);
@@ -237,7 +237,7 @@ export default function ProductDetail() {
 												key={o._id}
 												disabled={disabled}
 												onClick={() => setSelectedSizeId(o._id)}
-												className={`${pillBase} ${active ? 'bg-[#FF8B1A] text-black border-transparent' : 'bg-white/5 text-white border-white/10 hover:border-white/30'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+												className={`${pillBase} ${active ? 'bg-red-700 text-white border-red-700' : 'bg-white text-gray-700 border-gray-300 hover:border-red-700'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
 											>
 												{o.size}
 											</button>
@@ -249,7 +249,7 @@ export default function ProductDetail() {
 
 						{flavors.length > 0 && (
 							<div className="space-y-2">
-								<p className="text-xs font-medium tracking-wide text-white/60">SABOR</p>
+								<p className="text-xs font-medium tracking-wide text-gray-600">SABOR</p>
 								<div className="flex flex-wrap gap-2">
 									{flavors.map((f) => {
 										const active = f === selectedFlavor;
@@ -257,7 +257,7 @@ export default function ProductDetail() {
 											<button
 												key={f}
 												onClick={() => setSelectedFlavor(f)}
-												className={`${pillBase} ${active ? 'bg-white text-black border-white' : 'bg-white/5 text-white border-white/10 hover:border-white/30'}`}
+												className={`${pillBase} ${active ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-700 border-gray-300 hover:border-gray-900'}`}
 											>
 												{f}
 											</button>
@@ -269,12 +269,12 @@ export default function ProductDetail() {
 
 						{!isAdmin && (
 							<div className="flex items-center gap-4">
-								<div className="flex items-center rounded-full bg-white/5 border border-white/10 overflow-hidden">
-									<button onClick={() => adjustQty(-1)} className="w-11 h-11 text-xl font-bold hover:bg-white/5" aria-label="Disminuir">−</button>
-									<div className="w-14 text-center font-semibold">{quantity}</div>
-									<button onClick={() => adjustQty(1)} className="w-11 h-11 text-xl font-bold hover:bg-white/5" aria-label="Aumentar">+</button>
+								<div className="flex items-center rounded-full bg-white border border-gray-300 overflow-hidden">
+									<button onClick={() => adjustQty(-1)} className="w-11 h-11 text-xl font-bold text-gray-700 hover:bg-gray-100" aria-label="Disminuir">−</button>
+									<div className="w-14 text-center font-semibold text-gray-900">{quantity}</div>
+									<button onClick={() => adjustQty(1)} className="w-11 h-11 text-xl font-bold text-gray-700 hover:bg-gray-100" aria-label="Aumentar">+</button>
 								</div>
-								<p className="text-xs text-white/60">Cantidad</p>
+								<p className="text-xs text-gray-600">Cantidad</p>
 							</div>
 						)}
 
@@ -284,7 +284,7 @@ export default function ProductDetail() {
 									onClick={handleAdd}
 									disabled={!canAdd}
 									className={`flex-1 h-14 rounded-2xl text-sm font-black tracking-wide uppercase shadow-lg transition-all ${
-										canAdd ? 'bg-[#FF8B1A] text-black hover:translate-y-[1px]' : 'bg-white/10 text-white/40 cursor-not-allowed'
+										canAdd ? 'bg-red-700 text-white hover:bg-red-800' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
 									}`}
 								>
 									Agregar al carrito — ${formatPrice(displayPrice || 0)}
@@ -292,8 +292,8 @@ export default function ProductDetail() {
 								<button
 									onClick={handleBuyNow}
 									disabled={!canAdd}
-									className={`flex-1 h-14 rounded-2xl text-sm font-semibold uppercase border border-white/40 shadow-inner transition-all ${
-										canAdd ? 'bg-white text-black hover:bg-white/90' : 'bg-white/5 text-white/40 cursor-not-allowed'
+									className={`flex-1 h-14 rounded-2xl text-sm font-semibold uppercase border-2 border-gray-900 shadow-inner transition-all ${
+										canAdd ? 'bg-white text-gray-900 hover:bg-gray-50' : 'bg-gray-100 text-gray-400 cursor-not-allowed'
 									}`}
 								>
 									Comprar ahora
@@ -304,23 +304,23 @@ export default function ProductDetail() {
 						<div className="grid gap-3">
 							<div className={`${gradientPanel} p-4 flex items-center justify-between`}>
 								<div>
-									<p className="text-xs text-white/50">Entrega aproximada</p>
-									<p className="text-sm font-semibold">Nov 29 - Dic 02</p>
+									<p className="text-xs text-gray-500">Entrega aproximada</p>
+									<p className="text-sm font-semibold text-gray-900">Nov 29 - Dic 02</p>
 								</div>
-								<Clock className="w-5 h-5 text-white/60" />
+								<Clock className="w-5 h-5 text-gray-400" />
 							</div>
 							{infoRows.map((row) => (
 								<div key={row.title} className={`${gradientPanel} p-4 flex items-center justify-between`}>
 									<div>
-										<p className="text-sm font-semibold">{row.title}</p>
-										<p className="text-xs text-white/60">{row.description}</p>
+										<p className="text-sm font-semibold text-gray-900">{row.title}</p>
+										<p className="text-xs text-gray-600">{row.description}</p>
 									</div>
-									<row.icon className="w-5 h-5 text-white/60" />
+									<row.icon className="w-5 h-5 text-gray-400" />
 								</div>
 							))}
 						</div>
 
-						<div className="text-center text-xs text-white/40 pt-4">
+						<div className="text-center text-xs text-gray-500 pt-4">
 							<p>¿Necesitas acompañamiento? Escríbenos al WhatsApp flotante para recibir asesoría personalizada.</p>
 						</div>
 					</div>
