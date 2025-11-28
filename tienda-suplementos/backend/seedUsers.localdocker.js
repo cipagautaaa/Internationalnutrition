@@ -8,7 +8,7 @@ const MONGO_URI = 'mongodb://localhost:27017/tienda_prod';
 
 const users = [
   {
-    email: 'admin@supps.com',
+    email: 'internationalnutritioncol@gmail.com',
     firstName: 'Admin',
     lastName: 'Supps',
     phone: '1234567890',

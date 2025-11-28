@@ -11,7 +11,7 @@ async function resetPin() {
     const hash = await bcrypt.hash(newPin, 10);
     
     const user = await User.findOneAndUpdate(
-      { email: 'admin@supps.com' },
+      { email: 'internationalnutritioncol@gmail.com' },
       { 
         $set: { 
           adminPinHash: hash,

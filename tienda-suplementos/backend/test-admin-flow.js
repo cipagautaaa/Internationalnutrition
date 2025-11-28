@@ -15,7 +15,7 @@ async function testFullFlow() {
 
     // 2. Obtener admin
     console.log('\n2️⃣  Buscando admin en BD...');
-    const admin = await User.findOne({ email: 'admin@supps.com' });
+    const admin = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
     if (!admin) {
       console.log('   ❌ Admin no encontrado');
       return;

@@ -7,7 +7,7 @@ async function checkAdmin() {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('✅ Conectado a Atlas\n');
     
-    const admin = await User.findOne({ email: 'admin@supps.com' });
+    const admin = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
     
     if (!admin) {
       console.log('❌ No existe admin con ese email');

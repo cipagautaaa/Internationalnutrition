@@ -25,7 +25,7 @@ async function checkAtlas() {
     });
     
     console.log('\n=== BUSCANDO ADMIN ESPECÍFICAMENTE ===');
-    const admin = await users.findOne({ email: 'admin@supps.com' });
+    const admin = await users.findOne({ email: 'internationalnutritioncol@gmail.com' });
     if (admin) {
       console.log('✅ Admin encontrado');
       console.log('  _id:', admin._id);

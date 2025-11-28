@@ -12,7 +12,7 @@ async function verifyPin() {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tienda_suplementos');
     console.log('✅ Conectado a MongoDB');
 
-    const user = await User.findOne({ email: 'admin@supps.com' });
+    const user = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
     
     if (!user) {
       console.log('❌ Usuario no encontrado');

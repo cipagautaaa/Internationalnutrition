@@ -22,7 +22,7 @@ async function regeneratePinHash() {
     console.log(`✅ Nuevo hash generado: ${newHash}`);
 
     // Actualizar en base de datos
-    const user = await User.findOne({ email: 'admin@supps.com' });
+    const user = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
     if (!user) {
       console.log('❌ Admin no encontrado');
       return;
@@ -45,7 +45,7 @@ async function regeneratePinHash() {
     console.log(`\n🔐 Verificación bcrypt.compare('${pin}', hash): ${verify}`);
 
     console.log('\n✅ ¡PIN regenerado exitosamente!');
-    console.log('   Email: admin@supps.com');
+    console.log('   Email: internationalnutritioncol@gmail.com');
     console.log(`   PIN: ${pin}`);
 
     process.exit(0);

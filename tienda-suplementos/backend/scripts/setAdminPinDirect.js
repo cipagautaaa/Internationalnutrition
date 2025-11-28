@@ -13,7 +13,7 @@ const PIN = process.env.ADMIN_PIN_DIRECT || '836492'; // permite override
 (async () => {
   try {
     await mongoose.connect(MONGO_URI, {});
-    const admin = await User.findOne({ email: 'admin@supps.com' });
+    const admin = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
     if (!admin) {
       console.error('Admin no encontrado');
       process.exit(1);
