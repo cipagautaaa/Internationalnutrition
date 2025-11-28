@@ -110,8 +110,9 @@ const HomeComboSection = () => {
               const showImage = !!imageSrc && !imageErrors[comboId];
 
               return (
-              <div
+              <Link
                 key={comboId}
+                to={`/combo/${comboId}`}
                 className="group relative bg-white border-2 border-gray-300 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:border-red-700 transition-all duration-500 hover:-translate-y-2 flex flex-col"
               >
                 {/* Imagen del combo */}
@@ -180,13 +181,16 @@ const HomeComboSection = () => {
 
                   {/* Botón */}
                   <button 
-                    onClick={() => handleAddComboToCart(combo)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddComboToCart(combo);
+                    }}
                     className="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm active:scale-95"
                   >
                     Agregar al Carrito
                   </button>
                 </div>
-              </div>
+              </Link>
               );
             })}
           </div>
