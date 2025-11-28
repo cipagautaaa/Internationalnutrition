@@ -160,6 +160,22 @@ export default function ProductDetail() {
 		navigate('/checkout');
 	};
 
+	if (loading) {
+		return <div className="min-h-screen flex items-center justify-center text-sm text-gray-500">Cargando producto...</div>;
+	}
+	if (error) {
+		return <div className="min-h-screen flex items-center justify-center text-center p-6">
+			<div>
+				<p className="text-red-700 font-medium mb-3">{error}</p>
+				<Link to="/products" className="text-indigo-600 underline text-sm">Volver</Link>
+			</div>
+		</div>;
+	}
+	if (!product) {
+		return <div className="min-h-screen flex items-center justify-center text-sm text-gray-500">No encontrado</div>;
+	}
+
+	// Todas las siguientes variables dependen de product existente
 	const detailHeader = (
 		<div className="space-y-3">
 			<div className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3 py-1 text-[11px] tracking-[0.3em] uppercase text-red-700">
@@ -295,21 +311,6 @@ export default function ProductDetail() {
 			<p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{product.description}</p>
 		</div>
 	);
-
-	if (loading) {
-		return <div className="min-h-screen flex items-center justify-center text-sm text-gray-500">Cargando producto...</div>;
-	}
-	if (error) {
-		return <div className="min-h-screen flex items-center justify-center text-center p-6">
-			<div>
-				<p className="text-red-700 font-medium mb-3">{error}</p>
-				<Link to="/products" className="text-indigo-600 underline text-sm">Volver</Link>
-			</div>
-		</div>;
-	}
-	if (!product) {
-		return <div className="min-h-screen flex items-center justify-center text-sm text-gray-500">No encontrado</div>;
-	}
 
 	return (
 		<div className="min-h-screen bg-gray-50">
