@@ -1,5 +1,5 @@
 const DEFAULT_WHATSAPP_NUMBER = '573006851794';
-const WHATSAPP_BASE_URL = 'https://wa.me';
+const WHATSAPP_BASE_URL = 'https://api.whatsapp.com/send';
 
 const sanitizeNumber = (number) => {
   if (!number) return DEFAULT_WHATSAPP_NUMBER;
@@ -11,8 +11,8 @@ export const getWhatsappUrl = (message, number = DEFAULT_WHATSAPP_NUMBER) => {
   const phone = sanitizeNumber(number);
   const encoded = encodeURIComponent(text);
 
-  // type=phone_number y app_absent forzan apertura correcta en móviles y escritorio
-  return `${WHATSAPP_BASE_URL}/${phone}?text=${encoded}&type=phone_number&app_absent=0`;
+  // Formato oficial de WhatsApp con parámetros explícitos
+  return `${WHATSAPP_BASE_URL}?phone=${phone}&text=${encoded}&type=phone_number&app_absent=0`;
 };
 
 export const buildOrderSummaryMessage = (order, prefix = 'Hola, necesito ayuda con mi pedido') => {
