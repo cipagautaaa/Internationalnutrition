@@ -14,13 +14,13 @@ const categories = [
 // Tipos/Subcategorías por categoría (sincronizado con AdminProducts.jsx)
 const CATEGORY_TYPES = {
   // Proteínas
-  'Proteínas': ['Proteínas limpias', 'Proteínas hipercalóricas', 'Proteínas veganas', 'Limpia', 'Hipercalórica', 'Vegana'],
+  'Proteínas': ['Proteínas limpias', 'Proteínas hipercalóricas', 'Proteínas veganas'],
   // Creatinas
-  'Creatinas': ['Monohidratadas', 'HCL', 'Complejos de creatina', 'Monohidrato'],
+  'Creatinas': ['Monohidratadas', 'HCL'],
   // Pre-entrenos y Quemadores
-  'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
+  'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
   // Aminoácidos y Recuperadores
-  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
+  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina'],
   // Salud y Bienestar
   'Salud y Bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
   // Comidas con proteína

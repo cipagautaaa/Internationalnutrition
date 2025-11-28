@@ -63,22 +63,22 @@ const normalizeText = (value) => {
 // Tipos/Subcategorías por categoría (soporta nuevas y legacy)
 const CATEGORY_TYPES = {
   // Proteínas
-  'proteínas': ['Proteínas limpias', 'Proteínas hipercalóricas', 'Proteínas veganas', 'Limpia', 'Hipercalórica', 'Vegana'],
-  'Proteínas': ['Proteínas limpias', 'Proteínas hipercalóricas', 'Proteínas veganas', 'Limpia', 'Hipercalórica', 'Vegana'],
+  'proteínas': ['Proteínas limpias', 'Proteínas hipercalóricas', 'Proteínas veganas'],
+  'Proteínas': ['Proteínas limpias', 'Proteínas hipercalóricas', 'Proteínas veganas'],
   // Creatinas (nuevas y legacy)
-  'Creatinas': ['Monohidratadas', 'HCL', 'Complejos de creatina', 'Monohidrato'],
-  'Creatina': ['Monohidratadas', 'HCL', 'Complejos de creatina', 'Monohidrato'],
-  'creatina': ['Monohidratadas', 'HCL', 'Complejos de creatina', 'Monohidrato'],
-  'creatinas': ['Monohidratadas', 'HCL', 'Complejos de creatina', 'Monohidrato'],
+  'Creatinas': ['Monohidratadas', 'HCL'],
+  'Creatina': ['Monohidratadas', 'HCL'],
+  'creatina': ['Monohidratadas', 'HCL'],
+  'creatinas': ['Monohidratadas', 'HCL'],
   // Pre-entrenos y Quemadores
-  'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
-  'pre-entrenos y quemadores': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
-  'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
-  'Pre-Workout': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
+  'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
+  'pre-entrenos y quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
+  'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa'],
+  'Pre-Workout': ['Pre-entrenos', 'Quemadores de grasa'],
   // Aminoácidos y Recuperadores
-  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
-  'Aminoácidos': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
-  'aminoácidos y recuperadores': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
+  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina'],
+  'Aminoácidos': ['BCAA y EAA', 'Glutamina'],
+  'aminoácidos y recuperadores': ['BCAA y EAA', 'Glutamina'],
   // Salud y Bienestar
   'Salud y Bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
   'salud y bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
