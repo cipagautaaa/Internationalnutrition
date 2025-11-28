@@ -13,7 +13,7 @@ import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses
 // - Trust signals micro
 // - Precio en rojo para captar atención
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, isCombo = false }) => {
   const { isAuthenticated, user } = useAuth();
   const isAdmin = isAuthenticated && user?.role === 'admin';
 
@@ -100,9 +100,14 @@ const ProductCard = ({ product }) => {
 
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const handleOpenQuickAdd = (event) => {
+    if (isCombo) return;
     event.preventDefault();
     setQuickAddOpen(true);
   };
+
+  const detailPath = isCombo
+    ? `/combo/${product.id || product._id}`
+    : `/product/${product.id || product._id}`;
 
   const isBestSeller = product.sales > 50 || product.featured;
   const isNew = product.createdAt && new Date(product.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -127,7 +132,7 @@ const ProductCard = ({ product }) => {
 
       {/* Imagen con hover zoom y Quick View */}
       <Link
-        to={`/product/${product.id || product._id}`}
+        to={detailPath}
         className={`block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center`}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
@@ -138,14 +143,16 @@ const ProductCard = ({ product }) => {
         />
 
         {/* Quick View al hacer hover */}
-        <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/20 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
-          <button
-            onClick={handleOpenQuickAdd}
-            className="transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl hover:bg-gray-100"
-          >
-            Vista Rápida
-          </button>
-        </div>
+        {!isCombo && (
+          <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/20 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+            <button
+              onClick={handleOpenQuickAdd}
+              className="transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 bg-white text-gray-900 font-semibold px-6 py-3 rounded-xl hover:bg-gray-100"
+            >
+              Vista Rápida
+            </button>
+          </div>
+        )}
       </Link>
 
       {/* Divisor con efecto de profundidad */}
@@ -162,7 +169,7 @@ const ProductCard = ({ product }) => {
         </div>
 
         {/* Título */}
-        <Link to={`/product/${product.id || product._id}`}>
+        <Link to={detailPath}>
           <h3 className="text-xs sm:text-base font-bold text-gray-900 line-clamp-2 group-hover:text-red-700 transition-colors min-h-[1.5rem] sm:min-h-[2.8rem] leading-tight">
             {product.name}
           </h3>
@@ -236,7 +243,7 @@ const ProductCard = ({ product }) => {
             </div>
 
             {/* CTA cuadrado solo en móvil - Ocultar si es admin */}
-            {!isAdmin && (
+            {!isAdmin && !isCombo && (
               <button
                 onClick={handleOpenQuickAdd}
                 disabled={!hasAvailableStock}
@@ -259,7 +266,7 @@ const ProductCard = ({ product }) => {
           </div>
 
           {/* CTA completo en desktop - Ocultar si es admin */}
-          {!isAdmin && (
+          {!isAdmin && !isCombo && (
             <button
               onClick={handleOpenQuickAdd}
               disabled={!hasAvailableStock}
@@ -291,12 +298,14 @@ const ProductCard = ({ product }) => {
        
       </div>
 
-      <QuickAddModal
-        product={product}
-        open={quickAddOpen}
-        onClose={() => setQuickAddOpen(false)}
-        initialVariantId={activeOption ? activeOption.optionId || String(activeOption._id) : null}
-      />
+      {!isCombo && (
+        <QuickAddModal
+          product={product}
+          open={quickAddOpen}
+          onClose={() => setQuickAddOpen(false)}
+          initialVariantId={activeOption ? activeOption.optionId || String(activeOption._id) : null}
+        />
+      )}
     </div>
   );
 };
