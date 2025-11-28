@@ -2,6 +2,19 @@ import CategoryPageBase from './CategoryPageBase';
 import proteinasImg from '../../assets/images/proteinas.jpg';
 
 const Proteinas = () => {
+  const productTypes = [
+    { title: 'Whey Protein', description: 'Absorción rápida para acompañar la ventana anabólica post-entreno.' },
+    { title: 'Caseína', description: 'Liberación sostenida que alimenta el músculo durante la noche.' },
+    { title: 'Proteína vegetal', description: 'Combinaciones plant-based completas sin comprometer aminoácidos esenciales.' }
+  ];
+
+  const reasons = [
+    'Certificadas por laboratorios independientes',
+    'Sin edulcorantes agresivos ni rellenos innecesarios',
+    'Sabores consistentes incluso con agua fría',
+    'Envío gratis en compras superiores a $80.000'
+  ];
+
   return (
     <CategoryPageBase
       title="Proteínas"
@@ -23,37 +36,36 @@ const Proteinas = () => {
         )
       }}
       description={
-        <div className="text-left">
-          <p className="mb-4">
-            Descubre nuestra amplia selección de <strong>proteínas de alta calidad</strong> diseñadas 
-            para maximizar tu rendimiento y acelerar tu recuperación muscular.
+        <div className="space-y-6 text-left">
+          <p className="text-gray-700 leading-relaxed">
+            Descubre nuestra selección de <strong>proteínas de alta calidad</strong> para acelerar la recuperación, cuidar tu
+            masa muscular y mantener un perfil nutricional limpio en cada toma.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Whey Protein</h3>
-              <p className="text-gray-600">Absorción rápida, ideal post-entreno</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Caseína</h3>
-              <p className="text-gray-600">Liberación lenta, perfecta antes de dormir</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Proteína Vegetal</h3>
-              <p className="text-gray-600">Opción plant-based sin comprometer calidad</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {productTypes.map((item) => (
+              <div key={item.title} className="rounded-2xl border border-gray-200 bg-white/90 p-5 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.35em] text-gray-500 mb-3">Formato</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{item.title}</h3>
+                <p className="text-sm text-gray-600">{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       }
     >
-      {/* Aquí puedes añadir contenido adicional específico para proteínas */}
       <div className="mb-12">
-        <div className="bg-blue-50 p-6 rounded-lg">
-          <h3 className="text-2xl font-bold text-blue-900 mb-3">¿Por qué elegir nuestras proteínas?</h3>
-          <ul className="list-disc list-inside text-blue-800 space-y-2">
-            <li>Certificadas por laboratorios independientes</li>
-            <li>Sin aditivos artificiales dañinos</li>
-            <li>Múltiples sabores deliciosos</li>
-            <li>Envío gratis en compras superiores a $80.000</li>
+        <div className="rounded-3xl border border-gray-200 bg-white/95 p-6 sm:p-8 shadow-sm">
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
+            <h3 className="text-2xl font-semibold text-gray-900">¿Por qué elegir nuestras proteínas?</h3>
+            <span className="text-xs uppercase tracking-[0.35em] text-gray-500">Calidad garantizada</span>
+          </div>
+          <ul className="space-y-3 text-sm text-gray-700">
+            {reasons.map((reason) => (
+              <li key={reason} className="flex items-start gap-3">
+                <span className="mt-1 h-1.5 w-6 rounded-full bg-gray-900/80" />
+                <span>{reason}</span>
+              </li>
+            ))}
           </ul>
         </div>
       </div>

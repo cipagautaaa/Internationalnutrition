@@ -2,6 +2,39 @@ import CategoryPageBase from './CategoryPageBase';
 import vitaminasImg from '../../assets/images/vitaminas.jpg';
 
 const Salud = () => {
+  const pillars = [
+    { title: 'Vitaminas', description: 'Complejos A, B, C, D y E para cubrir deficiencias comunes.' },
+    { title: 'Minerales', description: 'Magnesio, zinc y calcio para sistema nervioso y óseo.' },
+    { title: 'Probióticos', description: 'Soporte digestivo e inmunológico diario.' },
+    { title: 'Omega 3', description: 'Protección cardiovascular y cognitiva.' }
+  ];
+
+  const reasons = [
+    {
+      title: 'Deficiencias nutricionales',
+      description: 'Incluso con una dieta equilibrada es complejo cubrir todo el espectro de micronutrientes.'
+    },
+    {
+      title: 'Estilo de vida activo',
+      description: 'Entrenamientos intensos y estrés elevan la demanda de vitaminas antioxidantes y minerales.'
+    }
+  ];
+
+  const ageGroups = [
+    {
+      title: '18-30 años',
+      items: ['Complejo B para energía estable', 'Vitamina D3 para densidad ósea', 'Omega 3 antipresión', 'Probióticos diarios']
+    },
+    {
+      title: '30-50 años',
+      items: ['Magnesio para gestionar el estrés', 'Antioxidantes C y E', 'Coenzima Q10', 'Multivitamínico completo']
+    },
+    {
+      title: '50+ años',
+      items: ['Calcio + Vitamina K2', 'Vitamina B12 para memoria', 'Colágeno hidrolizado', 'Curcumina antiinflamatoria']
+    }
+  ];
+
   return (
     <CategoryPageBase
       title="Salud y Bienestar"
@@ -22,91 +55,56 @@ const Salud = () => {
         )
       }}
       description={
-        <div className="text-left">
-          <p className="mb-4">
-            Tu <strong>salud es tu mayor tesoro</strong>. Encuentra vitaminas, minerales, probióticos 
-            y suplementos naturales para fortalecer tu sistema inmune y mejorar tu bienestar general.
+        <div className="space-y-6 text-left">
+          <p className="text-gray-700 leading-relaxed">
+            Tu <strong>salud es tu mayor tesoro</strong>. Combina vitaminas, minerales y compuestos naturales para mantener un sistema inmune
+            sólido, gestionar el estrés y apoyar las funciones metabólicas diarias.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Vitaminas</h3>
-              <p className="text-gray-600 text-sm">A, B, C, D, E y complejos esenciales</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Minerales</h3>
-              <p className="text-gray-600 text-sm">Magnesio, zinc, calcio y más</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Probióticos</h3>
-              <p className="text-gray-600 text-sm">Salud digestiva y inmunológica</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-purple-500">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Omega 3</h3>
-              <p className="text-gray-600 text-sm">Salud cardiovascular y cerebral</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            {pillars.map((pillar) => (
+              <div key={pillar.title} className="rounded-2xl border border-gray-200 bg-white/90 p-5 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.35em] text-gray-500 mb-3">Pilar</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{pillar.title}</h3>
+                <p className="text-sm text-gray-600">{pillar.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       }
     >
-      {/* Contenido específico para salud */}
       <div className="mb-12">
-        <div className="bg-purple-50 p-6 rounded-lg">
-          <h3 className="text-2xl font-bold text-purple-900 mb-4">¿Por qué suplementar tu dieta?</h3>
+        <div className="rounded-3xl border border-gray-200 bg-white/95 p-6 sm:p-8 shadow-sm">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-6">¿Por qué suplementar tu dieta?</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                <span className="mr-2">🥗</span> Deficiencias nutricionales
-              </h4>
-              <p className="text-purple-700 text-sm mb-4">
-                Incluso con una dieta balanceada, es difícil obtener todos los nutrientes 
-                que nuestro cuerpo necesita para funcionar óptimamente.
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold text-purple-800 mb-3 flex items-center">
-                <span className="mr-2">🏃‍♀️</span> Estilo de vida activo
-              </h4>
-              <p className="text-purple-700 text-sm mb-4">
-                El ejercicio intenso y el estrés diario aumentan nuestras necesidades 
-                de vitaminas y minerales específicos.
-              </p>
-            </div>
+            {reasons.map((reason) => (
+              <div key={reason.title} className="rounded-2xl border border-gray-100 bg-white p-5">
+                <p className="text-[10px] uppercase tracking-[0.35em] text-gray-400 mb-2">Motivo</p>
+                <h4 className="font-semibold text-gray-900 mb-2">{reason.title}</h4>
+                <p className="text-sm text-gray-600 leading-relaxed">{reason.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
 
       <div className="mb-12">
-        <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Suplementos esenciales por edad</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-            <div className="text-3xl mb-3">👦</div>
-            <h4 className="font-semibold text-gray-900 mb-3">18-30 años</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Complejo B para energía</li>
-              <li>• Vitamina D3</li>
-              <li>• Omega 3</li>
-              <li>• Probióticos</li>
-            </ul>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-            <div className="text-3xl mb-3">👨</div>
-            <h4 className="font-semibold text-gray-900 mb-3">30-50 años</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Magnesio para estrés</li>
-              <li>• Antioxidantes (C, E)</li>
-              <li>• Coenzima Q10</li>
-              <li>• Multivitamínico</li>
-            </ul>
-          </div>
-          <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-            <div className="text-3xl mb-3">👴</div>
-            <h4 className="font-semibold text-gray-900 mb-3">50+ años</h4>
-            <ul className="text-sm text-gray-600 space-y-1">
-              <li>• Calcio + Vitamina K2</li>
-              <li>• B12 para memoria</li>
-              <li>• Colágeno</li>
-              <li>• Curcumina</li>
-            </ul>
+        <div className="rounded-3xl border border-gray-200 bg-white/95 p-6 sm:p-8 shadow-sm">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-6 text-center">Suplementos esenciales por edad</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {ageGroups.map((group) => (
+              <div key={group.title} className="rounded-2xl border border-gray-100 bg-white p-5">
+                <p className="text-[10px] uppercase tracking-[0.35em] text-gray-400 mb-2">Etapa</p>
+                <h4 className="font-semibold text-gray-900 mb-3">{group.title}</h4>
+                <ul className="space-y-2 text-sm text-gray-600">
+                  {group.items.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-gray-900" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
         </div>
       </div>

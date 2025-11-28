@@ -2,6 +2,22 @@
 import creatinasImg from '../../assets/images/creatinas.jpg';
 
 const Creatinas = () => {
+  const formats = [
+    { title: 'Creatina monohidrato', description: 'La forma más estudiada, perfecta para iniciar cualquier protocolo de fuerza.' },
+    { title: 'Creatina HCL', description: 'Mayor solubilidad y digestión ligera para quienes buscan cero retención.' }
+  ];
+
+  const benefits = [
+    ['Hasta 15% más de fuerza en movimientos explosivos', 'Mayor número de repeticiones efectivas', 'Recuperación rápida entre series'],
+    ['Aumento real del volumen muscular', 'Mejor síntesis de proteínas', 'Hidratación celular optimizada']
+  ];
+
+  const protocol = [
+    { step: '01', title: 'Fase de carga (opcional)', description: '20 g diarios durante 5 días divididos en 4 tomas iguales.' },
+    { step: '02', title: 'Mantenimiento', description: '3-5 g al día idealmente post-entreno junto a una fuente de carbohidratos.' },
+    { step: '03', title: 'Hidratación', description: 'Asegura al menos 2.5 L de agua diarios para aprovechar la creatina intracelular.' }
+  ];
+
   return (
     <CategoryPageBase
       title="Creatinas"
@@ -22,69 +38,55 @@ const Creatinas = () => {
         )
       }}
       description={
-        <div className="text-left">
-          <p className="mb-4">
-            La <strong>creatina</strong> es uno de los suplementos más estudiados y efectivos para 
-            aumentar la fuerza, potencia y volumen muscular. Nuestras creatinas son de máxima pureza.
+        <div className="space-y-6 text-left">
+          <p className="text-gray-700 leading-relaxed">
+            La <strong>creatina</strong> es el estándar para incrementar fuerza, potencia y volumen muscular. Trabajamos con materias primas
+            certificadas que garantizan pureza y trazabilidad lote a lote.
           </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-red-7000">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Creatina Monohidrato</h3>
-              <p className="text-gray-600">La forma más estudiada y efectiva. Ideal para principiantes.</p>
-            </div>
-            <div className="bg-white p-6 rounded-lg shadow-sm border-l-4 border-red-7000">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">Creatina HCL</h3>
-              <p className="text-gray-600">Mayor solubilidad, sin retención de líquidos.</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {formats.map((format) => (
+              <div key={format.title} className="rounded-2xl border border-gray-200 bg-white/90 p-5 shadow-sm">
+                <p className="text-[11px] uppercase tracking-[0.35em] text-gray-500 mb-3">Formato</p>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{format.title}</h3>
+                <p className="text-sm text-gray-600">{format.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       }
     >
-      {/* Contenido específico para creatinas */}
       <div className="mb-12">
-        <div className="bg-red-700 p-6 rounded-lg">
-          <h3 className="text-2xl font-bold text-red-700 mb-3">Beneficios comprobados</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-red-700">
-            <div>
-              <h4 className="font-semibold mb-2">🏋️‍♂️ Rendimiento</h4>
-              <ul className="list-disc list-inside space-y-1 text-sm">
-                <li>+15% de fuerza en ejercicios explosivos</li>
-                <li>Mayor resistencia en entrenamientos intensos</li>
-                <li>Recuperación más rápida entre series</li>
+        <div className="rounded-3xl border border-gray-200 bg-white/95 p-6 sm:p-8 shadow-sm">
+          <div className="flex items-center justify-between gap-3 flex-wrap mb-6">
+            <h3 className="text-2xl font-semibold text-gray-900">Beneficios comprobados</h3>
+            <span className="text-xs uppercase tracking-[0.35em] text-gray-500">Datos reales</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {benefits.map((group, idx) => (
+              <ul key={idx} className="space-y-3 text-sm text-gray-700">
+                {group.map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-1 h-1.5 w-1.5 rounded-full bg-gray-900" />
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-2">💪 Desarrollo Muscular</h4>
-              <ul className="list-disc list-inside space-y-1 text-sm">
-                <li>Aumento del volumen muscular</li>
-                <li>Mejor síntesis de proteínas</li>
-                <li>Hidratación celular mejorada</li>
-              </ul>
-            </div>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* Sección de cómo tomar */}
       <div className="mb-12">
-        <h3 className="text-2xl font-bold text-gray-900 mb-4">¿Cómo tomar creatina?</h3>
-        <div className="bg-gray-100 p-6 rounded-lg">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div>
-              <div className="text-3xl mb-2">📅</div>
-              <h4 className="font-semibold mb-2">Fase de carga (opcional)</h4>
-              <p className="text-sm text-gray-600">20g por 5 días divididos en 4 tomas</p>
-            </div>
-            <div>
-              <div className="text-3xl mb-2">🥤</div>
-              <h4 className="font-semibold mb-2">Mantenimiento</h4>
-              <p className="text-sm text-gray-600">3-5g diarios, preferible post-entreno</p>
-            </div>
-            <div>
-              <div className="text-3xl mb-2">💧</div>
-              <h4 className="font-semibold mb-2">Hidratación</h4>
-              <p className="text-sm text-gray-600">Bebe abundante agua durante todo el día</p>
-            </div>
+        <div className="rounded-3xl border border-gray-200 bg-white/95 p-6 sm:p-8 shadow-sm">
+          <h3 className="text-2xl font-semibold text-gray-900 mb-6">¿Cómo tomar creatina?</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {protocol.map((item) => (
+              <div key={item.step} className="rounded-2xl border border-gray-100 bg-white p-5">
+                <p className="text-[10px] uppercase tracking-[0.35em] text-gray-400 mb-2">{item.step}</p>
+                <h4 className="font-semibold text-gray-900 mb-2">{item.title}</h4>
+                <p className="text-sm text-gray-600 leading-relaxed">{item.description}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
