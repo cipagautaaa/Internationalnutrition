@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { getWhatsappUrl } from '../utils/whatsapp';
 
 const SimpleCheckout = () => {
   const { items, getTotalPrice, clearCart } = useCart();
@@ -11,9 +12,6 @@ const SimpleCheckout = () => {
   const [loading, setLoading] = useState(false);
   // Dejar por defecto el formulario embebido (Bricks)
   const [paymentMethod, setPaymentMethod] = useState('card_api');
-
-  // Número de WhatsApp (puedes cambiarlo por el tuyo)
-  const WHATSAPP_NUMBER = '573006851794'; // Reemplaza con tu número real
 
   if (items.length === 0) {
     return (
@@ -45,23 +43,21 @@ const SimpleCheckout = () => {
     if (paymentMethod === 'transferencia') {
       // Crear mensaje para WhatsApp con los detalles de la orden
       const orderDetails = items.map(item => 
+    if (paymentMethod === 'transferencia') {
+      // Crear mensaje para WhatsApp con los detalles de la orden
+      const orderDetails = items.map(item => 
         `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString()}`
       ).join('\n');
       
-      const message = encodeURIComponent(
-        `¡Hola! Quiero realizar una compra por transferencia bancaria 💰\n\n` +
+      const message = `¡Hola! Quiero realizar una compra por transferencia bancaria 💰\n\n` +
         `👤 Cliente: ${user.firstName} ${user.lastName}\n` +
         `📧 Email: ${user.email}\n\n` +
         `🛒 PRODUCTOS:\n${orderDetails}\n\n` +
         `💵 TOTAL: $${getTotalPrice().toLocaleString()}\n\n` +
-        `Por favor, envíame los datos bancarios para realizar la transferencia. ¡Gracias!`
-      );
+        `Por favor, envíame los datos bancarios para realizar la transferencia. ¡Gracias!`;
       
-      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+      const whatsappUrl = getWhatsappUrl(message);
       window.open(whatsappUrl, '_blank');
-      
-      // Limpiar carrito después de enviar mensaje
-      setTimeout(() => {
         clearCart();
         setLoading(false);
         alert('Te hemos redirigido a WhatsApp. ¡Esperamos tu mensaje!');
@@ -70,23 +66,21 @@ const SimpleCheckout = () => {
 
   } else if (paymentMethod === 'efectivo') {
       // Crear mensaje para WhatsApp para pago en efectivo
+  } else if (paymentMethod === 'efectivo') {
+      // Crear mensaje para WhatsApp para pago en efectivo
       const orderDetails = items.map(item => 
         `• ${item.name} x${item.quantity} - $${(item.price * item.quantity).toLocaleString()}`
       ).join('\n');
       
-      const message = encodeURIComponent(
-        `¡Hola! Quiero realizar una compra con pago en efectivo 💵\n\n` +
+      const message = `¡Hola! Quiero realizar una compra con pago en efectivo 💵\n\n` +
         `👤 Cliente: ${user.firstName} ${user.lastName}\n` +
         `📧 Email: ${user.email}\n\n` +
         `🛒 PRODUCTOS:\n${orderDetails}\n\n` +
         `💵 TOTAL: $${getTotalPrice().toLocaleString()}\n\n` +
-        `Pagaré en efectivo al recibir el pedido. Por favor, coordina la entrega conmigo. ¡Gracias!`
-      );
+        `Pagaré en efectivo al recibir el pedido. Por favor, coordina la entrega conmigo. ¡Gracias!`;
       
-      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
-      window.open(whatsappUrl, '_blank');
-      
-      // Limpiar carrito después de enviar mensaje
+      const whatsappUrl = getWhatsappUrl(message);
+      window.open(whatsappUrl, '_blank');r mensaje
       setTimeout(() => {
         clearCart();
         setLoading(false);

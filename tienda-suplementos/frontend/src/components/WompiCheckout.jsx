@@ -3,6 +3,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { getWhatsappUrl } from '../utils/whatsapp';
 import logoImg from '../assets/images/Captura_de_pantalla_2025-08-09_192459-removebg-preview.png';
 
 const WompiCheckout = () => {
@@ -127,14 +128,8 @@ ${productosTexto}
 
 Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias! 🙏`;
 
-    // Codificar mensaje para URL
-    const mensajeCodificado = encodeURIComponent(mensaje);
-    
-    // Número de WhatsApp desde variable de entorno
-    const numeroWhatsApp = import.meta.env.VITE_WHATSAPP_NUMBER || '573006851794';
-    
-    // Crear URL de WhatsApp
-    const whatsappURL = `https://wa.me/${numeroWhatsApp}?text=${mensajeCodificado}`;
+    // Crear URL de WhatsApp usando el helper
+    const whatsappURL = getWhatsappUrl(mensaje);
     
     // Abrir WhatsApp
     window.open(whatsappURL, '_blank');
