@@ -6,9 +6,15 @@ const sanitizeNumber = (number) => {
 };
 
 export const getWhatsappUrl = (message, number = DEFAULT_WHATSAPP_NUMBER) => {
+  // Asegurar que el mensaje tenga contenido
   const text = message && message.trim() ? message.trim() : 'Hola, necesito asesoría.';
   const phone = sanitizeNumber(number);
-  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+  
+  // Usar api.whatsapp.com para mejor compatibilidad con mensajes largos
+  // Formato: https://api.whatsapp.com/send?phone=NUMERO&text=MENSAJE
+  const url = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(text)}`;
+  
+  return url;
 };
 
 export const buildOrderSummaryMessage = (order, prefix = 'Hola, necesito ayuda con mi pedido') => {
