@@ -127,7 +127,7 @@ const ProductCard = ({ product }) => {
       {/* Imagen con hover zoom y Quick View */}
       <Link
         to={`/product/${product.id || product._id}`}
-        className="block relative overflow-hidden aspect-square bg-gradient-to-br from-gray-50 via-white to-gray-100/50"
+        className="block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 h-[230px] xs:h-[260px] sm:h-[300px] flex items-center justify-center"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
         <img
