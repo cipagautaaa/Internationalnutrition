@@ -8,7 +8,7 @@ async function cleanAdminPin() {
     console.log('✅ Conectado a Atlas');
     
     const result = await User.updateOne(
-      { email: 'internationalnutritioncol@gmail.com' },
+      { email: 'admin@supps.com' },
       { 
         $set: { 
           adminPinAttempts: 0, 
@@ -19,7 +19,7 @@ async function cleanAdminPin() {
     
     console.log('✅ Actualización result:', result);
     
-    const admin = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
+    const admin = await User.findOne({ email: 'admin@supps.com' });
     console.log('\n📊 Admin después de limpiar:');
     console.log('   email:', admin.email);
     console.log('   role:', admin.role);

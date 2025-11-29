@@ -13,7 +13,7 @@ mongoose.connection.on('connected', async () => {
     const pinHash = await bcrypt.hash(adminPin, 10);
     
     const newAdmin = new User({
-      email: 'internationalnutritioncol@gmail.com',
+      email: 'admin@supps.com',
       firstName: 'Admin',
       lastName: 'System',
       password: await bcrypt.hash('123456', 10),
@@ -27,7 +27,7 @@ mongoose.connection.on('connected', async () => {
     
     await newAdmin.save();
     console.log('✅ Admin creado exitosamente');
-    console.log('   Email: internationalnutritioncol@gmail.com');
+    console.log('   Email: admin@supps.com');
     console.log('   PIN: 9999');
     console.log('   Hash: ' + pinHash.substring(0, 30) + '...');
     

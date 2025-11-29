@@ -17,7 +17,7 @@ async function seedOrders() {
 
     // Obtener usuarios y productos
     const user = await User.findOne({ email: 'cliente@supps.com' });
-    const admin = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
+    const admin = await User.findOne({ email: 'admin@supps.com' });
     const products = await Product.find();
 
     if (!user || !admin || products.length < 2) {

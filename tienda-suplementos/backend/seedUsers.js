@@ -7,7 +7,7 @@ const User = require('./models/User');
 
 const users = [
   {
-    email: 'internationalnutritioncol@gmail.com',
+    email: 'admin@supps.com',
     firstName: 'Admin',
     lastName: 'Supps',
     phone: '1234567890',

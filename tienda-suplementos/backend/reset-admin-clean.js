@@ -6,7 +6,7 @@ async function reset() {
   try {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://mongo:27017/tienda-suplementos');
     
-    const admin = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
+    const admin = await User.findOne({ email: 'admin@supps.com' });
     console.log('ANTES:');
     console.log('  adminPinAttempts:', admin.adminPinAttempts);
     console.log('  adminPinLockedUntil:', admin.adminPinLockedUntil);

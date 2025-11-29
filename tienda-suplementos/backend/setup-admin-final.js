@@ -13,12 +13,12 @@ async function setupAdmin() {
     console.log('✅ Conectado a MongoDB');
 
     // Buscar y actualizar el admin
-    console.log('\n🔍 Actualizando usuario internationalnutritioncol@gmail.com...');
+    console.log('\n🔍 Actualizando usuario admin@supps.com...');
     
     const hashedPin = await bcrypt.hash('1234', 10);
     
     const result = await User.findOneAndUpdate(
-      { email: 'internationalnutritioncol@gmail.com' },
+      { email: 'admin@supps.com' },
       {
         $set: {
           role: 'admin',

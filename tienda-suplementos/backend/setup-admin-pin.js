@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const User = require('./models/User');
 
-const adminEmail = 'internationalnutritioncol@gmail.com';
+const adminEmail = 'admin@supps.com';
 const adminPin = '1234'; // PIN por defecto para pruebas
 
 async function setupAdminPin() {

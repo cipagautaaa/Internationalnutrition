@@ -11,7 +11,7 @@ async function run() {
     const loginRes = await fetch(BASE + '/api/auth/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: 'internationalnutritioncol@gmail.com' })
+      body: JSON.stringify({ email: 'admin@supps.com' })
     });
     const loginJson = await loginRes.json();
     console.log('Login response:', loginJson);

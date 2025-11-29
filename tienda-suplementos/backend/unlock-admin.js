@@ -11,7 +11,7 @@ async function unlockAdmin() {
     const pastDate = new Date(Date.now() - 20 * 60 * 1000); // 20 minutos atrás
     
     const result = await User.updateOne(
-      { email: 'internationalnutritioncol@gmail.com' },
+      { email: 'admin@supps.com' },
       { 
         $set: { 
           adminPinAttempts: 0, 
@@ -23,7 +23,7 @@ async function unlockAdmin() {
     console.log('✅ Update result:', result);
     
     // Leer de nuevo
-    const admin = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
+    const admin = await User.findOne({ email: 'admin@supps.com' });
     const now = new Date();
     const isLocked = admin.adminPinLockedUntil && new Date(admin.adminPinLockedUntil) > now;
     

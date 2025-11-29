@@ -5,7 +5,7 @@ const User = require('./models/User');
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://mongo:27017/tienda_suplementos');
 
 mongoose.connection.on('connected', async () => {
-  const user = await User.findOne({email: 'internationalnutritioncol@gmail.com'});
+  const user = await User.findOne({email: 'admin@supps.com'});
   console.log('Hash:', user.adminPinHash);
   console.log('Hash length:', user.adminPinHash.length);
   

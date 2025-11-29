@@ -18,7 +18,7 @@ async function resetPinHash() {
     console.log('Nuevo Hash:', newHash);
     
     const result = await users.updateOne(
-      { email: 'internationalnutritioncol@gmail.com' },
+      { email: 'admin@supps.com' },
       { $set: { adminPinHash: newHash, adminPinAttempts: 0, adminPinLockedUntil: null } }
     );
     
@@ -26,7 +26,7 @@ async function resetPinHash() {
     
     // Verificar
     console.log('\n=== VERIFICANDO ===');
-    const admin = await users.findOne({ email: 'internationalnutritioncol@gmail.com' });
+    const admin = await users.findOne({ email: 'admin@supps.com' });
     console.log('adminPinHash:', admin.adminPinHash);
     console.log('adminPinAttempts:', admin.adminPinAttempts);
     console.log('adminPinLockedUntil:', admin.adminPinLockedUntil);

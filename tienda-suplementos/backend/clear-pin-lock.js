@@ -7,7 +7,7 @@ async function clearLock() {
     await mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/tienda_suplementos');
     
     const user = await User.findOneAndUpdate(
-      { email: 'internationalnutritioncol@gmail.com' },
+      { email: 'admin@supps.com' },
       { 
         $set: { 
           adminPinAttempts: 0,

@@ -8,7 +8,7 @@ mongoose.connection.on('connected', async () => {
     console.log('🔄 Limpiando PIN lock...');
     
     const result = await User.updateOne(
-      { email: 'internationalnutritioncol@gmail.com' },
+      { email: 'admin@supps.com' },
       { 
         $set: { 
           adminPinLockedUntil: null, 
@@ -19,7 +19,7 @@ mongoose.connection.on('connected', async () => {
     
     console.log('✅ Update result:', result.modifiedCount, 'documents modified');
     
-    const user = await User.findOne({ email: 'internationalnutritioncol@gmail.com' });
+    const user = await User.findOne({ email: 'admin@supps.com' });
     console.log('✅ Admin after cleanup:');
     console.log('   adminPinLockedUntil:', user.adminPinLockedUntil);
     console.log('   adminPinAttempts:', user.adminPinAttempts);
