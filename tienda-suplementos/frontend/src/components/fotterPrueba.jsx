@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { Facebook, Instagram, MessageCircle, Mail, Phone, MapPin, Clock, Shield, Truck, Award, Heart } from 'lucide-react';
+import { Instagram, MessageCircle, Mail, Phone, MapPin, Clock, Shield, Truck, Award, Tiktok } from 'lucide-react';
 import { getWhatsappUrl } from '../utils/whatsapp';
 // Importamos el SVG correcto solicitado
 import logoImage from '../assets/images/image.png';
@@ -128,8 +128,8 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-red-7000 flex-shrink-0" />
-                <a href="mailto:info@intsuplementos.com" className="text-gray-300 hover:text-red-700 transition-colors text-sm">
-                  info@intsuplementos.com
+                <a href="mailto:internationalnutritioncol@gmail.com" className="text-gray-300 hover:text-red-700 transition-colors text-sm">
+                  internationalnutritioncol@gmail.com
                 </a>
               </div>
               <div className="flex items-center space-x-3">
@@ -146,13 +146,25 @@ const Footer = () => {
                 Síguenos
               </h3>
               <div className="flex space-x-4">
-                <a href="#" target="_blank" rel="noopener noreferrer" className="bg-red-700 hover:bg-red-700 p-2 rounded transition-all duration-300 transform hover:scale-110">
-                  <Facebook className="h-6 w-6 text-white" />
+                <a
+                  href="https://www.tiktok.com/@int.supps?_r=1&_t=ZS-91s4lxW5aon"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gray-900 hover:bg-gray-800 p-2 rounded transition-all duration-300 transform hover:scale-110"
+                  aria-label="TikTok"
+                >
+                  <Tiktok className="h-6 w-6 text-white" />
                 </a>
-                <a href="#" target="_blank" rel="noopener noreferrer" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 p-2 rounded transition-all duration-300 transform hover:scale-110">
+                <a
+                  href="https://www.instagram.com/int.supps?igsh=MWo5ajB1cTVzMGo2eQ=="
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 p-2 rounded transition-all duration-300 transform hover:scale-110"
+                  aria-label="Instagram"
+                >
                   <Instagram className="h-6 w-6 text-white" />
                 </a>
-                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="bg-green-600 hover:bg-green-700 p-2 rounded transition-all duration-300 transform hover:scale-110">
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer" className="bg-green-600 hover:bg-green-700 p-2 rounded transition-all duration-300 transform hover:scale-110" aria-label="WhatsApp">
                   <MessageCircle className="h-6 w-6 text-white" />
                 </a>
               </div>

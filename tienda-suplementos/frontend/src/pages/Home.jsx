@@ -1,5 +1,5 @@
 ﻿import { Link } from 'react-router-dom';
-import { ArrowRight, Star, Truck, Shield, RotateCcw, CheckCircle, ChevronDown } from 'lucide-react';
+import { ArrowRight, Star, Truck, RotateCcw, CheckCircle, ChevronDown, MessageCircle } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import FeaturedProductCard from '../components/FeaturedProductCard';
 import SelectProductModal from '../components/SelectProductModal';
@@ -32,6 +32,10 @@ const Home = () => {
   const promoImageSrc = CLOUDINARY_ASSETS.images?.foto2 || bannerPromoFallback;
   const advisoryWhatsappLink = useMemo(
     () => getWhatsappUrl('Hola, necesito asesoría para elegir mis suplementos.'),
+    []
+  );
+  const personalizedWhatsappLink = useMemo(
+    () => getWhatsappUrl('necesito asesoria personalizada'),
     []
   );
 
@@ -277,10 +281,10 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-left mb-10 sm:mb-16">
             <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 tracking-tight">
-              Destacados
+              ¡LO MAS VENDIDO!
             </h2>
             <p className="text-base sm:text-xl text-gray-600 font-light">
-              Los Productos favoritos de nuestros clientes
+              Estos son los productos que nuestros clientes prefieren
             </p>
             {isAdmin && (
               <p className="text-sm text-red-700 font-medium mt-2">
@@ -353,17 +357,28 @@ const Home = () => {
             </div>
 
             {/* Feature 3 */}
-            <div className="text-center group cursor-pointer">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-red-600 to-red-700 rounded-full mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-red-600/50 group-hover:-translate-y-1 animate-float">
-                <Shield className="w-7 h-7 text-white" />
+            <a
+              href={personalizedWhatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-center group cursor-pointer relative focus:outline-none focus-visible:ring-4 focus-visible:ring-green-400/70 rounded-2xl"
+              aria-label="Solicitar asesoría personalizada por WhatsApp"
+            >
+              <span className="absolute inset-0 rounded-2xl bg-gradient-to-br from-green-500/15 via-emerald-500/10 to-transparent blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" aria-hidden="true" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-500 via-emerald-500 to-green-600 rounded-full mb-4 transition-all duration-300 group-hover:scale-110 group-hover:shadow-[0_10px_30px_rgba(16,185,129,0.55)] group-hover:-translate-y-1 animate-pulse">
+                <MessageCircle className="w-7 h-7 text-white" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2 transition-colors group-hover:text-red-700">
-                Calidad Premium
+              <h3 className="text-lg font-semibold text-gray-900 mb-2 transition-colors group-hover:text-green-600">
+                Asesoria gratis
               </h3>
               <p className="text-gray-600 font-light">
-                Productos certificados
+                Recibe atencion personalizada
               </p>
-            </div>
+              <div className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-green-600 group-hover:text-green-700">
+                Ir a WhatsApp
+                <ArrowRight className="w-4 h-4" />
+              </div>
+            </a>
 
             {/* Feature 4 */}
             <div className="text-center group cursor-pointer">
@@ -468,12 +483,19 @@ const Home = () => {
                     </p>
                     
                     {/* Horario */}
-                    <div className="mb-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-100">
-                      <p className="text-sm text-white/80 mb-1">
-                        <span className="font-semibold">Horario de apertura:</span>
-                      </p>
-                      <p className="text-sm text-white/90">Abiertos todos los días – 10:00am to 8:00pm</p>
-                      <p className="text-xs text-white/70">Festivos también</p>
+                    <div className="mb-6 bg-white/10 backdrop-blur rounded-2xl p-4 border border-white/20 shadow-lg shadow-black/20">
+                      <p className="text-xs uppercase tracking-[0.2em] text-white/80 font-semibold mb-2">Horario de atencion</p>
+                      <div className="space-y-2">
+                        <div>
+                          <p className="text-sm text-white font-semibold">Lunes a Sabado</p>
+                          <p className="text-sm text-white/90">9:00 AM a 1:00 PM y 3:00 PM a 8:00 PM</p>
+                        </div>
+                        <div className="h-px bg-white/20" />
+                        <div>
+                          <p className="text-sm text-white font-semibold">Domingos y Festivos</p>
+                          <p className="text-sm text-white/90">10:00 AM a 4:00 PM</p>
+                        </div>
+                      </div>
                     </div>
 
                     {/* Botón CTA */}

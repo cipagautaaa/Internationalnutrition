@@ -6,6 +6,8 @@ import creatinasImg from '../assets/images/creatinas.jpg';
 import proteinasImg from '../assets/images/proteinas.jpg';
 import preentrenosImg from '../assets/images/preentrenos.jpg';
 import aminoacidosImg from '../assets/images/aminos.jpg';
+import saludImg from '../assets/images/vitaminas.jpg';
+import comidasImg from '../assets/images/comidas.jpg';
 
 // 6 categorías
 const BASE = [
@@ -13,8 +15,8 @@ const BASE = [
   { id: 2, name: 'Pre-entrenos y Quemadores', image: preentrenosImg, link: '/products/preworkout' },
   { id: 3, name: 'Creatinas', image: creatinasImg, link: '/products/creatina' },
   { id: 4, name: 'Aminoácidos y Recuperadores', image: aminoacidosImg, link: '/products/aminoacidos' },
-  { id: 5, name: 'Salud y Bienestar', image: proteinasImg, link: '/products/salud' },
-  { id: 6, name: 'Comidas con proteína', image: proteinasImg, link: '/products/comida' }
+  { id: 5, name: 'Salud y Bienestar', image: saludImg, link: '/products/salud' },
+  { id: 6, name: 'Comidas con proteína', image: comidasImg, link: '/products/comida' }
 ];
 
 export default function CategoryCarouselClean() {
