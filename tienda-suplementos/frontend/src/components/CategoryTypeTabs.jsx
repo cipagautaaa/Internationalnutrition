@@ -1,5 +1,23 @@
 ﻿import { useState, useEffect } from 'react';
 
+const HEALTH_TYPES = ['Multivitamínicos', 'Precursores de testosterona', 'Suplementos para la salud'];
+
+const normalizeText = (value = '') =>
+  value
+    .toString()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim();
+
+const HEALTH_CATEGORY_KEYS = new Set(
+  ['Salud y Bienestar', 'Vitaminas', 'Para la salud', 'Complementos', 'Rendimiento hormonal'].map(normalizeText)
+);
+
+const HEALTH_MULTIVIT_REGEX = /(multi|vitamin)/i;
+const HEALTH_TESTO_REGEX = /(testo|tribu|zma|andro|mascul|alpha|booster)/i;
+const HEALTH_SUPP_REGEX = /(suplement|salud|omega|magnes|miner|colageno|adaptog|immune|probio|bienestar|wellness)/i;
+
 // Etiquetas visibles (sin duplicados) por categoría
 const VISIBLE_TYPES = {
   'Proteínas': ['Limpias', 'Hipercalóricas', 'Veganas'],
@@ -7,7 +25,13 @@ const VISIBLE_TYPES = {
   'Creatina': ['Monohidratada', 'HCL'],
   'Creatinas': ['Monohidratada', 'HCL'],
   'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
-  'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa']
+  'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa'],
+  // Salud y Bienestar + sinónimos legacy
+  'Salud y Bienestar': HEALTH_TYPES,
+  'Vitaminas': HEALTH_TYPES,
+  'Para la salud': HEALTH_TYPES,
+  'Complementos': HEALTH_TYPES,
+  'Rendimiento hormonal': HEALTH_TYPES
 };
 
 // Mapa de etiqueta visible/sinónimos -> forma canónica almacenada en BD
@@ -34,7 +58,23 @@ const VISIBLE_TO_CANONICAL = {
   'Hipercalórica': 'Hipercalórica',
   'Vegana': 'Vegana',
   'QUEMADORES DE GRASA': 'Quemadores de grasa',
-  'PRE ENTRENO': 'Pre-entrenos'
+  'PRE ENTRENO': 'Pre-entrenos',
+  // Salud y Bienestar (nuevas subcategorías)
+  'Multivitamínicos': 'Multivitamínicos',
+  'Multivitamínico': 'Multivitamínicos',
+  'multivitaminico': 'Multivitamínicos',
+  'multivitaminicos': 'Multivitamínicos',
+  'Precursores de testosterona': 'Precursores de testosterona',
+  'Precursor de testosterona': 'Precursores de testosterona',
+  'Potenciadores masculinos naturales': 'Precursores de testosterona',
+  'Potenciador masculino natural': 'Precursores de testosterona',
+  'Test booster': 'Precursores de testosterona',
+  'Testo booster': 'Precursores de testosterona',
+  'Suplementos para la salud': 'Suplementos para la salud',
+  'Suplemento para la salud': 'Suplementos para la salud',
+  'Vitaminas y minerales': 'Suplementos para la salud',
+  'Colágeno, omega y antioxidantes': 'Suplementos para la salud',
+  'Adaptógenos y suplementos naturales': 'Suplementos para la salud'
 };
 
 /**
@@ -44,14 +84,23 @@ const VISIBLE_TO_CANONICAL = {
 export default function CategoryTypeTabs({ category, products, onFilteredProducts }) {
   // Aceptar categoría en singular o plural
   const normalizedCategoryName = (category || '').trim();
+  const normalizedCategoryKey = normalizeText(category);
   const baseTypes = VISIBLE_TYPES[category] || VISIBLE_TYPES[normalizedCategoryName] || [];
-  const isCreatineCategory = normalizedCategoryName === 'Creatina' || normalizedCategoryName === 'Creatinas';
+  const isCreatineCategory = normalizedCategoryKey === 'creatina' || normalizedCategoryKey === 'creatinas';
+  const isHealthCategory = HEALTH_CATEGORY_KEYS.has(normalizedCategoryKey);
 
   // Usar una declaración de función (hoisted) para poder llamarla antes de su definición textual
   function canonical(value) {
     if (!value) return value;
-    const key = typeof value === 'string' ? value.trim() : value;
-    return VISIBLE_TO_CANONICAL[key] || key;
+    if (typeof value !== 'string') return value;
+    const key = value.trim();
+    const normalized = normalizeText(key);
+    const direct = VISIBLE_TO_CANONICAL[key] || VISIBLE_TO_CANONICAL[normalized];
+    if (direct) return direct;
+    if (HEALTH_TESTO_REGEX.test(normalized)) return 'Precursores de testosterona';
+    if (HEALTH_MULTIVIT_REGEX.test(normalized)) return 'Multivitamínicos';
+    if (HEALTH_SUPP_REGEX.test(normalized)) return 'Suplementos para la salud';
+    return key;
   }
 
   // Ocultar pestañas vacías dinámicamente (si no hay productos para ese tipo)
@@ -61,9 +110,14 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
       .filter(Boolean)
       .map(canonical)
   );
-  const types = isCreatineCategory
+  const types = (isCreatineCategory || isHealthCategory)
     ? baseTypes
-    : baseTypes.filter(t => t === 'Todas' || availableCanonicalTypes.has(canonical(t)) || category === 'Pre-entrenos y Quemadores' || category === 'Pre-entrenos y Energía');
+    : baseTypes.filter(t =>
+        t === 'Todas'
+        || availableCanonicalTypes.has(canonical(t))
+        || category === 'Pre-entrenos y Quemadores'
+        || category === 'Pre-entrenos y Energía'
+      );
 
   const [selectedType, setSelectedType] = useState(types[0] || '');
 
@@ -71,6 +125,7 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
     if (cat === 'Proteínas' || cat === 'Proteina' || cat === 'Proteinas') return 'Limpia';
     if (cat === 'Creatina' || cat === 'Creatinas') return 'Monohidratada';
     if (cat === 'Pre-entrenos y Quemadores' || cat === 'Pre-entrenos y Energía') return 'Pre-entrenos';
+    if (HEALTH_CATEGORY_KEYS.has(normalizeText(cat))) return 'Multivitamínicos';
     return null;
   };
 
@@ -78,13 +133,19 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
 
   // Heurística mínima para inferir tipo cuando no viene del backend
   const inferTipoFromName = (name = '', cat = '') => {
-    const n = String(name).toLowerCase();
-    const c = String(cat).toLowerCase();
+    const n = normalizeText(name);
+    const c = normalizeText(cat);
     if (c.includes('pre-entrenos') || c.includes('pre entrenos')) {
       // Palabras comunes en termogénicos/quemadores
       const burnerHints = /(lipo|hydroxi|burn|stack|cut|drene|core|redux|slim|shred|fat\s*burn)/i;
       if (burnerHints.test(n)) return 'Quemadores de grasa';
       return 'Pre-entrenos';
+    }
+    if (HEALTH_CATEGORY_KEYS.has(c)) {
+      if (HEALTH_TESTO_REGEX.test(n)) return 'Precursores de testosterona';
+      if (HEALTH_MULTIVIT_REGEX.test(n)) return 'Multivitamínicos';
+      if (HEALTH_SUPP_REGEX.test(n)) return 'Suplementos para la salud';
+      return getDefaultType(category) || 'Suplementos para la salud';
     }
     return undefined;
   };

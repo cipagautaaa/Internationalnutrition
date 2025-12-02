@@ -20,6 +20,27 @@ const Salud = () => {
     }
   ];
 
+  const wellnessTypes = [
+    {
+      title: 'Multivitamínicos',
+      badge: 'Balance diario',
+      description: 'Complejos completos para cubrir brechas de micronutrientes y sostener la energía metabólica.',
+      focus: ['Soporte inmune', 'Energía estable', 'Micronutrientes esenciales']
+    },
+    {
+      title: 'Precursores de testosterona',
+      badge: 'Rendimiento hormonal',
+      description: 'Formulados con ZMA, tribulus o fenogreco para apoyar la producción natural de testosterona y la recuperación.',
+      focus: ['Mejor descanso', 'Recuperación muscular', 'Vitalidad masculina']
+    },
+    {
+      title: 'Suplementos para la salud',
+      badge: 'Órganos y bienestar',
+      description: 'Omega 3, magnesio, colágeno y adaptógenos para corazón, articulaciones y manejo del estrés.',
+      focus: ['Salud cardiovascular', 'Cuidado articular', 'Estrés y enfoque']
+    }
+  ];
+
   const ageGroups = [
     {
       title: '18-30 años',
@@ -72,6 +93,39 @@ const Salud = () => {
         </div>
       }
     >
+      <div className="mb-12">
+        <div className="rounded-3xl border border-gray-200 bg-white/95 p-6 sm:p-8 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.35em] text-gray-400">Subcategorías oficiales</p>
+              <h3 className="text-2xl font-semibold text-gray-900">Agrupa tus suplementos con intención</h3>
+            </div>
+            <p className="text-sm text-gray-600 max-w-md">
+              Igual que en Proteínas o Creatinas, ahora puedes filtrar Salud y Bienestar por tres focos clave para comprar o administrar inventario.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {wellnessTypes.map(type => (
+              <div key={type.title} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm">
+                <div className="flex items-center justify-between text-xs font-semibold text-gray-500 mb-2">
+                  <span className="uppercase tracking-[0.3em] text-gray-400">{type.badge}</span>
+                  <span className="px-3 py-1 rounded-full bg-red-50 text-red-700">{type.title}</span>
+                </div>
+                <p className="text-sm text-gray-600 mb-4 leading-relaxed">{type.description}</p>
+                <ul className="space-y-2 text-sm text-gray-700">
+                  {type.focus.map(point => (
+                    <li key={point} className="flex items-start gap-2">
+                      <span className="mt-1 h-1.5 w-1.5 rounded-full bg-red-700" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
       <div className="mb-12">
         <div className="rounded-3xl border border-gray-200 bg-white/95 p-6 sm:p-8 shadow-sm">
           <h3 className="text-2xl font-semibold text-gray-900 mb-6">¿Por qué suplementar tu dieta?</h3>

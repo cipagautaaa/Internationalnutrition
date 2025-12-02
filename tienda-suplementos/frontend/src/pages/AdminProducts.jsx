@@ -60,6 +60,12 @@ const normalizeText = (value) => {
     .trim();
 };
 
+const HEALTH_TYPES = ['Multivitamínicos', 'Precursores de testosterona', 'Suplementos para la salud'];
+const HEALTH_CATEGORY_KEYS = ['Salud y Bienestar', 'salud y bienestar', 'Vitaminas', 'Para la salud', 'Complementos', 'Rendimiento hormonal'];
+const HEALTH_TESTO_TERMS = ['testo', 'tribu', 'zma', 'andro', 'mascul', 'alpha', 'booster'];
+const HEALTH_MULTIVIT_TERMS = ['multivit', 'vitamin'];
+const HEALTH_SUPP_TERMS = ['suplement', 'salud', 'omega', 'magnes', 'miner', 'colageno', 'adaptog', 'immune', 'probio', 'bienestar', 'wellness'];
+
 // Tipos/Subcategorías por categoría (soporta nuevas y legacy)
 const CATEGORY_TYPES = {
   // Proteínas
@@ -80,10 +86,12 @@ const CATEGORY_TYPES = {
   'Aminoácidos': ['BCAA y EAA', 'Glutamina'],
   'aminoácidos y recuperadores': ['BCAA y EAA', 'Glutamina'],
   // Salud y Bienestar
-  'Salud y Bienestar': ['Multivitamínicos'],
-  'salud y bienestar': ['Multivitamínicos'],
-  'Vitaminas': ['Multivitamínicos'],
-  'Para la salud': ['Multivitamínicos'],
+  'Salud y Bienestar': HEALTH_TYPES,
+  'salud y bienestar': HEALTH_TYPES,
+  'Vitaminas': HEALTH_TYPES,
+  'Para la salud': HEALTH_TYPES,
+  'Complementos': HEALTH_TYPES,
+  'Rendimiento hormonal': HEALTH_TYPES,
   // Comidas con proteína
   'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
   'Comida': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']
@@ -93,6 +101,26 @@ const CATEGORY_TYPES_LOOKUP = Object.entries(CATEGORY_TYPES).reduce((acc, [key, 
   acc[normalizeText(key)] = value;
   return acc;
 }, {});
+
+const HEALTH_CATEGORY_KEY_SET = new Set(HEALTH_CATEGORY_KEYS.map(normalizeText));
+const includesAny = (text, terms) => {
+  if (!text) return false;
+  return terms.some(term => text.includes(term));
+};
+const canonicalizeHealthType = (rawType, productName = '') => {
+  const normalizedType = normalizeText(rawType);
+  if (includesAny(normalizedType, HEALTH_MULTIVIT_TERMS)) return 'Multivitamínicos';
+  if (includesAny(normalizedType, HEALTH_TESTO_TERMS)) return 'Precursores de testosterona';
+  if (includesAny(normalizedType, HEALTH_SUPP_TERMS)) return 'Suplementos para la salud';
+
+  const normalizedName = normalizeText(productName);
+  if (includesAny(normalizedName, HEALTH_MULTIVIT_TERMS)) return 'Multivitamínicos';
+  if (includesAny(normalizedName, HEALTH_TESTO_TERMS)) return 'Precursores de testosterona';
+  if (includesAny(normalizedName, HEALTH_SUPP_TERMS)) return 'Suplementos para la salud';
+
+  if (normalizedType || normalizedName) return 'Suplementos para la salud';
+  return '';
+};
 
 const getCategoryTypes = (category) => CATEGORY_TYPES_LOOKUP[normalizeText(category)] || null;
 
@@ -258,15 +286,18 @@ export default function AdminProducts() {
     const normalizedCategoryName = normalizeCategory(product?.category);
     const typesForCategory = getCategoryTypes(normalizedCategoryName);
     const rawType = (product?.tipo || '').trim();
+    const isHealthCategory = HEALTH_CATEGORY_KEY_SET.has(normalizeText(product?.category)) || HEALTH_CATEGORY_KEY_SET.has(normalizeText(normalizedCategoryName));
+    const inferredHealthType = isHealthCategory ? canonicalizeHealthType(rawType, product?.name) : '';
+    const effectiveType = inferredHealthType || rawType;
 
-    if (rawType) {
+    if (effectiveType) {
       if (typesForCategory?.length) {
-        const match = typesForCategory.find(option => normalizeText(option) === normalizeText(rawType));
+        const match = typesForCategory.find(option => normalizeText(option) === normalizeText(effectiveType));
         if (match) {
           return match;
         }
       }
-      return rawType;
+      return effectiveType;
     }
 
     if (typesForCategory?.length) {

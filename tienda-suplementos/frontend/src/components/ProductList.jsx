@@ -3,6 +3,19 @@ import CategoryTypeTabs from './CategoryTypeTabs';
 import { useEffect, useState, useMemo } from 'react';
 import api from '../services/api';
 
+const normalizeCategory = (value = '') =>
+	value
+		.toString()
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase()
+		.trim();
+
+const proteinCategoryKeys = new Set(['proteinas', 'proteina']);
+const creatineCategoryKeys = new Set(['creatina', 'creatinas']);
+const preworkoutCategoryKeys = new Set(['pre-entrenos y quemadores', 'pre-entrenos y energia']);
+const healthWellnessCategoryKeys = new Set(['salud y bienestar', 'vitaminas', 'para la salud', 'complementos', 'rendimiento hormonal']);
+
 // Props opcionales: category, search, showVariants (si true expande cada variante como tarjeta independiente)
 const ProductList = ({ category, search, showVariants = false }) => {
 	const [products, setProducts] = useState([]);
@@ -11,11 +24,12 @@ const ProductList = ({ category, search, showVariants = false }) => {
 	const [error, setError] = useState('');
 
 	// Determinar si esta categoría usa pestañas de tipo/subcategoría
-	const proteinCategories = ['Proteínas', 'Proteinas', 'Proteina'];
-	const creatineCategories = ['Creatina', 'Creatinas'];
-	const preworkoutCategories = ['Pre-entrenos y Quemadores', 'Pre-entrenos y Energía'];
-	const healthWellnessCategories = ['Salud y Bienestar'];
-	const showTypeTabs = proteinCategories.includes(category) || creatineCategories.includes(category) || preworkoutCategories.includes(category) || healthWellnessCategories.includes(category);
+	const normalizedCategory = normalizeCategory(category);
+	const isProteinCategory = proteinCategoryKeys.has(normalizedCategory);
+	const isCreatineCategory = creatineCategoryKeys.has(normalizedCategory);
+	const isPreworkoutCategory = preworkoutCategoryKeys.has(normalizedCategory);
+	const isHealthCategory = healthWellnessCategoryKeys.has(normalizedCategory);
+	const showTypeTabs = isProteinCategory || isCreatineCategory || isPreworkoutCategory || isHealthCategory;
 
 	// Importante: TODOS los hooks deben llamarse en el mismo orden en cada render
 	// Calculamos displayProducts con useMemo ANTES de cualquier return condicional
@@ -69,7 +83,7 @@ const ProductList = ({ category, search, showVariants = false }) => {
 						expanded = variantCards;
 					}
 					setProducts((expanded || []).filter(Boolean));
-					if (category !== 'Proteínas' && category !== 'Creatina' && category !== 'Creatinas' && category !== 'Pre-entrenos y Quemadores' && category !== 'Salud y Bienestar') {
+					if (!showTypeTabs) {
 						setFilteredProducts((expanded || []).filter(Boolean));
 					}
 				}
@@ -81,7 +95,7 @@ const ProductList = ({ category, search, showVariants = false }) => {
 		};
 		fetchProducts();
 		return () => { cancelled = true; };
-	}, [category, search, showVariants]);
+	}, [category, search, showVariants, showTypeTabs]);
 
 	// Salidas tempranas (después de definir todos los hooks)
 	if (loading) return <p className="text-gray-400">Cargando productos...</p>;
@@ -89,8 +103,7 @@ const ProductList = ({ category, search, showVariants = false }) => {
 	if (!products.length) return <p className="text-gray-400">No hay productos.</p>;
 
 	// Separar proteínas limpias y veganas para mostrar con divisor
-	const isProteinsCategory = proteinCategories.includes(category);
-	const shouldSeparateVegan = isProteinsCategory && filteredProducts.some(p => {
+	const shouldSeparateVegan = isProteinCategory && filteredProducts.some(p => {
 		const tipo = p.tipo || p.productType || p.type || '';
 		return tipo.toLowerCase().includes('vegan');
 	});

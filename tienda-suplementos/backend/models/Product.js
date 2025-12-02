@@ -25,6 +25,19 @@ const LEGACY_CATEGORIES = [
 
 const ALLOWED_CATEGORIES = Array.from(new Set([...NEW_CATEGORIES, ...LEGACY_CATEGORIES]));
 
+const HEALTH_TIPOS = [
+  'Multivitamínicos',
+  'Multivitamínico',
+  'Precursores de testosterona',
+  'Precursor de testosterona',
+  'Suplementos para la salud',
+  'Suplemento para la salud',
+  'Vitaminas y minerales',
+  'Colágeno, omega y antioxidantes',
+  'Adaptógenos y suplementos naturales',
+  'Potenciadores masculinos naturales'
+];
+
 // Tipos/subcategorías permitidas por categoría (no obligatorio)
 const ALLOWED_TIPOS_BY_CATEGORY = {
   // Proteínas
@@ -40,11 +53,11 @@ const ALLOWED_TIPOS_BY_CATEGORY = {
   'Aminoácidos': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
   'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
   // Salud y Bienestar (fusiona vitaminas, salud y rendimiento hormonal)
-  'Vitaminas': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
-  'Para la salud': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
-  'Salud y Bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
-  'Complementos': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
-  'Rendimiento hormonal': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
+  'Vitaminas': HEALTH_TIPOS,
+  'Para la salud': HEALTH_TIPOS,
+  'Salud y Bienestar': HEALTH_TIPOS,
+  'Complementos': HEALTH_TIPOS,
+  'Rendimiento hormonal': HEALTH_TIPOS,
   // Comidas con proteína (nuevo y legacy)
   'Comida': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
   'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']

@@ -1,10 +1,66 @@
 ﻿import { Link } from 'react-router-dom';
-import { ShoppingCart, Star, Truck } from 'lucide-react';
+import { ShoppingCart, Star } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import QuickAddModal from './QuickAddModal';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
 import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
+
+const normalizeText = (value = '') =>
+  value
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+
+const includesAny = (text, keywords = []) => keywords.some(keyword => text.includes(keyword));
+
+const deriveProductType = (product = {}) => {
+  const category = normalizeText(product.category);
+  const rawType = normalizeText(product.tipo);
+  const name = normalizeText(product.name);
+  const source = rawType || name;
+
+  if (!category && !rawType) return null;
+
+  if (category === 'proteinas' || category === 'proteina') {
+    if (includesAny(source, ['vega', 'vegana', 'plant'])) return 'Proteína vegana';
+    if (includesAny(source, ['hiper', 'gainer', 'mass'])) return 'Proteína hipercalórica';
+    return 'Proteína limpia';
+  }
+
+  if (category === 'creatina' || category === 'creatinas') {
+    if (includesAny(source, ['hcl', 'hydrocl', 'hydroch'])) return 'Creatina HCL';
+    return 'Creatina Monohidratada';
+  }
+
+  if (category === 'pre-entrenos y quemadores' || category === 'pre-entrenos y energia' || category === 'pre-entrenos y energía' || category === 'pre-workout') {
+    if (includesAny(source, ['quem', 'burn', 'cut', 'shred', 'lipo', 'thermo', 'redux'])) return 'Quemadores de grasa';
+    return 'Pre-entrenos';
+  }
+
+  if (category === 'aminoacidos y recuperadores' || category === 'aminoacidos' || category === 'aminoácidos') {
+    if (includesAny(source, ['gluta'])) return 'Glutamina';
+    if (includesAny(source, ['bcaa', 'eaa'])) return 'BCAA y EAA';
+    return 'Recuperación';
+  }
+
+  if (category === 'salud y bienestar' || category === 'vitaminas' || category === 'para la salud' || category === 'complementos' || category === 'rendimiento hormonal') {
+    if (includesAny(source, ['testo', 'tribu', 'zma', 'andro', 'mascul', 'booster'])) return 'Precursores de testosterona';
+    if (includesAny(source, ['multi', 'vitam'])) return 'Multivitamínicos';
+    return 'Suplementos para la salud';
+  }
+
+  if (category === 'comidas con proteina' || category === 'comida') {
+    if (includesAny(source, ['barra', 'cookie', 'snack', 'bite'])) return 'Snacks proteicos';
+    if (includesAny(source, ['pancake', 'waffle', 'mix', 'mezcla'])) return 'Mezclas y harinas';
+    return 'Snacks funcionales';
+  }
+
+  if (product.tipo) return product.tipo;
+  return null;
+};
 
 // ProductCard optimizado con psicología de conversión
 // - Fondo blanco para percepción de limpieza
@@ -16,6 +72,8 @@ import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses
 const ProductCard = ({ product, isCombo = false }) => {
   const { isAuthenticated, user } = useAuth();
   const isAdmin = isAuthenticated && user?.role === 'admin';
+
+  const displayType = useMemo(() => deriveProductType(product), [product]);
 
   const variants = useMemo(
     () => (Array.isArray(product?.variants) ? product.variants : []),
@@ -162,10 +220,14 @@ const ProductCard = ({ product, isCombo = false }) => {
 
       {/* Info del producto */}
       <div className="flex flex-col flex-1 p-1.5 sm:p-5 bg-gradient-to-b from-white to-gray-50/30 gap-1 sm:gap-4">
-        {/* Categoría pequeña - Oculta en móvil */}
-        <div className="hidden sm:flex items-center gap-2 text-xs">
-          <div className="h-0.5 w-6 bg-gradient-to-r from-red-7000 to-red-700 rounded-full"></div>
-          <p className="text-[10px] text-gray-500 uppercase tracking-wider font-semibold">{product.category}</p>
+        <div className="flex flex-wrap items-center gap-2 text-[10px] sm:text-xs text-gray-500 font-semibold tracking-wider">
+          <div className="hidden sm:block h-0.5 w-6 bg-gradient-to-r from-red-7000 to-red-700 rounded-full"></div>
+          <p className="uppercase">{product.category}</p>
+          {displayType && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full border border-red-100 bg-red-50 text-[9px] sm:text-[11px] text-red-700 normal-case tracking-normal">
+              {displayType}
+            </span>
+          )}
         </div>
 
         {/* Título */}

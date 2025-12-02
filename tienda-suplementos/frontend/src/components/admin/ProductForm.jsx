@@ -11,6 +11,16 @@ const categories = [
   'Comidas con proteína'
 ];
 
+const normalizeKey = (value = '') =>
+  value
+    .toString()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+
+const HEALTH_TYPES = ['Multivitamínicos', 'Precursores de testosterona', 'Suplementos para la salud'];
+
 // Tipos/Subcategorías por categoría (sincronizado con AdminProducts.jsx)
 const CATEGORY_TYPES = {
   // Proteínas
@@ -22,10 +32,19 @@ const CATEGORY_TYPES = {
   // Aminoácidos y Recuperadores
   'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina'],
   // Salud y Bienestar
-  'Salud y Bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
+  'Salud y Bienestar': HEALTH_TYPES,
+  'Vitaminas': HEALTH_TYPES,
+  'Para la salud': HEALTH_TYPES,
+  'Complementos': HEALTH_TYPES,
+  'Rendimiento hormonal': HEALTH_TYPES,
   // Comidas con proteína
   'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']
 };
+
+const CATEGORY_TYPES_LOOKUP = Object.entries(CATEGORY_TYPES).reduce((acc, [key, value]) => {
+  acc[normalizeKey(key)] = value;
+  return acc;
+}, {});
 
 // editingMode: boolean indica si estamos editando un producto existente.
 // categoryLocked: boolean indica si la categoría está preseleccionada y no debe ser editable (desde panel de categoría/subcategoría)
@@ -105,8 +124,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     return () => document.removeEventListener('paste', handlePaste);
   }, []);
 
-  const normalizeText = (val) => (val || '').toLowerCase()
-    .normalize('NFD').replace(/\p{Diacritic}/gu, '');
+  const normalizeText = (val) => normalizeKey(val);
   const isProteins = (val) => {
     const n = normalizeText(val);
     return n === 'proteinas' || n === 'proteina';
@@ -125,15 +143,20 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
   };
   const isHealthWellness = (val) => {
     const n = normalizeText(val);
-    return n === 'salud y bienestar' || n === 'vitaminas' || n === 'para la salud';
+    return n === 'salud y bienestar' || n === 'vitaminas' || n === 'para la salud' || n === 'complementos' || n === 'rendimiento hormonal';
   };
   const isMealsProtein = (val) => {
     const n = normalizeText(val);
     return n === 'comidas con proteina' || n === 'comida';
   };
 
-  const getCategoryTypes = (category) => {
-    return CATEGORY_TYPES[category] || null;
+  const getCategoryTypes = (category) => CATEGORY_TYPES_LOOKUP[normalizeKey(category)] || null;
+
+  const getTypeOptions = (category, currentType) => {
+    const options = getCategoryTypes(category) || [];
+    if (!currentType) return options;
+    const exists = options.some(option => normalizeKey(option) === normalizeKey(currentType));
+    return exists ? options : [currentType, ...options];
   };
 
   const update = (k, v) => {
@@ -442,7 +465,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                 className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
               >
                 <option value="">Selecciona un tipo</option>
-                {getCategoryTypes(form.category)?.map(type => (
+                {getTypeOptions(form.category, form.tipo)?.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
@@ -462,7 +485,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                 className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
               >
                 <option value="">Selecciona un tipo</option>
-                {getCategoryTypes(form.category)?.map(type => (
+                {getTypeOptions(form.category, form.tipo)?.map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
