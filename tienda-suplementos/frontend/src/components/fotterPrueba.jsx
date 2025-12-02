@@ -1,5 +1,6 @@
 ﻿import React from 'react';
-import { Instagram, MessageCircle, Mail, Phone, MapPin, Clock, Shield, Truck, Award, Tiktok } from 'lucide-react';
+import { Instagram, MessageCircle, Mail, Phone, MapPin, Clock, Shield, Truck, Award } from 'lucide-react';
+import { SiTiktok } from 'react-icons/si';
 import { getWhatsappUrl } from '../utils/whatsapp';
 // Importamos el SVG correcto solicitado
 import logoImage from '../assets/images/image.png';
@@ -153,7 +154,7 @@ const Footer = () => {
                   className="bg-gray-900 hover:bg-gray-800 p-2 rounded transition-all duration-300 transform hover:scale-110"
                   aria-label="TikTok"
                 >
-                  <Tiktok className="h-6 w-6 text-white" />
+                  <SiTiktok className="h-6 w-6 text-white" />
                 </a>
                 <a
                   href="https://www.instagram.com/int.supps?igsh=MWo5ajB1cTVzMGo2eQ=="
