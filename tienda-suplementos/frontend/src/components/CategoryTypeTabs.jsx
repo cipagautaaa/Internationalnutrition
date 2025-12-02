@@ -43,7 +43,9 @@ const VISIBLE_TO_CANONICAL = {
  */
 export default function CategoryTypeTabs({ category, products, onFilteredProducts }) {
   // Aceptar categoría en singular o plural
-  const baseTypes = VISIBLE_TYPES[category] || VISIBLE_TYPES[category?.trim()] || [];
+  const normalizedCategoryName = (category || '').trim();
+  const baseTypes = VISIBLE_TYPES[category] || VISIBLE_TYPES[normalizedCategoryName] || [];
+  const isCreatineCategory = normalizedCategoryName === 'Creatina' || normalizedCategoryName === 'Creatinas';
 
   // Usar una declaración de función (hoisted) para poder llamarla antes de su definición textual
   function canonical(value) {
@@ -59,7 +61,9 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
       .filter(Boolean)
       .map(canonical)
   );
-  const types = baseTypes.filter(t => t === 'Todas' || availableCanonicalTypes.has(canonical(t)) || category === 'Pre-entrenos y Quemadores' || category === 'Pre-entrenos y Energía');
+  const types = isCreatineCategory
+    ? baseTypes
+    : baseTypes.filter(t => t === 'Todas' || availableCanonicalTypes.has(canonical(t)) || category === 'Pre-entrenos y Quemadores' || category === 'Pre-entrenos y Energía');
 
   const [selectedType, setSelectedType] = useState(types[0] || '');
 
