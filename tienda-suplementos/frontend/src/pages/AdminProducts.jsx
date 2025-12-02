@@ -80,10 +80,10 @@ const CATEGORY_TYPES = {
   'Aminoácidos': ['BCAA y EAA', 'Glutamina'],
   'aminoácidos y recuperadores': ['BCAA y EAA', 'Glutamina'],
   // Salud y Bienestar
-  'Salud y Bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
-  'salud y bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
-  'Vitaminas': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
-  'Para la salud': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales', 'Precursores de testosterona', 'Potenciadores masculinos naturales'],
+  'Salud y Bienestar': ['Multivitamínicos'],
+  'salud y bienestar': ['Multivitamínicos'],
+  'Vitaminas': ['Multivitamínicos'],
+  'Para la salud': ['Multivitamínicos'],
   // Comidas con proteína
   'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
   'Comida': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']

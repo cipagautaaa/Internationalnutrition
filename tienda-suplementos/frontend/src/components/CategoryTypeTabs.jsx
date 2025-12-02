@@ -3,9 +3,9 @@
 // Etiquetas visibles (sin duplicados) por categoría
 const VISIBLE_TYPES = {
   'Proteínas': ['Limpias', 'Hipercalóricas', 'Veganas'],
-  // Creatina: agregamos "Todas" para mostrar sin filtrar
-  'Creatina': ['Todas', 'Monohidrato', 'HCL', 'Complejos de creatina'],
-  'Creatinas': ['Todas', 'Monohidrato', 'HCL', 'Complejos de creatina'],
+  // Creatina: solo mostramos tipos concretos solicitados
+  'Creatina': ['Monohidratada', 'HCL'],
+  'Creatinas': ['Monohidratada', 'HCL'],
   'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
   'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa']
 };
@@ -18,6 +18,7 @@ const VISIBLE_TO_CANONICAL = {
   'Veganas': 'Vegana',
   // Creatinas
   'Monohidrato': 'Monohidrato',
+  'Monohidratada': 'Monohidrato',
   'HCL': 'HCL',
   'Complejos de creatina': 'Complejos de creatina',
   'Todas': '__ALL__',
@@ -64,7 +65,7 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
 
   const getDefaultType = (cat) => {
     if (cat === 'Proteínas' || cat === 'Proteina' || cat === 'Proteinas') return 'Limpia';
-    if (cat === 'Creatina' || cat === 'Creatinas') return 'Todas';
+    if (cat === 'Creatina' || cat === 'Creatinas') return 'Monohidratada';
     if (cat === 'Pre-entrenos y Quemadores' || cat === 'Pre-entrenos y Energía') return 'Pre-entrenos';
     return null;
   };
