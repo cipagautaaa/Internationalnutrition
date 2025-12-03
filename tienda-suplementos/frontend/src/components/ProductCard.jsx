@@ -5,6 +5,7 @@ import QuickAddModal from './QuickAddModal';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
 import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
+import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
 const normalizeText = (value = '') =>
   value
@@ -17,6 +18,8 @@ const normalizeText = (value = '') =>
 const includesAny = (text, keywords = []) => keywords.some(keyword => text.includes(keyword));
 
 const deriveProductType = (product = {}) => {
+  const override = resolveHealthTypeOverride(product.tipo) || resolveHealthTypeOverride(product.name);
+  if (override) return override;
   const category = normalizeText(product.category);
   const rawType = normalizeText(product.tipo);
   const name = normalizeText(product.name);

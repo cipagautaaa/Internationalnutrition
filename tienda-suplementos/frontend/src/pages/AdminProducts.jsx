@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import ProductForm from '../components/admin/ProductForm';
 import AdminPageManagement from '../components/AdminPageManagement';
 import ImplementsPanel from '../components/admin/ImplementsPanel';
+import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
 // Taxonomía 2025 (7 categorías, nombres de visualización)
 const ALL_CATEGORIES = [
@@ -108,6 +109,8 @@ const includesAny = (text, terms) => {
   return terms.some(term => text.includes(term));
 };
 const canonicalizeHealthType = (rawType, productName = '') => {
+  const override = resolveHealthTypeOverride(rawType) || resolveHealthTypeOverride(productName);
+  if (override) return override;
   const normalizedType = normalizeText(rawType);
   if (includesAny(normalizedType, HEALTH_MULTIVIT_TERMS)) return 'Multivitamínicos';
   if (includesAny(normalizedType, HEALTH_TESTO_TERMS)) return 'Precursores de testosterona';

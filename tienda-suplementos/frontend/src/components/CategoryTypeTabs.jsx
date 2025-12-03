@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
+import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
 const HEALTH_TYPES = ['Multivitamínicos', 'Precursores de testosterona', 'Suplementos para la salud'];
 
@@ -95,6 +96,8 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
     if (typeof value !== 'string') return value;
     const key = value.trim();
     const normalized = normalizeText(key);
+    const override = resolveHealthTypeOverride(key);
+    if (override) return override;
     const direct = VISIBLE_TO_CANONICAL[key] || VISIBLE_TO_CANONICAL[normalized];
     if (direct) return direct;
     if (HEALTH_TESTO_REGEX.test(normalized)) return 'Precursores de testosterona';
@@ -135,6 +138,8 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
   const inferTipoFromName = (name = '', cat = '') => {
     const n = normalizeText(name);
     const c = normalizeText(cat);
+    const overrideFromName = resolveHealthTypeOverride(name);
+    if (overrideFromName) return overrideFromName;
     if (c.includes('pre-entrenos') || c.includes('pre entrenos')) {
       // Palabras comunes en termogénicos/quemadores
       const burnerHints = /(lipo|hydroxi|burn|stack|cut|drene|core|redux|slim|shred|fat\s*burn)/i;
