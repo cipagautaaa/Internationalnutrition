@@ -116,12 +116,12 @@ const HomeComboSection = () => {
                 className="group relative bg-white border-2 border-gray-300 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:border-red-700 transition-all duration-500 hover:-translate-y-2 flex flex-col"
               >
                 {/* Imagen del combo */}
-                <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 w-full aspect-square overflow-hidden">
+                <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 w-full overflow-hidden sm:aspect-square">
                   {showImage && (
                     <img
                       src={imageSrc}
                       alt={combo.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="w-full h-auto sm:h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       onError={() => {
                         setImageErrors((prev) => ({ ...prev, [comboId]: true }));
                       }}
