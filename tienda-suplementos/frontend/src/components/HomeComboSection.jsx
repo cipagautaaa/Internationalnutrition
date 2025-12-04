@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from '../utils/axios';
 import { useCart } from '../context/CartContext';
@@ -168,7 +168,7 @@ const HomeComboSection = () => {
                   </h3>
 
                   {/* Descripción productos */}
-                  <p className="text-xs text-gray-600 line-clamp-2 min-h-[2rem]">
+                  <p className="hidden sm:block text-xs text-gray-600 line-clamp-2 min-h-[2rem]">
                     {combo.description}
                   </p>
 
@@ -185,8 +185,9 @@ const HomeComboSection = () => {
                       e.preventDefault();
                       handleAddComboToCart(combo);
                     }}
-                    className="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm active:scale-95"
+                    className="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm active:scale-95 inline-flex items-center justify-center gap-2"
                   >
+                    <ShoppingCart className="w-4 h-4" />
                     Agregar al Carrito
                   </button>
                 </div>

@@ -144,14 +144,16 @@ const Header = () => {
             >
               <Search className="w-5 h-5" />
             </button>
-            <button
-              type="button"
-              onClick={openCart}
-              className="text-white p-2 rounded-full bg-white/10"
-              aria-label="Carrito"
-            >
-              <ShoppingCart className="w-5 h-5" />
-            </button>
+            {!(isAuthenticated && user?.role === 'admin') && (
+              <button
+                type="button"
+                onClick={openCart}
+                className="text-white p-2 rounded-full bg-white/10"
+                aria-label="Carrito"
+              >
+                <ShoppingCart className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -384,11 +386,14 @@ const Header = () => {
             </svg>
           </button>
 
-          <button onClick={openCart} id="open-cart" className="rounded-full bg-white/10 p-2 hover:bg-red-7000/20 hover:scale-110 transition-all duration-300" aria-label="Carrito">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className="w-5 h-5 text-white" fill="currentColor">
-              <path d="M216,42H40A14,14,0,0,0,26,56V200a14,14,0,0,0,14,14H216a14,14,0,0,0,14-14V56A14,14,0,0,0,216,42Zm2,158a2,2,0,0,1-2,2H40a2,2,0,0,1-2-2V56a2,2,0,0,1,2-2H216a2,2,0,0,1,2,2ZM174,88a46,46,0,0,1-92,0,6,6,0,0,1,12,0,34,34,0,0,0,68,0,6,6,0,0,1,12,0Z"></path>
-            </svg>
-          </button>
+          {/* Ocultar carrito si es admin */}
+          {!(isAuthenticated && user?.role === 'admin') && (
+            <button onClick={openCart} id="open-cart" className="rounded-full bg-white/10 p-2 hover:bg-red-7000/20 hover:scale-110 transition-all duration-300" aria-label="Carrito">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" className="w-5 h-5 text-white" fill="currentColor">
+                <path d="M216,42H40A14,14,0,0,0,26,56V200a14,14,0,0,0,14,14H216a14,14,0,0,0,14-14V56A14,14,0,0,0,216,42Zm2,158a2,2,0,0,1-2,2H40a2,2,0,0,1-2-2V56a2,2,0,0,1,2-2H216a2,2,0,0,1,2,2ZM174,88a46,46,0,0,1-92,0,6,6,0,0,1,12,0,34,34,0,0,0,68,0,6,6,0,0,1,12,0Z"></path>
+              </svg>
+            </button>
+          )}
           {isAuthenticated && (
             <button
               onClick={() => { logout(); navigate('/'); }}
@@ -406,7 +411,11 @@ const Header = () => {
         isAuthenticated={isAuthenticated}
         user={user}
         onLogout={() => { logout(); navigate('/'); }}
-        onCartClick={openCart}
+        onCartClick={() => {
+          if (!(isAuthenticated && user?.role === 'admin')) {
+            openCart();
+          }
+        }}
         onSearchClick={openSearch}
       />
     </nav>
