@@ -172,24 +172,31 @@ const HomeComboSection = () => {
                     {combo.description}
                   </p>
 
-                  {/* Precio */}
-                  <div className="mt-auto">
+                  {/* Precio + CTA inline */}
+                  <div className="mt-auto flex items-center justify-between gap-3">
                     <p className="text-xl sm:text-2xl font-bold text-red-700">
                       {formatPrice(combo.price)}
                     </p>
+                    <button 
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (combo.inStock === false) return;
+                        handleAddComboToCart(combo);
+                      }}
+                      className={`w-11 h-11 flex items-center justify-center rounded-xl border text-sm font-semibold transition-all ${
+                        combo.inStock === false
+                          ? 'border-gray-200 text-gray-400 cursor-not-allowed'
+                          : 'border-gray-300 text-red-700 hover:bg-red-50'
+                      }`}
+                      aria-label="Agregar combo al carrito"
+                    >
+                      <ShoppingCart className="w-5 h-5" />
+                    </button>
                   </div>
 
-                  {/* Botón */}
-                  <button 
-                    onClick={(e) => {
-                      e.preventDefault();
-                      handleAddComboToCart(combo);
-                    }}
-                    className="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm active:scale-95 inline-flex items-center justify-center gap-2"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    Agregar al Carrito
-                  </button>
+                  {combo.inStock === false && (
+                    <p className="text-[11px] font-semibold text-red-600">Sin stock disponible</p>
+                  )}
                 </div>
               </Link>
               );

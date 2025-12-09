@@ -262,7 +262,7 @@ const Header = () => {
           </div>
 
           <Link to="/implementos" className="text-white font-medium hover:text-red-700 transition-all duration-300 hover:-translate-y-1">
-            Wargo y accesorios para gym
+            Wargo
           </Link>
 
           <Link to="/combos/volumen" className="text-white font-medium hover:text-red-700 transition-all duration-300 hover:-translate-y-1">
