@@ -12,9 +12,9 @@ async function startServer() {
     console.log('✅ Conectado a MongoDB');
     console.log('Base de datos:', mongoose.connection.name);
 
-    // Obtener implementos
+    // Obtener Wargo y accesorios para gym
     const implements = await Implement.find({ isActive: true });
-    console.log(`✅ Encontrados ${implements.length} implementos activos`);
+    console.log(`✅ Encontrados ${implements.length} Wargo y accesorios para gym activos`);
 
     // Crear servidor HTTP simple
     const server = http.createServer(async (req, res) => {

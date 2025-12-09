@@ -8,11 +8,11 @@ async function checkImplements() {
     console.log('✅ Conectado a MongoDB\n');
 
     const impl = await Implement.findOne();
-    console.log('📦 Primer Implement encontrado:');
+    console.log('📦 Primer accesorio para gym encontrado:');
     console.log(JSON.stringify(impl, null, 2));
     
     const allImpls = await Implement.find().select('name sizes originalPrice');
-    console.log('\n📊 Resumen de Implementos:');
+    console.log('\n📊 Resumen de Wargo y accesorios para gym:');
     allImpls.forEach((i, idx) => {
       console.log(`  ${idx + 1}. ${i.name} - Tallas: ${i.sizes?.length || 0}`);
     });

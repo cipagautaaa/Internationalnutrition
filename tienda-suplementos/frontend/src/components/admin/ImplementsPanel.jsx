@@ -2,6 +2,8 @@
 import axios from '../../utils/axios';
 import { uploadImplementImage } from '../../services/api';
 
+const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
+
 const emptyImplement = { name: '', size: '', price: '', originalPrice: '', image: '', sizes: [], isActive: true };
 
 const mapImplement = (item) => ({
@@ -36,7 +38,7 @@ const ImplementsPanel = () => {
       setImplementsList(items);
     } catch (err) {
       console.error('Error loading implements', err);
-      setError(err.response?.data?.message || 'No se pudieron cargar los implementos.');
+      setError(err.response?.data?.message || `No se pudieron cargar ${IMPLEMENTS_LABEL}.`);
     } finally {
       setLoading(false);
     }
@@ -110,7 +112,7 @@ const ImplementsPanel = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (!form.name.trim()) {
-      setError('El nombre del implemento es obligatorio.');
+      setError(`El nombre de ${IMPLEMENTS_LABEL} es obligatorio.`);
       return;
     }
     if (!form.price || parseFloat(form.price) <= 0) {
@@ -144,7 +146,7 @@ const ImplementsPanel = () => {
       resetForm();
     } catch (err) {
       console.error('Error saving implement', err);
-      setError(err.response?.data?.message || 'No se pudo guardar el implemento.');
+      setError(err.response?.data?.message || `No se pudo guardar ${IMPLEMENTS_LABEL}.`);
     } finally {
       setSaving(false);
     }
@@ -164,7 +166,7 @@ const ImplementsPanel = () => {
   };
 
   const handleDelete = async (item) => {
-    if (!window.confirm(`¿Eliminar el implemento "${item.name}"?`)) {
+    if (!window.confirm(`¿Eliminar ${IMPLEMENTS_LABEL} "${item.name}"?`)) {
       return;
     }
     try {
@@ -175,7 +177,7 @@ const ImplementsPanel = () => {
       }
     } catch (err) {
       console.error('Error deleting implement', err);
-      setError(err.response?.data?.message || 'No se pudo eliminar el implemento.');
+      setError(err.response?.data?.message || `No se pudo eliminar ${IMPLEMENTS_LABEL}.`);
     }
   };
 
@@ -183,15 +185,15 @@ const ImplementsPanel = () => {
     <section className="space-y-6 mt-12">
       <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold mb-1">Panel de Implementos</h2>
-          <p className="text-sm text-gray-600">Gestiona implementos y tallas disponibles.</p>
+          <h2 className="text-2xl font-bold mb-1">Panel de {IMPLEMENTS_LABEL}</h2>
+          <p className="text-sm text-gray-600">Gestiona {IMPLEMENTS_LABEL} y tallas disponibles.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar implementos..."
+            placeholder={`Buscar ${IMPLEMENTS_LABEL}...`}
             className="w-full sm:w-64 h-10 px-3 rounded-lg border border-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-700"
           />
           <button
@@ -213,7 +215,7 @@ const ImplementsPanel = () => {
       <div className="grid lg:grid-cols-2 gap-6">
         <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
           <h3 className="text-lg font-semibold text-gray-800">
-            {editing ? 'Editar implemento' : 'Nuevo implemento'}
+            {editing ? `Editar ${IMPLEMENTS_LABEL}` : `Nuevo ${IMPLEMENTS_LABEL}`}
           </h3>
 
           <label className="flex flex-col gap-1 text-sm text-gray-700">
@@ -270,7 +272,7 @@ const ImplementsPanel = () => {
 
           {/* Imagen */}
           <label className="flex flex-col gap-1 text-sm text-gray-700">
-            <span>Imagen del Implemento</span>
+            <span>Imagen de {IMPLEMENTS_LABEL}</span>
             
             {/* Zona de arrastrar y soltar */}
             <div
@@ -432,13 +434,13 @@ const ImplementsPanel = () => {
                 {loading ? (
                   <tr>
                     <td colSpan="6" className="p-6 text-center text-gray-500">
-                      Cargando implementos...
+                      Cargando {IMPLEMENTS_LABEL}...
                     </td>
                   </tr>
                 ) : filtered.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="p-6 text-center text-gray-400 text-sm">
-                      {search ? 'Sin coincidencias para la búsqueda.' : 'No hay implementos registrados aún.'}
+                      {search ? 'Sin coincidencias para la búsqueda.' : `No hay ${IMPLEMENTS_LABEL} registrados aún.`}
                     </td>
                   </tr>
                 ) : (

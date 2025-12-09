@@ -29,7 +29,7 @@ const SearchDrawer = () => {
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
-  // Cargar productos y implementos dinámicos una sola vez al abrir
+  // Cargar productos y Wargo y accesorios para gym dinámicos una sola vez al abrir
   useEffect(() => {
     if (isSearchOpen && dynamicProducts.length === 0 && dynamicImplements.length === 0 && !loading) {
       (async () => {
@@ -48,11 +48,11 @@ const SearchDrawer = () => {
     }
   }, [isSearchOpen, dynamicProducts.length, dynamicImplements.length, loading]);
 
-  // Dataset combinado: productos dinámicos + implementos
+  // Dataset combinado: productos dinámicos + Wargo y accesorios para gym
   const dataset = useMemo(() => {
     const products = dynamicProducts.length === 0 ? [] : dynamicProducts;
 
-    // Agregar implementos al dataset
+    // Agregar Wargo y accesorios para gym al dataset
     const implementItems = dynamicImplements.map(imp => ({
       ...imp,
       _type: 'implement' // marcar como implemento
@@ -154,7 +154,7 @@ const SearchDrawer = () => {
                       <div className="font-medium break-words">{highlight(item.name, q.trim())}</div>
                       <div className="text-xs text-gray-500 truncate">
                         {item._type === 'implement' ? (
-                          <span>Implemento • ${item.price}</span>
+                          <span>Wargo y accesorios para gym • ${item.price}</span>
                         ) : (
                           <>
                             {highlight(item.category, q.trim())} • ${item.price}

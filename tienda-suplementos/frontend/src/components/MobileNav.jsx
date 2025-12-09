@@ -43,8 +43,8 @@ const mainMenuItems = [
   },
   {
     key: 'implements',
-    label: 'Implementos',
-    description: 'Accesorios y equipamiento',
+    label: 'Wargo y accesorios para gym',
+    description: 'Accesorios y equipamiento Wargo',
     to: '/implementos',
     Icon: Wrench,
   },

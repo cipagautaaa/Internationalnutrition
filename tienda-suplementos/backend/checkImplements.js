@@ -14,12 +14,12 @@ async function checkImplements() {
 
     // Contar documentos
     const count = await Implement.countDocuments();
-    console.log(`\nTotal de implementos en la colección: ${count}`);
+    console.log(`\nTotal de Wargo y accesorios para gym en la colección: ${count}`);
 
-    // Listar todos los implementos
+    // Listar todos los accesorios para gym
     if (count > 0) {
       const implements = await Implement.find({}).limit(10);
-      console.log('\nPrimeros 10 implementos:');
+      console.log('\nPrimeros 10 accesorios para gym:');
       implements.forEach(impl => {
         console.log(`- ${impl.name} (ID: ${impl._id})`);
       });

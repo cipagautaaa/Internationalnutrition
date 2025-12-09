@@ -28,7 +28,7 @@ const implementSchema = new mongoose.Schema(
     },
     image: {
       type: String,
-      default: 'https://via.placeholder.com/300?text=Implemento'
+      default: 'https://via.placeholder.com/300?text=Wargo+accesorio'
     },
     isActive: {
       type: Boolean,

@@ -15,8 +15,8 @@ const Implements = () => {
         const implementsData = response.data.data || response.data || [];
         setImplementsList(Array.isArray(implementsData) ? implementsData : []);
       } catch (err) {
-        console.error('Error al cargar implementos', err);
-        setError('No fue posible cargar los implementos en este momento.');
+        console.error('Error al cargar Wargo y accesorios para gym', err);
+        setError('No fue posible cargar la categoría Wargo y accesorios para gym en este momento.');
       } finally {
         setLoading(false);
       }
@@ -29,10 +29,10 @@ const Implements = () => {
     <div className="pt-32 pb-16 px-4 sm:px-8 max-w-7xl mx-auto">
       <header className="mb-12 text-center">
         <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
-          Implementos de Gym
+          Wargo y accesorios para gym
         </h1>
         <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto">
-          Descubre nuestra colección de implementos y accesorios esenciales para potenciar tu entrenamiento
+          Descubre nuestra colección Wargo y accesorios esenciales para potenciar tu entrenamiento
         </p>
       </header>
 
@@ -55,7 +55,7 @@ const Implements = () => {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
           </div>
-          <p className="text-gray-600 text-lg font-medium">No hay implementos disponibles</p>
+          <p className="text-gray-600 text-lg font-medium">No hay Wargo y accesorios para gym disponibles</p>
           <p className="text-gray-500 text-sm mt-2">Vuelve pronto para ver nuestros productos</p>
         </div>
       )}
@@ -64,7 +64,7 @@ const Implements = () => {
         <>
           <div className="mb-6 text-center">
             <p className="text-gray-600 text-sm">
-              {implementsList.length} {implementsList.length === 1 ? 'implemento disponible' : 'implementos disponibles'}
+              {implementsList.length} {implementsList.length === 1 ? 'accesorio disponible' : 'accesorios disponibles'}
             </p>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

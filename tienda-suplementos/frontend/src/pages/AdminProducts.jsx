@@ -7,6 +7,8 @@ import AdminPageManagement from '../components/AdminPageManagement';
 import ImplementsPanel from '../components/admin/ImplementsPanel';
 import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
+const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
+
 // Taxonomía 2025 (7 categorías, nombres de visualización)
 const ALL_CATEGORIES = [
   'proteínas',
@@ -15,7 +17,7 @@ const ALL_CATEGORIES = [
   'Aminoácidos y Recuperadores',
   'Salud y Bienestar',
   'Alimentacion saludable y alta en proteina',
-  'Implementos'
+  IMPLEMENTS_LABEL
 ];
 
 // Normalización de categorías del backend (legacy -> nuevas visibles)
@@ -44,8 +46,9 @@ const normalizeCategory = (raw) => {
     'Salud y bienestar': 'Salud y Bienestar',
     'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
     'Comidas con Proteína': 'Alimentacion saludable y alta en proteina',
-    'Implementos': 'Implementos',
-    'implementos': 'Implementos',
+    'Implementos': IMPLEMENTS_LABEL,
+    'implementos': IMPLEMENTS_LABEL,
+    [IMPLEMENTS_LABEL]: IMPLEMENTS_LABEL,
   };
   return map[c] || c || 'Sin categoría';
 };
@@ -311,7 +314,7 @@ export default function AdminProducts() {
   };
 
   const handleCategorySelect = (category) => {
-    if (category === 'Implementos') {
+    if (category === IMPLEMENTS_LABEL) {
       setShowImplements(true);
       return;
     }
@@ -462,9 +465,9 @@ export default function AdminProducts() {
           <div className={`${PANEL_CARD_SURFACE} space-y-6`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="space-y-1">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Panel de implementos</p>
-                <h1 className="text-3xl font-bold text-gray-900">Gestiona implementos y tallas</h1>
-                <p className="text-sm text-gray-600">Crea, actualiza o desactiva implementos disponibles en la tienda.</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Panel de Wargo y accesorios para gym</p>
+                <h1 className="text-3xl font-bold text-gray-900">Gestiona Wargo y accesorios para gym y tallas</h1>
+                <p className="text-sm text-gray-600">Crea, actualiza o desactiva Wargo y accesorios para gym disponibles en la tienda.</p>
               </div>
               <button
                 type="button"

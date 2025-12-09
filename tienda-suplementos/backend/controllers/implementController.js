@@ -1,5 +1,7 @@
 const Implement = require('../models/Implement');
 
+const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
+
 const mapImplement = (implement) => ({
   _id: implement._id,
   id: implement.id,
@@ -22,7 +24,7 @@ exports.getImplements = async (req, res) => {
     res.json({ success: true, data: implementsList.map(mapImplement) });
   } catch (error) {
     console.error('[ImplementController] getImplements error', error);
-    res.status(500).json({ success: false, message: 'Error al obtener implementos' });
+    res.status(500).json({ success: false, message: `Error al obtener ${IMPLEMENTS_LABEL}` });
   }
 };
 
@@ -30,7 +32,7 @@ exports.createImplement = async (req, res) => {
   try {
     const { name, price, originalPrice, size, sizes, isActive, image } = req.body;
     if (!name || !name.trim()) {
-      return res.status(400).json({ success: false, message: 'El nombre del implemento es obligatorio' });
+      return res.status(400).json({ success: false, message: 'El nombre del accesorio para gym es obligatorio' });
     }
     if (price === undefined || price === null || price < 0) {
       return res.status(400).json({ success: false, message: 'El precio es obligatorio y debe ser mayor o igual a 0' });
@@ -65,7 +67,7 @@ exports.createImplement = async (req, res) => {
     res.status(201).json({ success: true, data: mapImplement(implement) });
   } catch (error) {
     console.error('[ImplementController] createImplement error', error);
-    res.status(500).json({ success: false, message: 'Error al crear implemento' });
+    res.status(500).json({ success: false, message: `Error al crear ${IMPLEMENTS_LABEL}` });
   }
 };
 
@@ -76,7 +78,7 @@ exports.updateImplement = async (req, res) => {
 
     const implement = await Implement.findById(id);
     if (!implement) {
-      return res.status(404).json({ success: false, message: 'Implemento no encontrado' });
+      return res.status(404).json({ success: false, message: 'Accesorio para gym no encontrado' });
     }
 
     if (typeof name === 'string') {
@@ -110,7 +112,7 @@ exports.updateImplement = async (req, res) => {
     res.json({ success: true, data: mapImplement(implement) });
   } catch (error) {
     console.error('[ImplementController] updateImplement error', error);
-    res.status(500).json({ success: false, message: 'Error al actualizar implemento' });
+    res.status(500).json({ success: false, message: `Error al actualizar ${IMPLEMENTS_LABEL}` });
   }
 };
 
@@ -119,13 +121,13 @@ exports.deleteImplement = async (req, res) => {
     const { id } = req.params;
     const implement = await Implement.findById(id);
     if (!implement) {
-      return res.status(404).json({ success: false, message: 'Implemento no encontrado' });
+      return res.status(404).json({ success: false, message: 'Accesorio para gym no encontrado' });
     }
 
     await implement.deleteOne();
-    res.json({ success: true, message: 'Implemento eliminado correctamente' });
+    res.json({ success: true, message: 'Accesorio para gym eliminado correctamente' });
   } catch (error) {
     console.error('[ImplementController] deleteImplement error', error);
-    res.status(500).json({ success: false, message: 'Error al eliminar implemento' });
+    res.status(500).json({ success: false, message: `Error al eliminar ${IMPLEMENTS_LABEL}` });
   }
 };

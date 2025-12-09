@@ -1,11 +1,13 @@
 // importarImplementosRaw.js
-// Script para limpiar la BD y cargar implementos desde implementos_raw.json
+// Script para limpiar la BD y cargar Wargo y accesorios para gym desde implementos_raw.json
 
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Implement = require('./models/Implement');
 const fs = require('fs');
 const path = require('path');
+
+const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
 
 async function importarImplementos() {
   try {
@@ -25,15 +27,15 @@ async function importarImplementos() {
     }
 
     const implementosRaw = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-    console.log(`📦 Total de implementos a cargar: ${implementosRaw.length}`);
+    console.log(`📦 Total de ${IMPLEMENTS_LABEL} a cargar: ${implementosRaw.length}`);
 
-    // PASO 1: Limpiar todos los implementos existentes
-    console.log('\n🗑️  Borrando implementos existentes de la BD...');
+    // PASO 1: Limpiar todos los registros existentes
+    console.log(`\n🗑️  Borrando ${IMPLEMENTS_LABEL} existentes de la BD...`);
     const resultado = await Implement.deleteMany({});
-    console.log(`✅ Se eliminaron ${resultado.deletedCount} implementos`);
+    console.log(`✅ Se eliminaron ${resultado.deletedCount} ${IMPLEMENTS_LABEL}`);
 
-    // PASO 2: Importar implementos del JSON
-    console.log('\n📥 Importando implementos desde implementos_raw.json...\n');
+    // PASO 2: Importar desde el JSON
+    console.log(`\n📥 Importando ${IMPLEMENTS_LABEL} desde implementos_raw.json...\n`);
 
     let insertados = 0;
     let errores = 0;
@@ -45,7 +47,7 @@ async function importarImplementos() {
         const implementoData = {
           name: implementoRaw.PRODUCTO?.trim(),
           price: parseFloat(implementoRaw.PRECIO),
-          image: 'https://via.placeholder.com/300?text=Implemento', // Imagen placeholder
+          image: 'https://via.placeholder.com/300?text=Wargo+accesorio', // Imagen placeholder
           sizes: implementoRaw.Tallas 
             ? implementoRaw.Tallas.split(',').map(t => t.trim())
             : [], // Convertir tallas de string a array
@@ -57,7 +59,7 @@ async function importarImplementos() {
           throw new Error(`Datos incompletos: name=${implementoData.name}, price=${implementoData.price}`);
         }
 
-        // Crear y guardar implemento
+        // Crear y guardar accesorio
         const nuevoImplemento = new Implement(implementoData);
         await nuevoImplemento.save();
         insertados++;
@@ -77,12 +79,12 @@ async function importarImplementos() {
     console.log('\n' + '='.repeat(60));
     console.log('📊 RESUMEN DE IMPORTACIÓN');
     console.log('='.repeat(60));
-    console.log(`✅ Implementos insertados: ${insertados}`);
-    console.log(`❌ Implementos con error: ${errores}`);
+    console.log(`✅ ${IMPLEMENTS_LABEL} insertados: ${insertados}`);
+    console.log(`❌ ${IMPLEMENTS_LABEL} con error: ${errores}`);
     console.log(`📦 Total en BD ahora: ${await Implement.countDocuments()}`);
 
     if (implementosConError.length > 0) {
-      console.log('\n⚠️  Implementos con error:');
+      console.log(`\n⚠️  ${IMPLEMENTS_LABEL} con error:`);
       implementosConError.forEach((item, index) => {
         console.log(`  ${index + 1}. ${item.producto}: ${item.error}`);
       });

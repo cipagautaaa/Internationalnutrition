@@ -6,6 +6,8 @@ const { protect } = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const upload = require('../middleware/uploadCloudinary');
 
+const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
+
 // --- Utilidades de taxonomía ---
 const NEW_TAXONOMY = [
   'Proteínas',
@@ -14,7 +16,7 @@ const NEW_TAXONOMY = [
   'Aminoácidos y Recuperadores',
   'Salud y Bienestar',
   'Alimentacion saludable y alta en proteina',
-  'Implementos'
+  IMPLEMENTS_LABEL
 ];
 
 const ensureFlavors = (flavorsInput) => {
@@ -174,7 +176,11 @@ const normalizeCategory = (c) => {
     'Aminoácidos y Recuperadores': 'Aminoácidos y Recuperadores',
     'Salud y Bienestar': 'Salud y Bienestar',
     'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
-    'Alimentacion saludable y alta en proteina': 'Alimentacion saludable y alta en proteina'
+    'Alimentacion saludable y alta en proteina': 'Alimentacion saludable y alta en proteina',
+    // Implementos
+    'Implementos': IMPLEMENTS_LABEL,
+    'implementos': IMPLEMENTS_LABEL,
+    [IMPLEMENTS_LABEL]: IMPLEMENTS_LABEL,
   };
   return map[cat] || cat || 'Sin categoría';
 };
@@ -224,12 +230,12 @@ router.get('/admin/category-summary', protect, isAdmin, async (req, res) => {
       if (p.inStock === false) row.outOfStock += 1;
     }
 
-    // Agregar conteo de Implementos
+    // Agregar conteo de Wargo y accesorios para gym
     const implements = await Implement.find({}).select('isActive');
     const implementsActive = implements.filter(i => i.isActive === true).length;
     const implementsInactive = implements.filter(i => i.isActive === false).length;
-    summaryMap.set('Implementos', {
-      category: 'Implementos',
+    summaryMap.set(IMPLEMENTS_LABEL, {
+      category: IMPLEMENTS_LABEL,
       total: implements.length,
       active: implementsActive,
       inactive: implementsInactive,
