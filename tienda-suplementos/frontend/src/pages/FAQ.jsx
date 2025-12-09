@@ -11,6 +11,27 @@ const FAQ = () => {
 
   const faqSections = [
     {
+      title: 'MAYORISTAS Y DISTRIBUIDORES',
+      questions: [
+        {
+          question: '¿Cómo solicito ser mayorista?',
+          answer: 'Escríbenos por WhatsApp con tu nombre, ciudad, NIT o cédula y el tipo de negocio que tienes. Te habilitamos precios de distribuidor, te enviamos el catálogo actualizado y acompañamos la primera compra para que arranques sin dudas.'
+        },
+        {
+          question: '¿Existe pedido mínimo para acceder a precios mayoristas?',
+          answer: 'Trabajamos precios de distribuidor en compras por volumen. Cuéntanos las referencias y cantidades que necesitas y te confirmamos el mínimo y la cotización exacta para tu caso.'
+        },
+        {
+          question: '¿Cómo funcionan los envíos y los tiempos para mayoristas?',
+          answer: 'Despachamos en 24-48 horas hábiles según disponibilidad. Enviamos a todo el país con transportadoras aliadas o puedes recoger en tienda. Compartimos la guía y el seguimiento en cuanto el pedido sale a ruta.'
+        },
+        {
+          question: '¿Qué métodos de pago aceptan para compras al por mayor?',
+          answer: 'Recibimos transferencias bancarias, pagos con link seguro y datáfono en tienda. Para separar inventario podemos pedir un anticipo y el saldo se liquida antes del despacho.'
+        }
+      ]
+    },
+    {
       title: 'PRODUCTOS Y SUPLEMENTOS',
       questions: [
         {
@@ -178,6 +199,10 @@ const FAQ = () => {
                     );
                   })}
                 </div>
+
+                {sectionIndex === 0 && (
+                  <div className="my-10 border-t border-dashed border-gray-200" aria-hidden="true" />
+                )}
               </div>
             ))}
           </div>
