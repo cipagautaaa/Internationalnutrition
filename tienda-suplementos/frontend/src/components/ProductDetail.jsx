@@ -124,9 +124,6 @@ export default function ProductDetail() {
 	const displayPrice = selectedSize ? selectedSize.price : product?.price;
 	const displayImage = selectedSize && selectedSize.image ? selectedSize.image : product?.image;
 	const displayOriginalPrice = selectedSize?.originalPrice ?? product?.originalPrice;
-	const discountPercentage = displayOriginalPrice && displayOriginalPrice > displayPrice
-		? Math.round(((displayOriginalPrice - displayPrice) / displayOriginalPrice) * 100)
-		: null;
 	const savings = displayOriginalPrice && displayOriginalPrice > displayPrice
 		? displayOriginalPrice - displayPrice
 		: null;
@@ -178,20 +175,21 @@ export default function ProductDetail() {
 	// Todas las siguientes variables dependen de product existente
 	const detailHeader = (
 		<div className="space-y-3">
-			<div className="inline-flex items-center gap-2 rounded-full bg-red-50 border border-red-200 px-3 py-1 text-[11px] tracking-[0.3em] uppercase text-red-700">
+			<div className="inline-flex items-center gap-2 rounded-full bg-white/80 backdrop-blur border border-red-200 px-4 py-1 text-[11px] tracking-[0.32em] uppercase text-red-700 shadow-sm">
 				<Sparkles className="w-4 h-4" />
 				<span>Rendimiento premium</span>
 			</div>
-			<h1 className="text-3xl sm:text-4xl font-black leading-tight text-gray-900">{product.name}</h1>
-			<div className="flex items-center gap-2 text-xs uppercase tracking-[0.3em] text-gray-500">
-				<span>{product.category}</span>
-				{product.rating > 0 && <span className="text-amber-600">★ {product.rating.toFixed(1)}</span>}
+			<h1 className="text-4xl sm:text-5xl font-black leading-tight text-gray-900">{product.name}</h1>
+			<div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.28em] text-gray-500">
+				<span className="px-3 py-1 rounded-full bg-white/60 border border-gray-200">{product.category}</span>
+				{product.rating > 0 && <span className="text-amber-600 font-semibold">★ {product.rating.toFixed(1)}</span>}
+				<span className="text-gray-400">Stock {canAdd ? 'listo' : 'no disponible'}</span>
 			</div>
 		</div>
 	);
 
 	const priceStack = (
-		<div className="space-y-2">
+		<div className="p-4 rounded-2xl bg-white/80 backdrop-blur border border-red-100 shadow-lg space-y-2">
 			<div className="flex items-baseline gap-3">
 				<span className="text-4xl font-black text-gray-900">${formatPrice(displayPrice || 0)}</span>
 				{displayOriginalPrice && (
@@ -199,12 +197,12 @@ export default function ProductDetail() {
 				)}
 			</div>
 			{savings && (
-				<p className="text-sm text-emerald-600 font-semibold">Ahorra ${formatPrice(savings)} pesos</p>
+				<p className="text-sm text-emerald-600 font-semibold">Ahorra ${formatPrice(savings)}</p>
 			)}
 			{selectedSize && !selectedSize.__isBase && (
 				<p className="text-xs text-gray-600">Precio aplicado para {selectedSize.size}</p>
 			)}
-			<p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $0</p>
+			<p className="text-xs text-gray-600">Impuestos incluidos · Envío rápido 24-72h</p>
 		</div>
 	);
 
@@ -267,7 +265,7 @@ export default function ProductDetail() {
 				onClick={handleAdd}
 				disabled={!canAdd}
 				className={`flex-1 h-14 rounded-2xl text-sm font-black tracking-wide uppercase shadow-lg transition-all ${
-					canAdd ? 'bg-red-700 text-white hover:bg-red-800' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+					canAdd ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-500 text-white hover:shadow-xl' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
 				}`}
 			>
 				Agregar al carrito — ${formatPrice(displayPrice || 0)}
@@ -286,15 +284,15 @@ export default function ProductDetail() {
 
 	const renderInfoCards = (wrapperClass) => (
 		<div className={wrapperClass}>
-			<div className={`${gradientPanel} p-4 flex items-center justify-between`}>
+			<div className={`col-span-full ${gradientPanel} p-4 flex items-center justify-between rounded-2xl bg-white/80 border border-gray-200`}>
 				<div>
-					<p className="text-xs text-gray-500">Entrega aproximada</p>
-					<p className="text-sm font-semibold text-gray-900">Nov 29 - Dic 02</p>
+					<p className="text-xs text-gray-500">Entrega estimada</p>
+					<p className="text-sm font-semibold text-gray-900">24 - 72 horas hábiles</p>
 				</div>
 				<Clock className="w-5 h-5 text-gray-400" />
 			</div>
 			{infoRows.map((row) => (
-				<div key={row.title} className={`${gradientPanel} p-4 flex items-center justify-between`}>
+				<div key={row.title} className={`${gradientPanel} p-4 flex items-center justify-between bg-white/80 border border-gray-200 rounded-2xl`}>
 					<div>
 						<p className="text-sm font-semibold text-gray-900">{row.title}</p>
 						<p className="text-xs text-gray-600">{row.description}</p>
@@ -306,102 +304,101 @@ export default function ProductDetail() {
 	);
 
 	const descriptionPanel = (
-		<div className={`${gradientPanel} p-5`}>
-			<h3 className="text-sm font-semibold mb-2 text-gray-900">Ingredientes clave</h3>
+		<div className={`${gradientPanel} p-6 bg-white/85 border border-gray-200 rounded-3xl shadow-lg`}> 
+			<h3 className="text-sm font-semibold mb-3 text-gray-900 tracking-wide">Lo que obtienes</h3>
 			<p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{product.description}</p>
 		</div>
 	);
 
 	return (
-		<div className="min-h-screen bg-gray-50">
-			<div className="lg:hidden">
-				<div className="max-w-xl mx-auto px-4 pt-28 pb-32 space-y-6">
-					<div className="rounded-[32px] border border-gray-200 bg-white shadow-xl overflow-hidden">
-						<div className="bg-gradient-to-b from-gray-50 to-white px-6 py-10 flex items-center justify-center">
-							<img src={displayImage} alt={product.name} className="max-h-[360px] object-contain drop-shadow-2xl" />
-						</div>
-						<div className="px-6 pb-6 space-y-4">
-							<div className="flex items-center justify-between text-[11px] uppercase tracking-[0.3em] text-gray-500">
-								<span>{product.category}</span>
-								<span>+1.500 envíos</span>
-							</div>
-							<h1 className="text-2xl font-black text-gray-900">{product.name}</h1>
-							<div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-								{priceStack}
-							</div>
-						</div>
-					</div>
-
-					<div className="rounded-3xl bg-white border border-gray-200 p-5 space-y-5 shadow-lg">
-						{sizeSelector}
-						{flavorSelector}
-						{quantitySelector}
-					</div>
-
-					{descriptionPanel}
-
-					{renderInfoCards('space-y-3')}
-
-					<div className="text-center text-xs text-gray-500">
-						<p>¿Necesitas acompañamiento? Escríbenos al WhatsApp flotante para recibir asesoría personalizada.</p>
-					</div>
-				</div>
-				{!isAdmin && (
-					<div className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white/95 backdrop-blur px-4 py-3 space-y-3 shadow-[0_-10px_35px_rgba(0,0,0,0.08)]">
-						<button
-							onClick={handleAdd}
-							disabled={!canAdd}
-							className={`w-full h-12 rounded-2xl text-sm font-black uppercase tracking-wide ${
-								canAdd ? 'bg-red-700 text-white' : 'bg-gray-200 text-gray-400'
-							}`}
-						>
-							Agregar al carrito — ${formatPrice(displayPrice || 0)}
-						</button>
-						<button
-							onClick={handleBuyNow}
-							disabled={!canAdd}
-							className={`w-full h-12 rounded-2xl text-sm font-semibold uppercase border-2 border-gray-900 ${
-								canAdd ? 'bg-white text-gray-900' : 'bg-gray-100 text-gray-400'
-							}`}
-						>
-							Comprar ahora
-						</button>
-					</div>
-				)}
+		<div className="min-h-screen bg-[#fff8f5] relative overflow-hidden">
+			<div className="absolute inset-0 opacity-70" aria-hidden="true">
+				<div className="absolute -top-32 -left-20 w-96 h-96 bg-red-100 blur-3xl" />
+				<div className="absolute top-10 right-[-6rem] w-[28rem] h-[28rem] bg-amber-100 blur-3xl" />
 			</div>
 
-			<div className="hidden lg:block">
-				<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
-					<div className="mb-10 flex items-center justify-between gap-4 text-xs uppercase tracking-[0.35em] text-gray-500">
-						<span>{product.category}</span>
-						<span>+1.500 envíos realizados en Colombia</span>
+			<div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-20 relative">
+				<div className="flex items-center justify-between mb-8 gap-3 text-[11px] uppercase tracking-[0.3em] text-gray-600">
+					<Link to="/products" className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 border border-gray-200 shadow-sm hover:-translate-y-[2px] transition">
+						<span className="text-red-700 font-semibold">←</span>
+						Volver
+					</Link>
+					<div className="flex items-center gap-2">
+						<span className="px-3 py-1 rounded-full bg-white/80 border border-gray-200">Entrega 24-72h</span>
+						<span className="px-3 py-1 rounded-full bg-white/80 border border-gray-200">Pago seguro</span>
+						<span className="px-3 py-1 rounded-full bg-white/80 border border-gray-200">Soporte experto</span>
 					</div>
+				</div>
 
-					<div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-start">
-						<div className="space-y-6">
-							<div className={`${gradientPanel} p-6`}>
-								<div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl h-[520px] flex items-center justify-center">
-									<img src={displayImage} alt={product.name} className="max-h-full object-contain drop-shadow-2xl" />
+				<div className="grid gap-10 lg:grid-cols-[1.05fr_0.95fr] items-start relative z-10">
+					<div className="space-y-6">
+						<div className="relative group">
+							<div className="absolute -inset-3 rounded-[36px] bg-gradient-to-br from-red-100/80 via-white to-amber-100/80 blur-xl" aria-hidden="true" />
+							<div className="relative overflow-hidden rounded-[32px] border border-gray-200 bg-white/85 shadow-2xl">
+								<div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,#fee2e2,transparent_35%),radial-gradient(circle_at_80%_0%,#fef3c7,transparent_30%)] opacity-70" aria-hidden="true" />
+								<div className="aspect-square sm:aspect-[4/5] flex items-center justify-center px-8 py-10 relative">
+									<img src={displayImage} alt={product.name} className="max-h-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:-translate-y-1" />
+									<div className="absolute bottom-5 left-5 flex flex-wrap gap-2">
+										<span className="px-3 py-1 rounded-full bg-red-700 text-white text-[11px] font-semibold uppercase tracking-[0.25em]">Envío gratis</span>
+										<span className="px-3 py-1 rounded-full bg-white/80 border border-gray-200 text-[11px] font-semibold uppercase tracking-[0.25em] text-gray-700">Autenticidad garantizada</span>
+									</div>
 								</div>
 							</div>
-							{descriptionPanel}
 						</div>
 
-						<div className="space-y-6">
-							{detailHeader}
-							{priceStack}
+						{descriptionPanel}
+						{renderInfoCards('grid sm:grid-cols-2 gap-3')}
+					</div>
+
+					<div className="space-y-6">
+						{detailHeader}
+						{priceStack}
+						<div className="rounded-3xl bg-white/90 backdrop-blur border border-gray-200 shadow-lg p-5 space-y-5">
 							{sizeSelector}
 							{flavorSelector}
 							{quantitySelector}
-							{actionButtons}
-							{renderInfoCards('grid gap-3')}
-							<div className="text-center text-xs text-gray-500 pt-4">
-								<p>¿Necesitas acompañamiento? Escríbenos al WhatsApp flotante para recibir asesoría personalizada.</p>
+						</div>
+						{actionButtons}
+						<div className="grid sm:grid-cols-3 gap-3">
+							<div className="rounded-2xl bg-white/80 border border-gray-200 p-3 text-center shadow-sm">
+								<p className="text-[11px] uppercase tracking-[0.25em] text-gray-500">Visita</p>
+								<p className="text-sm font-semibold text-gray-900">+1.500 envíos nacionales</p>
+							</div>
+							<div className="rounded-2xl bg-white/80 border border-gray-200 p-3 text-center shadow-sm">
+								<p className="text-[11px] uppercase tracking-[0.25em] text-gray-500">Soporte</p>
+								<p className="text-sm font-semibold text-gray-900">Acompañamiento 1 a 1</p>
+							</div>
+							<div className="rounded-2xl bg-white/80 border border-gray-200 p-3 text-center shadow-sm">
+								<p className="text-[11px] uppercase tracking-[0.25em] text-gray-500">Garantía</p>
+								<p className="text-sm font-semibold text-gray-900">Sello intacto o reembolso</p>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
+
+			{!isAdmin && (
+				<div className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-gray-200 bg-white/95 backdrop-blur px-4 py-3 space-y-3 shadow-[0_-10px_35px_rgba(0,0,0,0.08)]">
+					<button
+						onClick={handleAdd}
+						disabled={!canAdd}
+						className={`w-full h-12 rounded-2xl text-sm font-black uppercase tracking-wide ${
+							canAdd ? 'bg-gradient-to-r from-red-700 via-red-600 to-amber-500 text-white shadow-lg' : 'bg-gray-200 text-gray-400'
+						}`}
+					>
+						Agregar al carrito — ${formatPrice(displayPrice || 0)}
+					</button>
+					<button
+						onClick={handleBuyNow}
+						disabled={!canAdd}
+						className={`w-full h-12 rounded-2xl text-sm font-semibold uppercase border-2 border-gray-900 ${
+							canAdd ? 'bg-white text-gray-900' : 'bg-gray-100 text-gray-400'
+						}`}
+					>
+						Comprar ahora
+					</button>
+				</div>
+			)}
 		</div>
 	);
 }
