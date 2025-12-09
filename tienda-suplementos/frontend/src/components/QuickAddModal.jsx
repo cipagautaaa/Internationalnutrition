@@ -107,7 +107,7 @@ export default function QuickAddModal({ product, open, onClose, initialVariantId
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-6">
       <div className="absolute inset-0 bg-black/55 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-3xl bg-white/98 rounded-3xl shadow-2xl overflow-hidden border border-gray-200 animate-fade-in">
+      <div className="relative w-full max-w-3xl bg-gray-50/92 sm:bg-gray-50/95 rounded-3xl shadow-2xl overflow-hidden border border-gray-200 animate-fade-in">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-amber-500" aria-hidden="true" />
 
         <div className="grid grid-cols-1 md:grid-cols-[1fr_1.1fr] gap-0 md:gap-6 p-6 md:p-8">

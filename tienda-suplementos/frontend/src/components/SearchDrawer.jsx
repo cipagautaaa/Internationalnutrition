@@ -26,40 +26,48 @@ const SearchDrawer = () => {
   const [q, setQ] = useState('');
   const [dynamicProducts, setDynamicProducts] = useState([]);
   const [dynamicImplements, setDynamicImplements] = useState([]);
+  const [dynamicCombos, setDynamicCombos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(null);
 
   // Cargar productos y Wargo y accesorios para gym dinámicos una sola vez al abrir
   useEffect(() => {
-    if (isSearchOpen && dynamicProducts.length === 0 && dynamicImplements.length === 0 && !loading) {
+    if (isSearchOpen && dynamicProducts.length === 0 && dynamicImplements.length === 0 && dynamicCombos.length === 0 && !loading) {
       (async () => {
         try {
           setLoading(true); setLoadError(null);
-          const [productsRes, implementsRes] = await Promise.all([
+          const [productsRes, implementsRes, combosRes] = await Promise.all([
             axios.get('/products?limit=500&includeInactive=false'),
-            axios.get('/implements?limit=500&includeInactive=false').catch(() => ({ data: { data: [] } })) // fallback si no existe endpoint
+            axios.get('/implements?limit=500&includeInactive=false').catch(() => ({ data: { data: [] } })), // fallback si no existe endpoint
+            axios.get('/combos').catch(() => ({ data: [] }))
           ]);
           setDynamicProducts(productsRes.data.data || []);
           setDynamicImplements(implementsRes.data.data || []);
+          const combosData = combosRes.data.data || combosRes.data || [];
+          setDynamicCombos(Array.isArray(combosData) ? combosData : []);
         } catch {
           setLoadError('No se pudieron cargar productos en vivo.');
         } finally { setLoading(false); }
       })();
     }
-  }, [isSearchOpen, dynamicProducts.length, dynamicImplements.length, loading]);
+  }, [isSearchOpen, dynamicProducts.length, dynamicImplements.length, dynamicCombos.length, loading]);
 
   // Dataset combinado: productos dinámicos + Wargo y accesorios para gym
   const dataset = useMemo(() => {
     const products = dynamicProducts.length === 0 ? [] : dynamicProducts;
 
-    // Agregar Wargo y accesorios para gym al dataset
     const implementItems = dynamicImplements.map(imp => ({
       ...imp,
-      _type: 'implement' // marcar como implemento
+      _type: 'implement'
     }));
 
-    return [...products, ...implementItems];
-  }, [dynamicProducts, dynamicImplements]);
+    const comboItems = dynamicCombos.map(combo => ({
+      ...combo,
+      _type: 'combo'
+    }));
+
+    return [...products, ...implementItems, ...comboItems];
+  }, [dynamicProducts, dynamicImplements, dynamicCombos]);
 
   const results = useMemo(() => {
     const termRaw = q.trim();
@@ -148,14 +156,22 @@ const SearchDrawer = () => {
             <ul className="divide-y">
               {results.map((item) => (
                 <li key={item._id || item.id} className="p-4 hover:bg-gray-50">
-                  <Link to={item._type === 'implement' ? `/product/${item._id}` : `/product/${item._id || item.id}`} onClick={closeSearch} className="flex items-center gap-3">
+                  <Link
+                    to={item._type === 'implement'
+                      ? `/product/${item._id}`
+                      : item._type === 'combo'
+                        ? `/combo/${item._id || item.id}`
+                        : `/product/${item._id || item.id}`}
+                    onClick={closeSearch}
+                    className="flex items-center gap-3"
+                  >
                     {item.image && <img src={item.image} alt={item.name} className="w-12 h-12 rounded object-cover" />}
                     <div className="min-w-0">
                       <div className="font-medium break-words">{highlight(item.name, q.trim())}</div>
                       <div className="text-xs text-gray-500 truncate">
-                        {item._type === 'implement' ? (
-                          <span>Wargo y accesorios para gym • ${item.price}</span>
-                        ) : (
+                        {item._type === 'implement' && <span>Wargo y accesorios para gym • ${item.price}</span>}
+                        {item._type === 'combo' && <span>Combo • {highlight(item.category || 'Combos', q.trim())} • ${item.price}</span>}
+                        {!item._type && (
                           <>
                             {highlight(item.category, q.trim())} • ${item.price}
                             {!item.variants?.length && (item.size || item.baseSize) && (
