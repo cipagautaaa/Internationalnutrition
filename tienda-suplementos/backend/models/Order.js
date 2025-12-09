@@ -9,8 +9,13 @@ const orderSchema = new mongoose.Schema({
   items: [{
     product: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      refPath: 'items.kind',
       required: true
+    },
+    kind: {
+      type: String,
+      enum: ['Product', 'Combo'],
+      default: 'Product'
     },
     quantity: {
       type: Number,

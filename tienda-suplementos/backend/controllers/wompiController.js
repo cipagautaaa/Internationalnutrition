@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Combo = require('../models/Combo');
 const { sendNewOrderNotificationToAdmin, sendOrderConfirmationToCustomer } = require('../utils/emailService');
 const {
   createWompiTransaction,
@@ -32,11 +33,14 @@ const createWompiTransactionHandler = async (req, res) => {
     for (const item of items) {
       const productId = item.productId || item.id || item._id;
       let product = null;
+      let combo = null;
+      let kind = 'Product';
 
       try {
         if (mongoose.Types.ObjectId.isValid(productId)) {
           product = await Product.findById(productId);
-        } else {
+        }
+        if (!product) {
           product = await Product.findOne({
             $or: [
               { sku: productId },
@@ -44,30 +48,41 @@ const createWompiTransactionHandler = async (req, res) => {
               { id: productId }
             ]
           });
-
-          if (!product && typeof productId === 'number') {
-            const allProducts = await Product.find({});
-            product = allProducts.find(p =>
-              p.sku === productId.toString() ||
-              p.legacy_id === productId ||
-              p.name === item.name
-            );
+        }
+        // Si no es producto, intentar como combo
+        if (!product) {
+          if (mongoose.Types.ObjectId.isValid(productId)) {
+            combo = await Combo.findById(productId);
+          }
+          if (!combo) {
+            combo = await Combo.findOne({ name: item.name });
+          }
+          if (combo) {
+            kind = 'Combo';
           }
         }
       } catch (error) {
-        console.error('❌ Error buscando producto:', error);
+        console.error('❌ Error buscando producto/combo:', error);
       }
 
-      if (!product) {
+      if (!product && !combo) {
         return res.status(400).json({ success: false, message: `Producto ${item.name || productId} no encontrado. Verifica que el producto esté disponible.` });
       }
 
-      if (product.stock < item.quantity) {
+      if (product && product.stock < item.quantity) {
         return res.status(400).json({ success: false, message: `Stock insuficiente para ${product.name}` });
       }
 
-      totalAmount += product.price * item.quantity;
-      orderItems.push({ product: product._id, quantity: item.quantity, price: product.price });
+      if (combo && combo.inStock === false) {
+        return res.status(400).json({ success: false, message: `El combo ${combo.name} no está disponible` });
+      }
+
+      const unitPrice = typeof item.price === 'number'
+        ? item.price
+        : (product ? product.price : combo.price);
+
+      totalAmount += unitPrice * item.quantity;
+      orderItems.push({ product: product ? product._id : combo._id, kind, quantity: item.quantity, price: unitPrice });
     }
 
     // Aplicar descuentos simples (ejemplo)
@@ -189,10 +204,12 @@ const wompiWebhookHandler = async (req, res) => {
         order.paymentStatus = 'paid';
         order.status = 'processing';
         
-        // Solo descontar stock si el pago no estaba aprobado previamente
+        // Solo descontar stock de productos unitarios (no combos) si el pago no estaba aprobado previamente
         if (previousStatus !== 'paid' && previousStatus !== 'APPROVED') {
           for (const item of order.items) {
-            await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
+            if (item.kind === 'Product') {
+              await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
+            }
           }
         }
         
