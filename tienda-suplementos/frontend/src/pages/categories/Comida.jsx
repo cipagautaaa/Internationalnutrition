@@ -25,9 +25,9 @@ const Comida = () => {
 
 	return (
 		<CategoryPageBase
-			title="Comidas con proteína"
-			apiCategory="Comidas con proteína"
-			pageTitle="Comidas con proteína - Tienda Suplementos"
+			title="Alimentacion saludable y alta en proteina"
+			apiCategory="Alimentacion saludable y alta en proteina"
+			pageTitle="Alimentacion saludable y alta en proteina - Tienda Suplementos"
 			hero={{
 				type: 'image',
 				src: comidasImg,
@@ -35,7 +35,7 @@ const Comida = () => {
 				overlay: 'bg-black/30',
 				content: (
 					<div>
-						<h2 className="text-5xl font-bold mb-4">Comidas con proteína</h2>
+						<h2 className="text-5xl font-bold mb-4">Alimentacion saludable y alta en proteina</h2>
 						<p className="text-xl max-w-2xl mx-auto">Snacks inteligentes y mezclas listas para cubrir tus macros sin complicaciones.</p>
 					</div>
 				)

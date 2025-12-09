@@ -56,6 +56,7 @@ export default function CategoryPageBase({ title, apiCategory }) {
 function mapTitleToFAQGroup(title) {
   if (!title) return null;
   switch (title) {
+    case 'Alimentacion saludable y alta en proteina':
     case 'Comida':
     case 'Comidas con proteína':
       return 'comidasProteina';

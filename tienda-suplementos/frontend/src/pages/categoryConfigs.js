@@ -63,7 +63,7 @@ export const CATEGORY_META = {
   'Rendimiento hormonal': {
     hero: { type: 'image', src: CLOUDINARY_ASSETS.categoryHeroes.creatina, height: 'calc(100vh - 36px)', overlay: 'bg-black/20' }
   },
-  'Comidas con proteína': {
+  'Alimentacion saludable y alta en proteina': {
     hero: { type: 'image', src: CLOUDINARY_ASSETS.categoryHeroes.comidas, height: 'calc(100vh - 36px)', overlay: 'bg-black/20' }
   },
   'Comida': {

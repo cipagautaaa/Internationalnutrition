@@ -23,8 +23,9 @@ const normalizeCategory = (c) => {
     ['aminoácidos y recuperadores', 'Aminoácidos y Recuperadores'],
     ['salud y bienestar', 'Salud y Bienestar'],
     ['rendimiento hormonal', 'Salud y Bienestar'],
-    ['comidas con proteina', 'Comidas con proteína'],
-    ['comidas con proteína', 'Comidas con proteína']
+    ['comidas con proteina', 'Alimentacion saludable y alta en proteina'],
+    ['comidas con proteína', 'Alimentacion saludable y alta en proteina'],
+    ['alimentacion saludable y alta en proteina', 'Alimentacion saludable y alta en proteina']
   ]);
   return map.get(cat) || (cat ? cat[0].toUpperCase() + cat.slice(1) : 'Sin categoría');
 };
@@ -36,6 +37,7 @@ const ALLOWED_TIPOS_BY_CATEGORY = {
   'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
   'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
   'Salud y Bienestar': ['Multivitamínicos', 'Vitaminas y minerales', 'Colágeno, omega y antioxidantes', 'Adaptógenos y suplementos naturales'],
+  'Alimentacion saludable y alta en proteina': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
   'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']
 };
 

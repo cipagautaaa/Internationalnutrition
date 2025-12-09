@@ -18,8 +18,9 @@ const CATEGORY_NORMALIZATION_MAP = {
   'Para la salud': 'Salud y Bienestar',
   'Complementos': 'Salud y Bienestar',
   'Rendimiento hormonal': 'Salud y Bienestar',
-  'Comida': 'Comidas con proteína',
-  'Comidas con proteina': 'Comidas con proteína',
+  'Comida': 'Alimentacion saludable y alta en proteina',
+  'Comidas con proteina': 'Alimentacion saludable y alta en proteina',
+  'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
   'Creatina': 'Creatinas',
   'Proteinas': 'Proteínas',
   'Proteina': 'Proteínas'
@@ -41,7 +42,7 @@ const CATEGORY_ALIASES = {
   'Creatinas': ['Creatinas', 'Creatina'],
   'Aminoácidos y Recuperadores': ['Aminoácidos y Recuperadores', 'Aminoácidos', 'Aminoacidos y recuperadores'],
   'Salud y Bienestar': ['Salud y Bienestar', 'Vitaminas', 'Para la salud', 'Complementos', 'Rendimiento hormonal'],
-  'Comidas con proteína': ['Comidas con proteína', 'Comida', 'Comidas con proteina']
+  'Alimentacion saludable y alta en proteina': ['Alimentacion saludable y alta en proteina', 'Comida', 'Comidas con proteina', 'Comidas con proteína']
 };
 
 const normalizeCategory = (raw) => {
@@ -75,7 +76,7 @@ const SelectProductModal = ({ isOpen, onClose, onSelect }) => {
     'Creatinas',
     'Aminoácidos y Recuperadores',
     'Salud y Bienestar',
-    'Comidas con proteína'
+    'Alimentacion saludable y alta en proteina'
   ];
 
   const filterProducts = useCallback(() => {

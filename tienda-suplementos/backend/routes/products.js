@@ -13,7 +13,7 @@ const NEW_TAXONOMY = [
   'Creatinas',
   'Aminoácidos y Recuperadores',
   'Salud y Bienestar',
-  'Comidas con proteína',
+  'Alimentacion saludable y alta en proteina',
   'Implementos'
 ];
 
@@ -165,7 +165,7 @@ const normalizeCategory = (c) => {
     'Para la salud': 'Salud y Bienestar',
     'Rendimiento hormonal': 'Salud y Bienestar',
     'Complementos': 'Salud y Bienestar',
-    'Comida': 'Comidas con proteína',
+    'Comida': 'Alimentacion saludable y alta en proteina',
     'Creatina': 'Creatinas',
     // Nuevas (ya normalizadas)
     'Proteínas': 'Proteínas',
@@ -173,7 +173,8 @@ const normalizeCategory = (c) => {
     'Creatinas': 'Creatinas',
     'Aminoácidos y Recuperadores': 'Aminoácidos y Recuperadores',
     'Salud y Bienestar': 'Salud y Bienestar',
-    'Comidas con proteína': 'Comidas con proteína'
+    'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
+    'Alimentacion saludable y alta en proteina': 'Alimentacion saludable y alta en proteina'
   };
   return map[cat] || cat || 'Sin categoría';
 };
@@ -363,7 +364,7 @@ router.get('/', async (req, res) => {
         'Creatinas': ['Creatina'],
         'Aminoácidos y Recuperadores': ['Aminoácidos', 'Aminoacidos y recuperadores'],
         'Salud y Bienestar': ['Vitaminas', 'Para la salud', 'Rendimiento hormonal', 'Complementos'],
-        'Comidas con proteína': ['Comida', 'Comidas con proteina']
+        'Alimentacion saludable y alta en proteina': ['Comida', 'Comidas con proteina', 'Comidas con proteína']
       };
       const candidates = Array.from(new Set([
         canonical,

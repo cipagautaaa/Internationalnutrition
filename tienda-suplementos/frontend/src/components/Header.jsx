@@ -247,12 +247,12 @@ const Header = () => {
                     </Link>
                     <Link to="/products/salud" className="text-white font-medium hover:text-red-700 transition-colors text-sm">Salud y Bienestar</Link>
                   </div>
-                  {/* Comidas con proteína */}
+                  {/* Alimentacion saludable y alta en proteina */}
                   <div className="flex flex-col items-center text-center group/item">
                     <Link to="/products/comida" className="block overflow-hidden rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-xl mb-3">
-                      <img src={comidanavbar} alt="Comidas con proteína" className="w-32 h-32 object-cover" />
+                      <img src={comidanavbar} alt="Alimentacion saludable y alta en proteina" className="w-32 h-32 object-cover" />
                     </Link>
-                    <Link to="/products/comida" className="text-white font-medium hover:text-red-700 transition-colors text-sm">Comidas con proteína</Link>
+                    <Link to="/products/comida" className="text-white font-medium hover:text-red-700 transition-colors text-sm">Alimentacion saludable y alta en proteina</Link>
                   </div>
                   </div>
                 </div>

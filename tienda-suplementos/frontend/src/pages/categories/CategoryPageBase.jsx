@@ -97,7 +97,7 @@ function mapTitleToFAQGroup(title) {
     case 'Aminoácidos':
     case 'Aminoácidos y Recuperadores':
       return 'aminoacidos';
-    case 'Comidas con proteína':
+    case 'Alimentacion saludable y alta en proteina':
     case 'Comida':
       return 'comidasProteina';
     case 'Salud y Bienestar':

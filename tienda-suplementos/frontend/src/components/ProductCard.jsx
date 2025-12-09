@@ -55,7 +55,7 @@ const deriveProductType = (product = {}) => {
     return 'Suplementos para la salud';
   }
 
-  if (category === 'comidas con proteina' || category === 'comida') {
+  if (category === 'comidas con proteina' || category === 'comida' || category === 'alimentacion saludable y alta en proteina') {
     if (includesAny(source, ['barra', 'cookie', 'snack', 'bite'])) return 'Snacks proteicos';
     if (includesAny(source, ['pancake', 'waffle', 'mix', 'mezcla'])) return 'Mezclas y harinas';
     return 'Snacks funcionales';

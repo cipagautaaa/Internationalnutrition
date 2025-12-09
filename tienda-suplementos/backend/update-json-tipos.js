@@ -28,7 +28,7 @@ const categoryMap = {
   'AMINOACIDOS': 'Aminoácidos y Recuperadores',
   'VITAMINAS': 'Salud y Bienestar',
   'SALUD': 'Salud y Bienestar',
-  'COMIDAS': 'Comidas con proteína'
+  'COMIDAS': 'Alimentacion saludable y alta en proteina'
 };
 
 let updated = 0;

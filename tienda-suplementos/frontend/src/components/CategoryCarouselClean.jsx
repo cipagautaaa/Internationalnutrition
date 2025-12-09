@@ -16,7 +16,7 @@ const BASE = [
   { id: 3, name: 'Creatinas', image: creatinasImg, link: '/products/creatina' },
   { id: 4, name: 'Aminoácidos y Recuperadores', image: aminoacidosImg, link: '/products/aminoacidos' },
   { id: 5, name: 'Salud y Bienestar', image: saludImg, link: '/products/salud' },
-  { id: 6, name: 'Comidas con proteína', image: comidasImg, link: '/products/comida' }
+  { id: 6, name: 'Alimentacion saludable y alta en proteina', image: comidasImg, link: '/products/comida' }
 ];
 
 export default function CategoryCarouselClean() {

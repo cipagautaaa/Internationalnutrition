@@ -72,7 +72,7 @@ export const FAQ_DATA = {
     ]
   },
   comidasProteina: {
-    title: 'Preguntas Frecuentes sobre Comidas con Proteína',
+    title: 'Preguntas Frecuentes sobre Alimentacion saludable y alta en proteina',
     items: [
       { question: '¿Qué son estas comidas?', answer: 'Son productos listos (barras, puddings, mezclas para pancakes) diseñados para elevar tu ingesta proteica sin preparación extensa. Apoyan adherencia en días con poco tiempo y evitan saltarte objetivos de macronutrientes.' },
       { question: '¿Reemplazan comidas?', answer: 'Funcionan mejor como complemento estratégico entre comidas o post-entreno rápido. No sustituyen por completo platos con vegetales, fibra y micronutrientes; mantén equilibrio con alimentos frescos.' },
@@ -112,6 +112,7 @@ export function mapCategoryToFAQGroup(normalizedCategory) {
     case 'Aminoácidos':
     case 'Aminoácidos y Recuperadores':
       return 'aminoacidos';
+    case 'Alimentacion saludable y alta en proteina':
     case 'Comidas con proteína':
     case 'Comida':
       return 'comidasProteina';

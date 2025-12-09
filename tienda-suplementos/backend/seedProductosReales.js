@@ -18,7 +18,8 @@ const normalizeCategory = (categoria) => {
     'Aminoácidos y Recuperadores': 'Aminoácidos y Recuperadores',
     'Salud y Bienestar': 'Salud y Bienestar',
     'Rendimiento hormonal': 'Rendimiento hormonal',
-    'Comidas con proteína': 'Comidas con proteína'
+    'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
+    'Alimentacion saludable y alta en proteina': 'Alimentacion saludable y alta en proteina'
   };
   return map[categoria] || categoria;
 };
@@ -162,7 +163,7 @@ Uso:
   - Aminoácidos y Recuperadores
   - Salud y Bienestar
   - Rendimiento hormonal
-  - Comidas con proteína
+  - Alimentacion saludable y alta en proteina
 `);
   process.exit(0);
 }

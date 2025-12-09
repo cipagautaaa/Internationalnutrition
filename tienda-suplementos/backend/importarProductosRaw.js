@@ -27,9 +27,10 @@ const normalizeCategory = (categoria) => {
     'VITAMINAS': 'Salud y Bienestar',
     'SALUD Y BIENESTAR': 'Salud y Bienestar',
     'PARA LA SALUD': 'Salud y Bienestar',
-    'COMIDAS': 'Comidas con proteína',
-    'COMIDAS CON PROTEINA': 'Comidas con proteína',
-    'COMIDAS CON PROTEÍNA': 'Comidas con proteína'
+    'COMIDAS': 'Alimentacion saludable y alta en proteina',
+    'COMIDAS CON PROTEINA': 'Alimentacion saludable y alta en proteina',
+    'COMIDAS CON PROTEÍNA': 'Alimentacion saludable y alta en proteina',
+    'ALIMENTACION SALUDABLE Y ALTA EN PROTEINA': 'Alimentacion saludable y alta en proteina'
   };
   
   return map[categoriaNormalizada] || 'Proteínas';

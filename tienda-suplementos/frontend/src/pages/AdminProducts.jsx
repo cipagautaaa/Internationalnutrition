@@ -14,7 +14,7 @@ const ALL_CATEGORIES = [
   'Creatinas',
   'Aminoácidos y Recuperadores',
   'Salud y Bienestar',
-  'Comidas con proteína',
+  'Alimentacion saludable y alta en proteina',
   'Implementos'
 ];
 
@@ -28,7 +28,7 @@ const normalizeCategory = (raw) => {
     'Aminoácidos': 'Aminoácidos y Recuperadores',
     'Vitaminas': 'Salud y Bienestar',
     'Para la salud': 'Salud y Bienestar',
-    'Comida': 'Comidas con proteína',
+    'Comida': 'Alimentacion saludable y alta en proteina',
     'Creatina': 'Creatinas',
     // Ya nuevas (case-insensitive)
     'proteínas': 'proteínas',
@@ -42,8 +42,8 @@ const normalizeCategory = (raw) => {
     'Aminoácidos y recuperadores': 'Aminoácidos y Recuperadores',
     'Salud y Bienestar': 'Salud y Bienestar',
     'Salud y bienestar': 'Salud y Bienestar',
-    'Comidas con proteína': 'Comidas con proteína',
-    'Comidas con Proteína': 'Comidas con proteína',
+    'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
+    'Comidas con Proteína': 'Alimentacion saludable y alta en proteina',
     'Implementos': 'Implementos',
     'implementos': 'Implementos',
   };
@@ -93,8 +93,8 @@ const CATEGORY_TYPES = {
   'Para la salud': HEALTH_TYPES,
   'Complementos': HEALTH_TYPES,
   'Rendimiento hormonal': HEALTH_TYPES,
-  // Comidas con proteína
-  'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
+  // Alimentacion saludable y alta en proteina
+  'Alimentacion saludable y alta en proteina': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
   'Comida': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']
 };
 

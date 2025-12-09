@@ -22,7 +22,7 @@ const CATEGORY_SLUG_MAP = {
 	recuperadores: 'Aminoácidos y Recuperadores',
 	salud: 'Salud y Bienestar',
 	bienestar: 'Salud y Bienestar',
-	comidas: 'Comidas con proteína',
+	comidas: 'Alimentacion saludable y alta en proteina',
 	comida: 'Comida', // legacy
 	// Aliases adicionales y compatibilidad
 	proteina: 'Proteínas', // tolera singular
@@ -49,8 +49,8 @@ const BACKEND_CATEGORY_MAP = {
 	'Salud y Bienestar': 'Salud y Bienestar',
 	'Rendimiento hormonal': 'Salud y Bienestar',
 	'Complementos': 'Salud y Bienestar',
-	'Comidas con proteína': 'Comidas con proteína',
-	'Comida': 'Comidas con proteína'
+	'Alimentacion saludable y alta en proteina': 'Alimentacion saludable y alta en proteina',
+	'Comida': 'Alimentacion saludable y alta en proteina'
 };
 
 function useQuery() {

@@ -8,7 +8,7 @@ const categories = [
   'Creatinas',
   'Aminoácidos y Recuperadores',
   'Salud y Bienestar',
-  'Comidas con proteína'
+  'Alimentacion saludable y alta en proteina'
 ];
 
 const normalizeKey = (value = '') =>
@@ -37,7 +37,9 @@ const CATEGORY_TYPES = {
   'Para la salud': HEALTH_TYPES,
   'Complementos': HEALTH_TYPES,
   'Rendimiento hormonal': HEALTH_TYPES,
-  // Comidas con proteína
+  // Alimentacion saludable y alta en proteina (comidas funcionales)
+  'Alimentacion saludable y alta en proteina': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
+  // Legacy alias
   'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']
 };
 
@@ -147,7 +149,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
   };
   const isMealsProtein = (val) => {
     const n = normalizeText(val);
-    return n === 'comidas con proteina' || n === 'comida';
+    return n === 'alimentacion saludable y alta en proteina' || n === 'comida' || n === 'comidas con proteina';
   };
 
   const getCategoryTypes = (category) => CATEGORY_TYPES_LOOKUP[normalizeKey(category)] || null;

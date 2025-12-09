@@ -103,7 +103,7 @@ const categoryItems = [
     image: multinavbarImg,
   },
   {
-    label: 'Comidas con proteína',
+    label: 'Alimentacion saludable y alta en proteina',
     description: 'Snacks funcionales',
     to: '/products/comida',
     image: comidanavbar,

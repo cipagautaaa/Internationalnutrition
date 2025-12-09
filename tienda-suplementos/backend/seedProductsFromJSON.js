@@ -18,7 +18,7 @@ const normalizeCategory = (c) => {
     'Vitaminas': 'Salud y Bienestar',
     'Para la salud': 'Salud y Bienestar',
     'Complementos': 'Salud y Bienestar',
-    'Comida': 'Comidas con proteína',
+    'Comida': 'Alimentacion saludable y alta en proteina',
     'Creatina': 'Creatinas',
     // Nuevas (ya normalizadas)
     'Proteínas': 'Proteínas',
@@ -27,7 +27,8 @@ const normalizeCategory = (c) => {
     'Aminoácidos y Recuperadores': 'Aminoácidos y Recuperadores',
     'Salud y Bienestar': 'Salud y Bienestar',
     'Rendimiento hormonal': 'Salud y Bienestar',
-    'Comidas con proteína': 'Comidas con proteína'
+    'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
+    'Alimentacion saludable y alta en proteina': 'Alimentacion saludable y alta en proteina'
   };
   return map[cat] || cat || 'Sin categoría';
 };
@@ -549,7 +550,7 @@ Categorías válidas:
   - Pre-entrenos y Quemadores
   - Aminoácidos y Recuperadores
   - Salud y Bienestar
-  - Comidas con proteína
+  - Alimentacion saludable y alta en proteina
 
 Notas:
   * Los productos con el mismo nombre se agrupan en una familia y comparten tarjeta.

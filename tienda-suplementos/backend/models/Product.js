@@ -8,7 +8,7 @@ const NEW_CATEGORIES = [
   'Creatinas',
   'Aminoácidos y Recuperadores',
   'Salud y Bienestar',
-  'Comidas con proteína'
+  'Alimentacion saludable y alta en proteina'
 ];
 
 const LEGACY_CATEGORIES = [
@@ -20,7 +20,8 @@ const LEGACY_CATEGORIES = [
   'Para la salud',
   'Complementos',
   'Rendimiento hormonal',
-  'Comida'
+  'Comida',
+  'Comidas con proteína'
 ];
 
 const ALLOWED_CATEGORIES = Array.from(new Set([...NEW_CATEGORIES, ...LEGACY_CATEGORIES]));
@@ -59,6 +60,7 @@ const ALLOWED_TIPOS_BY_CATEGORY = {
   'Complementos': HEALTH_TIPOS,
   'Rendimiento hormonal': HEALTH_TIPOS,
   // Comidas con proteína (nuevo y legacy)
+  'Alimentacion saludable y alta en proteina': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
   'Comida': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales'],
   'Comidas con proteína': ['Pancakes y mezclas', 'Barras y galletas proteicas', 'Snacks funcionales']
 };

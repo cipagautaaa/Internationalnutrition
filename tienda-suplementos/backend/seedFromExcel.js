@@ -21,14 +21,15 @@ const normalizeCategory = (c) => {
     'Para la salud': 'Salud y Bienestar',
     'Complementos': 'Salud y Bienestar',
     'Rendimiento hormonal': 'Salud y Bienestar',
-    'Comida': 'Comidas con proteína',
+    'Comida': 'Alimentacion saludable y alta en proteina',
     'Creatina': 'Creatinas',
     'Proteínas': 'Proteínas',
     'Pre-entrenos y Quemadores': 'Pre-entrenos y Quemadores',
     'Creatinas': 'Creatinas',
     'Aminoácidos y Recuperadores': 'Aminoácidos y Recuperadores',
     'Salud y Bienestar': 'Salud y Bienestar',
-    'Comidas con proteína': 'Comidas con proteína'
+    'Comidas con proteína': 'Alimentacion saludable y alta en proteina',
+    'Alimentacion saludable y alta en proteina': 'Alimentacion saludable y alta en proteina'
   };
   return map[cat] || cat || 'Sin categoría';
 };

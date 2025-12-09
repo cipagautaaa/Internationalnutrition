@@ -24,6 +24,7 @@ const PLACEHOLDER_IMAGES = {
   'Creatinas': 'https://via.placeholder.com/800x800?text=Creatina',
   'Aminoácidos y Recuperadores': 'https://via.placeholder.com/800x800?text=Aminoacidos',
   'Salud y Bienestar': 'https://via.placeholder.com/800x800?text=Salud',
+  'Alimentacion saludable y alta en proteina': 'https://via.placeholder.com/800x800?text=Comidas',
   'Comidas con proteína': 'https://via.placeholder.com/800x800?text=Comidas',
 };
 

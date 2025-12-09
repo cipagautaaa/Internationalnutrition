@@ -42,8 +42,8 @@ const AdminCatalogView = () => {
       color: 'bg-pink-50 border-pink-200'
     },
     {
-      name: 'Comidas con proteína',
-      path: '/admin/products?category=Comidas con proteína',
+      name: 'Alimentacion saludable y alta en proteina',
+      path: '/admin/products?category=Alimentacion saludable y alta en proteina',
       count: 0,
       icon: '🍽️',
       color: 'bg-orange-50 border-orange-200'
