@@ -24,6 +24,11 @@ import Login from './pages/Login';
 import VerifyEmail from './pages/VerifyEmail';
 import CookieConsent from './components/CookieConsent';
 import CookiePolicy from './pages/CookiePolicy';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
+import ReturnsPolicy from './pages/ReturnsPolicy';
+import ShippingPolicy from './pages/ShippingPolicy';
+import CommerceData from './pages/CommerceData';
 import Profile from './pages/Profile';
 import WhatsappFloatButton from './components/WhatsappFloatButton';
 import ScrollToTop from './components/ScrollToTop';
@@ -134,6 +139,12 @@ function App() {
           <Route path="/contacto" element={<Contact />} />
           <Route path="/preguntas-frecuentes" element={<FAQ />} />
           <Route path="/politica-cookies" element={<CookiePolicy />} />
+          <Route path="/politica-privacidad" element={<PrivacyPolicy />} />
+          <Route path="/terminos-condiciones" element={<TermsConditions />} />
+          <Route path="/cambios-devoluciones-garantias" element={<ReturnsPolicy />} />
+          <Route path="/politica-envios" element={<ShippingPolicy />} />
+          <Route path="/envios" element={<ShippingPolicy />} />
+          <Route path="/datos-comercio" element={<CommerceData />} />
           <Route path="/admin" element={<RequireAdmin><AdminProducts /></RequireAdmin>} />
           <Route path="/admin/products" element={<RequireAdmin><AdminProducts /></RequireAdmin>} />
           <Route path="/admin/profile" element={<RequireAdmin><AdminProfile /></RequireAdmin>} />

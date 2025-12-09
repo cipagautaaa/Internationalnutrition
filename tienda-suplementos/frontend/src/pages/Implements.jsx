@@ -36,6 +36,32 @@ const Implements = () => {
         </p>
       </header>
 
+      <section className="mb-12 space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="rounded-2xl border border-gray-200 bg-white/95 p-5 shadow-sm">
+            <p className="text-[11px] uppercase tracking-[0.32em] text-gray-500 mb-3">Para quién</p>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Fuerza, cross y home gym</h3>
+            <p className="text-sm text-gray-700">Ligas, straps, cinturones y agarres para sostener volumen y evitar lesiones en tirones pesados.</p>
+          </div>
+          <div className="rounded-2xl border border-gray-200 bg-white/95 p-5 shadow-sm">
+            <p className="text-[11px] uppercase tracking-[0.32em] text-gray-500 mb-3">Antes de comprar</p>
+            <ul className="space-y-2 text-sm text-gray-700">
+              <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-gray-900" />Elige talla de cinturón midiendo tu cintura de entrenamiento.</li>
+              <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-gray-900" />Para straps y agarres: prioriza materiales antideslizantes si haces peso muerto/remos.</li>
+              <li className="flex items-start gap-2"><span className="mt-1 h-1.5 w-1.5 rounded-full bg-gray-900" />Shakers y botellas: busca tapa a prueba de fugas y marcación de ml.</li>
+            </ul>
+          </div>
+          <div className="rounded-2xl border border-gray-200 bg-white/95 p-5 shadow-sm">
+            <p className="text-[11px] uppercase tracking-[0.32em] text-gray-500 mb-3">Usos rápidos</p>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p><strong>Soporte:</strong> Cinturones y muñequeras para sentadilla, press y peso muerto.</p>
+              <p><strong>Grip:</strong> Straps, guantes y ganchos para series largas sin soltar la barra.</p>
+              <p><strong>Movilidad:</strong> Bandas y rodillos para calentamiento y descarga.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {loading && (
         <div className="flex justify-center py-20">
           <div className="h-12 w-12 border-4 border-gray-200 border-t-red-600 rounded-full animate-spin" aria-label="Cargando" />

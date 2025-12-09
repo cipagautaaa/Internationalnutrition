@@ -66,19 +66,19 @@ const Footer = () => {
               Empresa
             </h3>
             <ul className="space-y-3">
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Quiénes Somos</span>
               </a></li>
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Nuestro Equipo</span>
               </a></li>
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Blog y Noticias</span>
               </a></li>
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Oportunidades</span>
               </a></li>
@@ -91,19 +91,19 @@ const Footer = () => {
               Soporte
             </h3>
             <ul className="space-y-3">
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/preguntas-frecuentes" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Centro de Ayuda</span>
               </a></li>
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/politica-envios" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Envíos y Entregas</span>
               </a></li>
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/cambios-devoluciones-garantias" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Garantías y Devoluciones</span>
               </a></li>
-              <li><a href="#" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
+              <li><a href="/preguntas-frecuentes" className="text-gray-300 hover:text-red-700 transition-colors duration-300 flex items-center space-x-2">
                 <span className="w-1 h-1 bg-red-7000 rounded-full"></span>
                 <span>Preguntas Frecuentes</span>
               </a></li>
@@ -205,9 +205,10 @@ const Footer = () => {
             
             </div>
             <div className="flex space-x-6 text-xs text-gray-400">
-              <a href="#" className="hover:text-red-700 transition-colors">Política de Privacidad</a>
-              <a href="#" className="hover:text-red-700 transition-colors">Términos de Servicio</a>
-              <a href="#" className="hover:text-red-700 transition-colors">Política de Cookies</a>
+              <a href="/politica-privacidad" className="hover:text-red-700 transition-colors">Política de Privacidad</a>
+              <a href="/terminos-condiciones" className="hover:text-red-700 transition-colors">Términos de Servicio</a>
+              <a href="/politica-cookies" className="hover:text-red-700 transition-colors">Política de Cookies</a>
+              <a href="/datos-comercio" className="hover:text-red-700 transition-colors">Datos del Comercio</a>
             </div>
           </div>
         </div>
