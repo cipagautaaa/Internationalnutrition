@@ -1,4 +1,4 @@
-﻿import { Link } from 'react-router-dom';
+﻿import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight, Star, Truck, RotateCcw, CheckCircle, ChevronDown, MessageCircle } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import FeaturedProductCard from '../components/FeaturedProductCard';
@@ -12,9 +12,12 @@ import axios from '../utils/axios';
 import { CLOUDINARY_ASSETS } from '../config/cloudinaryAssets';
 import bannerPromoFallback from '../assets/images/foto2.jpg';
 import { getWhatsappUrl } from '../utils/whatsapp';
+import PromoWelcomeModal from '../components/PromoWelcomeModal';
 
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const isAdmin = isAuthenticated && user?.role === 'admin';
   const heroVideoRef = useRef(null);
   
@@ -23,6 +26,7 @@ const Home = () => {
   const [selectModalOpen, setSelectModalOpen] = useState(false);
   const [slotToReplace, setSlotToReplace] = useState(null);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
+  const [showPromo, setShowPromo] = useState(false);
 
   const stores = [
     { name: 'Sede Tunja', video: CLOUDINARY_ASSETS.videos.videoTunja, type: 'video' },
@@ -118,6 +122,19 @@ const Home = () => {
       document.removeEventListener('visibilitychange', resumeOnInteraction);
     };
   }, [ensureHeroVideoPlays]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      setShowPromo(false);
+      return;
+    }
+
+    const alreadyDismissed = typeof window !== 'undefined' && sessionStorage.getItem('promoWelcomeDismissed') === '1';
+    if (alreadyDismissed) return;
+
+    const timer = setTimeout(() => setShowPromo(true), 7000);
+    return () => clearTimeout(timer);
+  }, [isAuthenticated]);
 
   const fetchFeaturedProducts = async () => {
     setLoading(true);
@@ -221,8 +238,27 @@ const Home = () => {
     window.scrollTo({ top: y, behavior: 'smooth' });
   };
 
+  const handleClosePromo = () => {
+    setShowPromo(false);
+    try {
+      sessionStorage.setItem('promoWelcomeDismissed', '1');
+    } catch (err) {
+      console.warn('No se pudo registrar el cierre del popup:', err);
+    }
+  };
+
+  const handleClaimPromo = () => {
+    handleClosePromo();
+    navigate('/sign-in', { state: { from: location.pathname } });
+  };
+
   return (
   <div className="min-h-screen text-gray-900 bg-black">
+      <PromoWelcomeModal
+        open={!isAuthenticated && showPromo}
+        onClose={handleClosePromo}
+        onClaim={handleClaimPromo}
+      />
       {/* Hero Section Limpio */}
       <section
         className="relative bg-black z-0 h-screen"
