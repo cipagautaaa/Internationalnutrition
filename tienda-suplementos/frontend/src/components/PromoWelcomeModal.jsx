@@ -8,7 +8,7 @@ const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-4 sm:px-6">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
-      <div className="relative max-w-3xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2">
+      <div className="relative max-w-3xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2 md:h-[520px]">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition"
@@ -17,7 +17,7 @@ const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
           <X className="w-5 h-5" />
         </button>
 
-        <div className="relative h-full min-h-[320px]">
+        <div className="relative h-56 md:h-full min-h-[320px]">
           <img
             src={fotolocal}
             alt="Compra con descuento en International Nutrition"
