@@ -8,7 +8,7 @@ const validateEmail = (req, res, next) => {
     })
   });
 
-  const { error } = schema.validate(req.body);
+  const { error } = schema.validate(req.body, { allowUnknown: true });
   if (error) {
     return res.status(400).json({
       success: false,
@@ -31,7 +31,7 @@ const validateVerifyEmail = (req, res, next) => {
     })
   });
 
-  const { error } = schema.validate(req.body);
+  const { error } = schema.validate(req.body, { allowUnknown: true });
   if (error) {
     return res.status(400).json({
       success: false,
