@@ -71,6 +71,8 @@ const authReducer = (state, action) => {
       };
     case 'CLEAR_ERROR':
       return { ...state, error: null };
+    case 'STOP_LOADING':
+      return { ...state, loading: false };
     default:
       return state;
   }
@@ -219,6 +221,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.post('/auth/send-code', payload);
       dispatch({ type: 'CLEAR_ERROR' });
+      dispatch({ type: 'STOP_LOADING' });
       return { success: true, email: payload.email };
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Error de conexión';
