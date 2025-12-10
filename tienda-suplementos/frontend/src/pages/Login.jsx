@@ -49,7 +49,6 @@ export default function Login() {
     if (result.success) {
       setMessage({ type: 'success', text: '¡Listo! Cuenta verificada y sesión iniciada.' });
       setStep('success');
-      setTimeout(() => navigate(location.state?.from || '/'), 1200);
     } else {
       setMessage({ type: 'error', text: result.error || 'Código inválido.' });
     }

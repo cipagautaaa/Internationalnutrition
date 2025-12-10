@@ -4,3 +4,12 @@ npm-debug.log
 .env.local
 dist
 .DS_Store
+public/uploads
+logs
+*.log
+tmp
+temp
+tests
+coverage
+*.test.js
+*.spec.js
