@@ -11,7 +11,7 @@ const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
 
 // Taxonomía 2025 (7 categorías, nombres de visualización)
 const ALL_CATEGORIES = [
-  'proteínas',
+  'Proteínas',
   'Pre-entrenos y Quemadores',
   'Creatinas',
   'Aminoácidos y Recuperadores',
@@ -32,10 +32,10 @@ const normalizeCategory = (raw) => {
     'Para la salud': 'Salud y Bienestar',
     'Comida': 'Alimentacion saludable y alta en proteina',
     'Creatina': 'Creatinas',
-    // Ya nuevas (case-insensitive)
-    'proteínas': 'proteínas',
-    'Proteínas': 'proteínas',
-    'PROTEÍNAS': 'proteínas',
+    // Ya nuevas (case-insensitive) normalizadas a enum backend
+    'proteínas': 'Proteínas',
+    'Proteínas': 'Proteínas',
+    'PROTEÍNAS': 'Proteínas',
     'Pre-entrenos y Quemadores': 'Pre-entrenos y Quemadores',
     'Pre-entrenos y quemadores': 'Pre-entrenos y Quemadores',
     'Creatinas': 'Creatinas',
@@ -164,7 +164,7 @@ export default function AdminProducts() {
     description: '',
     price: '',
     originalPrice: '',
-    category: 'proteínas',
+    category: 'Proteínas',
     tipo: '',
     image: '',
     inStock: true,
@@ -417,10 +417,14 @@ export default function AdminProducts() {
     try {
       setSaving(true);
       setError(null);
+      const normalizedPayload = {
+        ...payload,
+        category: normalizeCategory(payload.category)
+      };
       if (editing) {
-        await axios.put(`/products/${editing._id}`, payload);
+        await axios.put(`/products/${editing._id}`, normalizedPayload);
       } else {
-        await axios.post('/products', payload);
+        await axios.post('/products', normalizedPayload);
       }
       setModalOpen(false);
       await fetchProducts();
@@ -540,7 +544,7 @@ export default function AdminProducts() {
             )}
 
             {(error || catSummaryError) && (
-              <div className="rounded-2xl border border-red-700 bg-red-700 px-4 py-3 text-sm text-red-700">
+              <div className="rounded-2xl border border-red-700 bg-red-700 px-4 py-3 text-sm text-white" aria-live="polite">
                 {error || catSummaryError}
               </div>
             )}

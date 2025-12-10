@@ -18,10 +18,23 @@ const userSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  fullName: {
+    type: String,
+    trim: true,
+    default: ''
+  },
   phone: {
     type: String,
     trim: true,
     default: ''
+  },
+  birthDate: {
+    type: Date,
+    default: null
+  },
+  passwordHash: {
+    type: String,
+    default: null
   },
   isEmailVerified: {
     type: Boolean,
@@ -32,6 +45,14 @@ const userSchema = new mongoose.Schema({
     default: null
   },
   emailVerificationExpires: {
+    type: Date,
+    default: null
+  },
+  passwordResetCode: {
+    type: String,
+    default: null
+  },
+  passwordResetExpires: {
     type: Date,
     default: null
   },

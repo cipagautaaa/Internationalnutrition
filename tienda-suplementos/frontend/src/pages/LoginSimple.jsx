@@ -4,19 +4,23 @@ import { useAuth } from '../context/AuthContext';
 import headerImg from '../assets/images/logo-largo-int-removebg-preview.png';
 
 export default function LoginSimple() {
-  const [email, setEmail] = useState('');
+  const location = useLocation();
+  const [email, setEmail] = useState(location.state?.email || '');
+  const [password, setPassword] = useState('');
+  const [mode, setMode] = useState(location.state?.mode || 'login'); // login | forgot | reset
+  const [code, setCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState(null);
-  const { login, loading, pendingAdminPin, verifyAdminPin, error, clearError } = useAuth();
+  const { login, loading, pendingAdminPin, verifyAdminPin, error, clearError, requestPasswordReset, resetPassword } = useAuth();
   const [pin, setPin] = useState('');
   const [pinMessage, setPinMessage] = useState(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
     clearError?.();
-    const result = await login(email);
+    const result = await login(email, password);
     if (result.success && result.adminPinRequired) {
       setMessage({ type: 'info', text: 'Ingresa tu PIN de administrador' });
       return;
@@ -24,10 +28,37 @@ export default function LoginSimple() {
     if (result.success && !result.requiresVerification) {
       setMessage({ type: 'success', text: 'Inicio de sesión exitoso' });
       setTimeout(() => navigate('/'), 800);
-    } else if (result.success && result.requiresVerification) {
-      navigate('/sign-in', { state: { email, step: 'code', from: location.pathname } });
+    } else if (result.requiresVerification) {
+      setMessage({ type: 'error', text: 'Verifica tu correo antes de iniciar sesión. Te enviamos un código.' });
     } else if (result.error) {
       setMessage({ type: 'error', text: result.error });
+    }
+  };
+
+  const handleForgot = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+    const res = await requestPasswordReset(email);
+    if (res.success) {
+      setMode('reset');
+      setMessage({ type: 'success', text: 'Enviamos un código a tu correo.' });
+    } else {
+      setMessage({ type: 'error', text: res.error || 'No pudimos enviar el código.' });
+    }
+  };
+
+  const handleReset = async (e) => {
+    e.preventDefault();
+    setMessage(null);
+    const res = await resetPassword(email, code, newPassword);
+    if (res.success) {
+      setMessage({ type: 'success', text: 'Contraseña actualizada. Inicia sesión.' });
+      setMode('login');
+      setPassword('');
+      setCode('');
+      setNewPassword('');
+    } else {
+      setMessage({ type: 'error', text: res.error || 'No pudimos actualizar la contraseña.' });
     }
   };
 
@@ -108,7 +139,7 @@ export default function LoginSimple() {
           
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              {!pendingAdminPin ? 'Iniciar sesión' : 'Verificación admin'}
+              {!pendingAdminPin ? (mode === 'login' ? 'Iniciar sesión' : mode === 'forgot' ? 'Recuperar acceso' : 'Restablecer contraseña') : 'Verificación admin'}
             </h1>
             <p className="text-gray-600">
               {!pendingAdminPin ? 'Accede a tu cuenta con tu correo' : 'Ingresa tu PIN de seguridad'}
@@ -125,58 +156,166 @@ export default function LoginSimple() {
                 <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path>
                 </svg>
+              {!pendingAdminPin ? (
+                mode === 'login' ? (
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                      <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Correo electrónico
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
+                          </svg>
+                        </div>
+                        <input
+                          type="email"
+                          id="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="w-full rounded-xl border-2 border-gray-200 pl-12 pr-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                          placeholder="tu@email.com"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label htmlFor="password" className="block text-sm font-semibold text-gray-700 mb-2">
+                        Contraseña
+                      </label>
+                      <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0-1.105-.895-2-2-2s-2 .895-2 2 2 5 2 5 2-3.895 2-5z" />
+                          </svg>
+                        </div>
+                        <input
+                          type="password"
+                          id="password"
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          className="w-full rounded-xl border-2 border-gray-200 pl-12 pr-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                          placeholder="Ingresa tu contraseña"
+                          required
+                        />
+                      </div>
+                      <div className="mt-2 text-right text-sm">
+                        <button type="button" className="text-red-600 hover:text-red-700 font-semibold" onClick={() => setMode('forgot')}>
+                          ¿Olvidaste tu contraseña?
+                        </button>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={loading || !email || !password}
+                      className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
+                        loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
+                      }`}
+                    >
+                      {loading ? (
+                        <span className="flex items-center justify-center gap-2">
+                          <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Cargando...
+                        </span>
+                      ) : 'Iniciar sesión →'}
+                    </button>
+
+                    <div className="pt-4 text-center">
+                      <p className="text-sm text-gray-600">
+                        ¿No tienes una cuenta?{' '}
+                        <Link to="/sign-in" className="font-bold text-red-600 hover:text-red-700 transition">
+                          Regístrate →
+                        </Link>
+                      </p>
+                    </div>
+                  </form>
+                ) : mode === 'forgot' ? (
+                  <form onSubmit={handleForgot} className="space-y-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Correo registrado</label>
+                      <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                        placeholder="tu@email.com"
+                        required
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={loading || !email}
+                      className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
+                        loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
+                      }`}
+                    >
+                      {loading ? 'Enviando...' : 'Enviar código'}
+                    </button>
+                    <div className="text-center text-sm">
+                      <button type="button" className="text-gray-600 hover:text-gray-800" onClick={() => setMode('login')}>
+                        ← Volver a iniciar sesión
+                      </button>
+                    </div>
+                  </form>
+                ) : (
+                  <form onSubmit={handleReset} className="space-y-5">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Correo</label>
+                        <input
+                          type="email"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-gray-700 mb-2">Código</label>
+                        <input
+                          type="text"
+                          value={code}
+                          onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                          className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all text-center tracking-[0.4em]"
+                          maxLength={6}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Nueva contraseña</label>
+                      <input
+                        type="password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                        placeholder="Mínimo 8 caracteres, mayúscula, minúscula y número"
+                        required
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      disabled={loading || !email || code.length !== 6 || newPassword.length < 8}
+                      className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
+                        loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
+                      }`}
+                    >
+                      {loading ? 'Actualizando...' : 'Guardar nueva contraseña'}
+                    </button>
+                    <div className="text-center text-sm">
+                      <button type="button" className="text-gray-600 hover:text-gray-800" onClick={() => setMode('login')}>
+                        ← Volver a iniciar sesión
+                      </button>
+                    </div>
+                  </form>
+                )
               ) : (
-                <svg className="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"></path>
-                </svg>
-              )}
-              {message.text}
-            </div>
-          )}
-
-          {/* Paso 1: Email */}
-          {!pendingAdminPin && (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Correo electrónico
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-                    </svg>
-                  </div>
-                  <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-xl border-2 border-gray-200 pl-12 pr-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
-                    placeholder="tu@email.com"
-                    required
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading || !email}
-                className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
-                  loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
-                }`}
-              >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Cargando...
-                  </span>
-                ) : 'Iniciar sesión →'}
-              </button>
-
               <div className="pt-4 text-center">
                 <p className="text-sm text-gray-600">
                   ¿No tienes una cuenta?{' '}

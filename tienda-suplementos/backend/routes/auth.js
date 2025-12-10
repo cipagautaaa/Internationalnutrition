@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const { sendVerificationEmail } = require('../utils/emailService');
+const { sendVerificationEmail, sendPasswordResetEmail } = require('../utils/emailService');
 const { generateVerificationCode } = require('../utils/generateCode');
 const { protect } = require('../middleware/auth');
 const { validateEmail, validateVerifyEmail } = require('../middleware/validation');
@@ -10,20 +10,62 @@ const { loginLimiter, codeLimiter } = require('../middleware/rateLimiter');
 // (Revertido) TOTP eliminado
 const bcrypt = require('bcryptjs');
 
-// Login directo para usuarios verificados o admins con PIN
-router.post('/login', validateEmail, async (req, res) => {
+const passwordMeetsPolicy = (password) => {
+  // Min 8 chars, 1 uppercase, 1 lowercase, 1 number
+  return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password || '');
+};
+
+// Login con email + contraseña (requiere email verificado)
+router.post('/login', loginLimiter, validateEmail, async (req, res) => {
   const requestId = Math.random().toString(36).slice(2);
   try {
-    const { email } = req.body;
+    const { email, password } = req.body;
     console.log(`[login:${requestId}] INICIO email=${email}`);
-    let user = await User.findOne({ email });
 
+    if (!password) {
+      return res.status(400).json({ success: false, message: 'Contraseña requerida' });
+    }
+
+    const user = await User.findOne({ email });
     if (!user) {
       console.log(`[login:${requestId}] ❌ Usuario no encontrado`);
       return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
     }
 
-    console.log(`[login:${requestId}] ✅ Usuario encontrado role=${user.role} verified=${user.isEmailVerified} pinEnabled=${user.adminPinEnabled}`);
+    if (!user.passwordHash) {
+      return res.status(400).json({ success: false, message: 'Esta cuenta aún no tiene contraseña. Regístrate o restablece tu contraseña.' });
+    }
+
+    const passwordOk = await bcrypt.compare(password, user.passwordHash);
+    if (!passwordOk) {
+      console.log(`[login:${requestId}] ❌ Contraseña incorrecta`);
+      return res.status(401).json({ success: false, message: 'Email o contraseña incorrectos' });
+    }
+
+    if (!user.isEmailVerified) {
+      const verificationCode = generateVerificationCode();
+      user.emailVerificationCode = verificationCode;
+      user.emailVerificationExpires = new Date(Date.now() + 10 * 60 * 1000);
+      await user.save();
+
+      sendVerificationEmail(email, verificationCode)
+        .then((info) => {
+          if (info?.skipped) {
+            console.log(`[login:${requestId}] Email SKIPPED (config faltante)`);
+          } else {
+            console.log(`[login:${requestId}] Email ENVIADO OK`);
+          }
+        })
+        .catch((err) => {
+          console.error(`[login:${requestId}] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+        });
+
+      return res.status(403).json({
+        success: false,
+        message: 'Necesitamos verificar tu email. Te enviamos un código.',
+        data: { step: 'VERIFY_EMAIL', email: user.email }
+      });
+    }
 
     if (user.role === 'admin' && user.adminPinEnabled && user.adminPinHash) {
       console.log(`[login:${requestId}] 🔑 Admin requiere PIN`);
@@ -39,48 +81,34 @@ router.post('/login', validateEmail, async (req, res) => {
       });
     }
 
-    if (user.isEmailVerified) {
-      console.log(`[login:${requestId}] Usuario verificado, generando token`);
-      const token = jwt.sign(
-        { id: user._id, email: user.email, role: user.role },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_EXPIRE }
-      );
-      user.lastLogin = new Date();
-      await user.save();
-      console.log(`[login:${requestId}] ✅ Token emitido`);
-      return res.json({
-        success: true,
-        message: 'Login exitoso',
-        data: { token, user: { id: user._id, email: user.email, firstName: user.firstName, lastName: user.lastName, isEmailVerified: user.isEmailVerified, lastLogin: user.lastLogin, role: user.role } }
-      });
-    }
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE }
+    );
 
-    console.log(`[login:${requestId}] Usuario NO verificado, generando código`);
-    const verificationCode = generateVerificationCode();
-    const verificationExpires = new Date(Date.now() + 10 * 60 * 1000);
-    user.emailVerificationCode = verificationCode;
-    user.emailVerificationExpires = verificationExpires;
+    user.lastLogin = new Date();
     await user.save();
-    console.log(`[login:${requestId}] Código generado=${verificationCode}`);
 
-    // Envío de email en background para no bloquear la respuesta
-    sendVerificationEmail(email, verificationCode)
-      .then((info) => {
-        if (info?.skipped) {
-          console.log(`[login:${requestId}] Email SKIPPED (config faltante)`);
-        } else {
-          console.log(`[login:${requestId}] Email ENVIADO OK`);
-        }
-      })
-      .catch((err) => {
-        console.error(`[login:${requestId}] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
-      });
-
+    console.log(`[login:${requestId}] ✅ Token emitido`);
     return res.json({
       success: true,
-      message: 'Código generado. Revisa tu correo en un momento',
-      data: { step: 'code', email: user.email }
+      message: 'Login exitoso',
+      data: {
+        token,
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: user.fullName,
+          phone: user.phone,
+          birthDate: user.birthDate,
+          isEmailVerified: user.isEmailVerified,
+          lastLogin: user.lastLogin,
+          role: user.role
+        }
+      }
     });
   } catch (error) {
     console.error(`[login:${requestId}] Error inesperado:`, error);
@@ -88,29 +116,60 @@ router.post('/login', validateEmail, async (req, res) => {
   }
 });
 
-// Enviar código de verificación (login/registro)
+// Registrar usuario y enviar código de verificación
 router.post('/send-code', codeLimiter, validateEmail, async (req, res) => {
   try {
-    const { email } = req.body;
-
-    const verificationCode = generateVerificationCode();
-    const verificationExpires = new Date(Date.now() + 10 * 60 * 1000);
+    const { email, fullName, firstName, lastName, phone, birthDate, password } = req.body;
 
     let user = await User.findOne({ email });
-    
-    if (user) {
-      user.emailVerificationCode = verificationCode;
-      user.emailVerificationExpires = verificationExpires;
-      await user.save();
-    } else {
-      user = await User.create({
-        email,
-        emailVerificationCode: verificationCode,
-        emailVerificationExpires: verificationExpires
-      });
+    const isNewUser = !user;
+
+    if (user && user.isEmailVerified) {
+      return res.status(400).json({ success: false, message: 'Este email ya está registrado. Inicia sesión.' });
     }
 
-    // Envío de email en background para no bloquear la respuesta
+    if (!user) {
+      if (!fullName || !phone || !birthDate || !password) {
+        return res.status(400).json({ success: false, message: 'Completa nombre, teléfono, cumpleaños y contraseña antes de continuar.' });
+      }
+      user = new User({ email });
+    }
+
+    const parsedBirthDate = birthDate ? new Date(birthDate) : user.birthDate;
+    if (birthDate && isNaN(parsedBirthDate)) {
+      return res.status(400).json({ success: false, message: 'Fecha de cumpleaños inválida' });
+    }
+
+    const needsPassword = !user.passwordHash;
+    if (needsPassword && !password) {
+      return res.status(400).json({ success: false, message: 'Debes crear una contraseña para registrarte.' });
+    }
+    if (password && !passwordMeetsPolicy(password)) {
+      return res.status(400).json({ success: false, message: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.' });
+    }
+
+    const nameForSplit = fullName || user.fullName || '';
+    const nameParts = nameForSplit.trim().split(/\s+/);
+    const derivedFirst = nameParts[0] || '';
+    const derivedLast = nameParts.slice(1).join(' ');
+
+    user.fullName = fullName || user.fullName || `${user.firstName || derivedFirst} ${user.lastName || derivedLast}`.trim();
+    user.firstName = firstName || user.firstName || derivedFirst;
+    user.lastName = lastName || user.lastName || derivedLast;
+    if (phone) user.phone = phone;
+    if (parsedBirthDate) user.birthDate = parsedBirthDate;
+
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      user.passwordHash = await bcrypt.hash(password, salt);
+    }
+
+    const verificationCode = generateVerificationCode();
+    user.emailVerificationCode = verificationCode;
+    user.emailVerificationExpires = new Date(Date.now() + 10 * 60 * 1000);
+    user.isEmailVerified = false;
+    await user.save();
+
     sendVerificationEmail(email, verificationCode)
       .then((info) => {
         if (info?.skipped) {
@@ -123,9 +182,10 @@ router.post('/send-code', codeLimiter, validateEmail, async (req, res) => {
         console.error(`[send-code] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
       });
 
+    const message = isNewUser ? 'Código de verificación enviado. Revisa tu correo.' : 'Reenviamos el código de verificación a tu correo.';
     res.json({
       success: true,
-      message: 'Código de verificación enviado a tu email',
+      message,
       data: { email: user.email }
     });
   } catch (error) {
@@ -153,6 +213,10 @@ router.post('/verify-code', loginLimiter, validateVerifyEmail, async (req, res) 
         success: false,
         message: 'Código inválido o expirado'
       });
+    }
+
+    if (!user.passwordHash) {
+      return res.status(400).json({ success: false, message: 'Falta configurar contraseña. Reinicia el registro.' });
     }
 
     user.isEmailVerified = true;
@@ -195,6 +259,9 @@ router.post('/verify-code', loginLimiter, validateVerifyEmail, async (req, res) 
           email: user.email,
           firstName: user.firstName,
           lastName: user.lastName,
+          fullName: user.fullName,
+          phone: user.phone,
+          birthDate: user.birthDate,
           isEmailVerified: user.isEmailVerified,
           lastLogin: user.lastLogin,
           role: user.role
@@ -257,6 +324,75 @@ router.post('/resend-code', async (req, res) => {
   }
 });
 
+// Solicitar código para recuperar contraseña
+router.post('/forgot-password', codeLimiter, validateEmail, async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.json({ success: true, message: 'Si el correo existe te enviaremos un código.' });
+    }
+
+    const resetCode = generateVerificationCode();
+    user.passwordResetCode = resetCode;
+    user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+
+    sendPasswordResetEmail(email, resetCode)
+      .then((info) => {
+        if (info?.skipped) {
+          console.log(`[forgot-password] Email SKIPPED (config faltante)`);
+        } else {
+          console.log(`[forgot-password] Email ENVIADO OK`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[forgot-password] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+      });
+
+    res.json({ success: true, message: 'Enviamos un código de recuperación a tu correo.' });
+  } catch (error) {
+    console.error('Error forgot-password:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
+  }
+});
+
+// Restablecer contraseña con código enviado al correo
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+    if (!email || !code || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Datos incompletos' });
+    }
+
+    if (!passwordMeetsPolicy(newPassword)) {
+      return res.status(400).json({ success: false, message: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.' });
+    }
+
+    const user = await User.findOne({
+      email,
+      passwordResetCode: code,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Código inválido o expirado' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.passwordHash = await bcrypt.hash(newPassword, salt);
+    user.passwordResetCode = null;
+    user.passwordResetExpires = null;
+    await user.save();
+
+    res.json({ success: true, message: 'Contraseña actualizada. Ahora puedes iniciar sesión.' });
+  } catch (error) {
+    console.error('Error reset-password:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
+  }
+});
+
 // Obtener perfil del usuario (ruta protegida)
 router.get('/profile', protect, async (req, res) => {
   try {
@@ -277,11 +413,14 @@ router.get('/profile', protect, async (req, res) => {
 // Actualizar perfil del usuario (ruta protegida)
 router.put('/profile', protect, async (req, res) => {
   try {
-    const { firstName, lastName, phone, addresses } = req.body;
-    
+    const { firstName, lastName, fullName, phone, birthDate, addresses } = req.body;
+
+    const updates = { firstName, lastName, fullName, phone, addresses };
+    if (birthDate) updates.birthDate = new Date(birthDate);
+
     const user = await User.findByIdAndUpdate(
       req.user.id,
-      { firstName, lastName, phone, addresses },
+      updates,
       { new: true, runValidators: true }
     );
 
@@ -296,6 +435,38 @@ router.put('/profile', protect, async (req, res) => {
       success: false,
       message: 'Error interno del servidor'
     });
+  }
+});
+
+// Cambiar contraseña autenticado (requiere contraseña actual)
+router.post('/change-password', protect, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Debes ingresar tu contraseña actual y la nueva.' });
+    }
+
+    if (!passwordMeetsPolicy(newPassword)) {
+      return res.status(400).json({ success: false, message: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.' });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    if (!user.passwordHash) return res.status(400).json({ success: false, message: 'Esta cuenta no tiene contraseña configurada.' });
+
+    const ok = await bcrypt.compare(currentPassword, user.passwordHash);
+    if (!ok) {
+      return res.status(401).json({ success: false, message: 'La contraseña actual no es correcta' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.passwordHash = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.json({ success: true, message: 'Contraseña actualizada correctamente.' });
+  } catch (error) {
+    console.error('Error change-password:', error);
+    res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 });
 

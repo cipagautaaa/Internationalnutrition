@@ -6,63 +6,50 @@ import headerImg from '../assets/images/logo-largo-int-removebg-preview.png';
 
 // Este componente ahora representa el REGISTRO (sign in) con verificación de código
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
-  const [pin, setPin] = useState('');
-  const [step, setStep] = useState('email'); // 'email' | 'code' | 'admin-pin'
-  const [message, setMessage] = useState(null);
-  const { login, verifyCode, verifyAdminPin, resendCode, loading } = useAuth();
-  const navigate = useNavigate();
   const location = useLocation();
+  const [form, setForm] = useState({
+    fullName: '',
+    email: location.state?.email || '',
+    phone: '',
+    birthDate: '',
+    password: ''
+  });
+  const [code, setCode] = useState('');
+  const [step, setStep] = useState(location.state?.step === 'code' ? 'code' : 'form'); // 'form' | 'code' | 'success'
+  const [message, setMessage] = useState(null);
+  const { register, verifyCode, resendCode, loading } = useAuth();
+  const navigate = useNavigate();
 
-  // Si venimos redirigidos desde LoginSimple con email y paso de código
-  useEffect(() => {
-    const st = location.state;
-    if (st?.email) {
-      setEmail(st.email);
-    }
-    if (st?.step === 'code') {
-      setStep('code');
-    }
-  }, [location.state]);
-
-  // Limpiar mensajes cuando cambia el step
   useEffect(() => {
     setMessage(null);
-    setPin('');
   }, [step]);
 
-  const handleEmailSubmit = async (e) => {
+  const isPasswordStrong = (pwd) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pwd || '');
+
+  const handleRegister = async (e) => {
     e.preventDefault();
     setMessage(null);
-    const result = await login(email);
-    if (result.success && result.adminPinRequired) {
-      // Admin necesita ingresar PIN
-      setMessage({ type: 'success', text: 'Ingresa tu PIN de administrador.' });
-      setStep('admin-pin');
-    } else if (result.success && result.requiresVerification) {
-      setMessage({ type: 'success', text: 'Código enviado. Revisa tu correo.' });
+    if (!isPasswordStrong(form.password)) {
+      setMessage({ type: 'error', text: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.' });
+      return;
+    }
+    const result = await register(form);
+    if (result.success) {
+      setMessage({ type: 'success', text: '¡Genial! Te enviamos un código de verificación. Revisa spam/promociones.' });
       setStep('code');
-    } else if (result.success && !result.requiresVerification) {
-      // Si ya estaba verificado, simplemente loguea
-      setMessage({ type: 'success', text: 'Cuenta ya verificada. Sesión iniciada.' });
-      // Volver a checkout si viene de ahí, sino al inicio
-      const redirectPath = location.state?.from || '/';
-      setTimeout(() => navigate(redirectPath), 800);
     } else {
-      setMessage({ type: 'error', text: result.error || 'Error enviando código.' });
+      setMessage({ type: 'error', text: result.error || 'No pudimos enviar el código.' });
     }
   };
 
   const handleCodeSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
-    const result = await verifyCode(email, code.trim());
+    const result = await verifyCode(form.email, code.trim());
     if (result.success) {
-      setMessage({ type: 'success', text: '¡Registro verificado e inicio de sesión exitoso!' });
-      // Volver a checkout si viene de ahí, sino al inicio
-      const redirectPath = location.state?.from || '/';
-      setTimeout(() => navigate(redirectPath), 1000);
+      setMessage({ type: 'success', text: '¡Listo! Cuenta verificada y sesión iniciada.' });
+      setStep('success');
+      setTimeout(() => navigate(location.state?.from || '/'), 1200);
     } else {
       setMessage({ type: 'error', text: result.error || 'Código inválido.' });
     }
@@ -71,35 +58,14 @@ export default function Login() {
   const handleResend = async () => {
     setMessage(null);
     try {
-      const r = await resendCode(email);
+      const r = await resendCode(form.email);
       if (r.success) {
-        setMessage({ type: 'success', text: 'Nuevo código enviado.' });
+        setMessage({ type: 'success', text: 'Nuevo código enviado. Revisa spam/promociones.' });
       } else {
         setMessage({ type: 'error', text: r.error || 'No se pudo reenviar.' });
       }
     } catch (err) {
       setMessage({ type: 'error', text: err.message || 'Error reenviando.' });
-    }
-  };
-
-  const handlePinSubmit = async (e) => {
-    e.preventDefault();
-    setMessage(null);
-    const inputPin = pin.trim();
-    
-    console.log('🔐 PIN Submit:', inputPin);
-    
-    const result = await verifyAdminPin(inputPin);
-    console.log('🔐 PIN Response:', result);
-    
-    if (result.success) {
-      console.log('✅ PIN correcto, navegando...');
-      setMessage({ type: 'success', text: '¡PIN correcto! Iniciando sesión...', timestamp: Date.now() });
-      setTimeout(() => navigate('/admin'), 1000);
-    } else {
-      console.log('❌ PIN fallido:', result.error);
-      setPin('');
-      setMessage({ type: 'error', text: result.error || 'PIN inválido o bloqueado.', timestamp: Date.now() });
     }
   };
 
@@ -117,9 +83,9 @@ export default function Login() {
               <span className="block text-red-500">comunidad fitness</span>
             </h2>
             <p className="text-gray-300 text-lg">
-              {step === 'email' ? 'Crea tu cuenta y accede a productos premium' : 
+              {step === 'form' ? 'Crea tu cuenta y accede a productos premium' : 
                step === 'code' ? 'Verifica tu identidad para continuar' : 
-               'Acceso exclusivo para administradores'}
+               '¡Activa tu 20% OFF con el código INTSUPPS20!'}
             </p>
           </div>
           
@@ -170,12 +136,12 @@ export default function Login() {
           
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              {step === 'email' ? 'Crear cuenta' : step === 'code' ? 'Verificar código' : 'Acceso admin'}
+              {step === 'form' ? 'Crear cuenta' : step === 'code' ? 'Verifica tu correo' : '¡Descuento listo!'}
             </h1>
             <p className="text-gray-600">
-              {step === 'email' ? 'Ingresa tu correo para comenzar' : 
-               step === 'code' ? 'Revisa tu bandeja de entrada' : 
-               'Ingresa tu PIN de seguridad'}
+              {step === 'form' ? 'Completa tus datos para crear tu cuenta' : 
+               step === 'code' ? 'Revisa tu bandeja de entrada (incluye spam/promociones)' : 
+               'Usa tu código exclusivo en tu próxima compra'}
             </p>
           </div>
           {message && (
@@ -200,46 +166,85 @@ export default function Login() {
             </div>
           )}
 
-          {step === 'email' && (
-            <form onSubmit={handleEmailSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
-                  Correo electrónico
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
-                    </svg>
-                  </div>
+          {step === 'form' && (
+            <form onSubmit={handleRegister} className="space-y-4">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre completo</label>
                   <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full rounded-xl border-2 border-gray-200 pl-12 pr-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
-                    placeholder="tu@email.com"
+                    type="text"
+                    value={form.fullName}
+                    onChange={(e) => setForm((prev) => ({ ...prev, fullName: e.target.value }))}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    placeholder="Tu nombre"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Celular</label>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    placeholder="3001234567"
                     required
                   />
                 </div>
               </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Correo electrónico</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    placeholder="tu@email.com"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">Cumpleaños</label>
+                  <input
+                    type="date"
+                    value={form.birthDate}
+                    onChange={(e) => setForm((prev) => ({ ...prev, birthDate: e.target.value }))}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
+                <input
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                  placeholder="Mínimo 8 caracteres, mayúscula, minúscula y número"
+                  required
+                />
+              </div>
+
               <button
                 type="submit"
-                disabled={loading || !email}
+                disabled={loading || !form.fullName || !form.email || !form.phone || !form.birthDate || !form.password}
                 className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
                   loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
-                {loading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Enviando...
-                  </span>
-                ) : 'Continuar →'}
+                {loading ? 'Enviando código...' : 'Crear cuenta y recibir código →'}
               </button>
+
+              <p className="text-sm text-gray-500 text-center">
+                ¿Ya tienes cuenta?{' '}
+                <button className="font-bold text-red-600 hover:text-red-700" onClick={() => navigate('/login')}>
+                  Inicia sesión
+                </button>
+              </p>
             </form>
           )}
 
@@ -253,20 +258,20 @@ export default function Login() {
                   type="text"
                   id="code"
                   value={code}
-                  onChange={(e) => setCode(e.target.value)}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
                   className="w-full rounded-xl border-2 border-gray-200 px-4 py-4 text-2xl font-bold tracking-[0.5em] text-center focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
                   placeholder="• • • • • •"
                   required
                 />
-                <p className="mt-2 text-xs text-gray-500 text-center">Revisa tu correo {email}</p>
+                <p className="mt-2 text-xs text-gray-500 text-center">Revisa tu correo {form.email}. Si no lo ves, mira en Spam o Promociones.</p>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2 text-sm">
                 <button type="button" onClick={handleResend} disabled={loading} className="font-semibold text-red-600 hover:text-red-700 disabled:text-gray-400 transition">
                   ↻ Reenviar código
                 </button>
-                <button type="button" onClick={() => setStep('email')} className="text-gray-600 hover:text-gray-800 transition">
-                  ← Cambiar email
+                <button type="button" onClick={() => setStep('form')} className="text-gray-600 hover:text-gray-800 transition">
+                  ← Editar datos
                 </button>
               </div>
               <button
@@ -276,52 +281,33 @@ export default function Login() {
                   loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
-                {loading ? 'Verificando...' : 'Verificar y continuar ✓'}
+                {loading ? 'Verificando...' : 'Verificar y finalizar ✓'}
               </button>
             </form>
           )}
 
-          {step === 'admin-pin' && (
-            <form onSubmit={handlePinSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="pin" className="block text-sm font-semibold text-gray-700 mb-2">
-                  PIN de administrador
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                    </svg>
-                  </div>
-                  <input
-                    type="password"
-                    id="pin"
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-                    minLength={4}
-                    maxLength={10}
-                    className="w-full rounded-xl border-2 border-gray-200 pl-12 pr-4 py-3.5 text-xl font-bold tracking-[0.5em] text-center focus:border-gray-900 focus:ring-4 focus:ring-gray-200 transition-all"
-                    placeholder="••••"
-                    required
-                  />
-                </div>
-                <p className="mt-2 text-xs text-gray-500 text-center">PIN de 4 a 10 dígitos</p>
-              </div>
-              <div className="flex justify-center text-sm">
-                <button type="button" onClick={() => { setStep('email'); setPin(''); setEmail(''); }} className="font-semibold text-gray-600 hover:text-gray-800 transition">
-                  ← Cambiar cuenta
+          {step === 'success' && (
+            <div className="space-y-6 text-center">
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-5">
+                <p className="text-sm font-semibold text-emerald-700">¡Registro completado!</p>
+                <p className="text-lg font-bold text-emerald-900 mt-2">Tu código: INTSUPPS20</p>
+                <p className="text-sm text-emerald-800">Cópialo y pégalo al finalizar tu compra.</p>
+                <button
+                  type="button"
+                  className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-100"
+                  onClick={() => navigator.clipboard?.writeText('INTSUPPS20')}
+                >
+                  Copiar código
                 </button>
               </div>
               <button
-                type="submit"
-                disabled={loading || pin.length < 4}
-                className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
-                  loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-gray-900 to-gray-800 hover:from-black hover:to-gray-900 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
-                }`}
+                type="button"
+                onClick={() => navigate('/')}
+                className="w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
               >
-                {loading ? 'Verificando...' : 'Acceder al panel 🔒'}
+                Ir a comprar →
               </button>
-            </form>
+            </div>
           )}
 
           <div className="pt-6 text-center">

@@ -243,6 +243,52 @@ const sendVerificationEmail = async (email, verificationCode) => {
   }
 };
 
+const sendPasswordResetEmail = async (email, verificationCode) => {
+  if (process.env.NODE_ENV === 'production' && !canSendEmails()) {
+    console.warn('[Email] Configuración de correo faltante en producción. Saltando envío y respondiendo ok.');
+    return { skipped: true };
+  }
+
+  const transporter = await createTransporterAsync();
+
+  const mailOptions = {
+    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    to: email,
+    subject: 'Recupera tu contraseña - SportSupps',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #3b82f6;">Recupera tu acceso</h2>
+        <p>Usa el siguiente código para restablecer tu contraseña. Si no solicitaste este cambio, ignora este correo.</p>
+        <div style="background-color: #f3f4f6; padding: 20px; text-align: center; margin: 20px 0;">
+          <h1 style="color: #3b82f6; font-size: 32px; margin: 0; letter-spacing: 5px;">${verificationCode}</h1>
+        </div>
+        <p>El código expira en 10 minutos.</p>
+      </div>
+    `
+  };
+
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Email de recuperación enviado a:', email, {
+      messageId: info?.messageId,
+      accepted: info?.accepted,
+      rejected: info?.rejected
+    });
+    try {
+      const preview = nodemailer.getTestMessageUrl(info);
+      if (preview) console.log('🔍 Preview URL:', preview);
+    } catch (e) {}
+    return info;
+  } catch (error) {
+    console.error('❌ Error enviando email de recuperación:', error);
+    if (process.env.NODE_ENV === 'production') {
+      console.warn('[Email] Fallo enviando correo en producción. Continuando sin bloquear.');
+      return { skipped: true, error: error.message || String(error) };
+    }
+    throw new Error(`Error enviando email de recuperación: ${error.message || error}`);
+  }
+};
+
 // Enviar notificación de nueva orden al administrador
 const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
   const transporter = await createTransporterAsync();
@@ -462,6 +508,7 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
 
 module.exports = { 
   sendVerificationEmail,
+  sendPasswordResetEmail,
   sendNewOrderNotificationToAdmin,
   sendOrderConfirmationToCustomer,
   sendContactMessage: async (payload) => {

@@ -13,6 +13,7 @@ const authReducer = (state, action) => {
         ...state,
         loading: false,
         user: action.payload.user,
+        token: action.payload.token || state.token,
         isAuthenticated: true,
         error: null
       };
@@ -29,6 +30,7 @@ const authReducer = (state, action) => {
         ...state,
         loading: false,
         user: action.payload.user,
+        token: action.payload.token || state.token,
         isAuthenticated: true,
         error: null
       };
@@ -63,6 +65,7 @@ const authReducer = (state, action) => {
       return {
         ...state,
         user: null,
+        token: null,
         isAuthenticated: false,
         error: null
       };
@@ -178,71 +181,49 @@ export const AuthProvider = ({ children }) => {
     boot();
   }, []);
 
-  const login = async (email) => {
+  const login = async (email, password) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      console.log('🔐 login() iniciando con email:', email);
-      const response = await axios.post('/auth/login', { email });
-      console.log('✅ login response:', response.data);
-      debugger; // PAUSA AQUÍ para que veas los logs
-      if (response.data.success) {
-        const data = response.data.data;
-        console.log('📊 data:', data);
-        // Nuevo: si backend devuelve paso 'code' (usuario aún no verificado)
-        if (data?.step === 'code') {
-          console.log('📧 Paso CODE recibido (usuario no verificado). Avanzando a pantalla de verificación. emailSkipped=', data?.emailSkipped);
-          // Quitamos loading sin marcar error
-          dispatch({ type: 'LOGIN_FAILURE', payload: null }); // reutilizamos para soltar loading
-          return { success: true, requiresVerification: true, emailSkipped: Boolean(data?.emailSkipped), email: data?.email };
-        }
-        if (data.step === 'ADMIN_PIN_REQUIRED') {
-          console.log('🔑 Admin PIN required');
-          dispatch({ type: 'ADMIN_PIN_PENDING', payload: { tempToken: data.tempToken, user: data.user } });
-          return { success: true, adminPinRequired: true };
-        } else {
-          const { token, user } = data;
-          console.log('👤 Non-admin user:', user);
-          console.log('👤 user.email:', user?.email);
-          console.log('👤 user.role:', user?.role);
-          console.log('👤 user.id:', user?.id);
-          // Solo guardar token en localStorage si NO es admin
-          // Los admins deben autenticarse cada vez (por seguridad)
-          if (user && user.role !== 'admin') {
-            console.log('💾 Guardando token y user en localStorage');
-            localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify(user));
-            console.log('✅ Token en localStorage:', localStorage.getItem('token')?.substring(0, 20) + '...');
-            console.log('✅ User en localStorage:', localStorage.getItem('user'));
-          }
-          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-          console.log('✅ Despachando LOGIN_SUCCESS con user:', user);
-          dispatch({ type: 'LOGIN_SUCCESS', payload: { user } });
-          console.log('✅ LOGIN_SUCCESS despachado. Estado debería actualizar en breve.');
-          return { success: true, requiresVerification: false };
-        }
+      const response = await axios.post('/auth/login', { email, password });
+      const data = response.data.data;
+
+      if (data.step === 'ADMIN_PIN_REQUIRED') {
+        dispatch({ type: 'ADMIN_PIN_PENDING', payload: { tempToken: data.tempToken, user: data.user } });
+        return { success: true, adminPinRequired: true };
       }
+
+      const { token, user } = data;
+      if (user && user.role !== 'admin') {
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+      }
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+      return { success: true, requiresVerification: false };
     } catch (error) {
-      console.error('❌ Error en login:', error.response?.status, error.message);
-      if (error.response?.status === 401) {
-        // Usuario no verificado, intentar enviar código
-        try {
-          console.log('📧 Usuario no verificado, enviando código...');
-          await axios.post('/auth/send-code', { email });
-          dispatch({ type: 'LOGIN_FAILURE', payload: null }); // Reinicia loading
-          return { success: true, requiresVerification: true };
-        } catch (sendError) {
-          dispatch({
-            type: 'LOGIN_FAILURE',
-            payload: sendError.response?.data?.message || 'Error al enviar código'
-          });
-          return { success: false, error: sendError.response?.data?.message || 'Error al enviar código' };
-        }
+      const status = error.response?.status;
+      const data = error.response?.data;
+      if (status === 403 && data?.data?.step === 'VERIFY_EMAIL') {
+        return { success: false, requiresVerification: true, email };
       }
       dispatch({
         type: 'LOGIN_FAILURE',
-        payload: error.response?.data?.message || error.message || 'Error de conexión'
+        payload: data?.message || error.message || 'Error de conexión'
       });
-      return { success: false, error: error.response?.data?.message || error.message || 'Error de conexión' };
+      return { success: false, error: data?.message || error.message || 'Error de conexión' };
+    }
+  };
+
+  const register = async (payload) => {
+    dispatch({ type: 'LOGIN_START' });
+    try {
+      await axios.post('/auth/send-code', payload);
+      dispatch({ type: 'CLEAR_ERROR' });
+      return { success: true, email: payload.email };
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || 'Error de conexión';
+      dispatch({ type: 'LOGIN_FAILURE', payload: message });
+      return { success: false, error: message };
     }
   };
 
@@ -267,7 +248,7 @@ export const AuthProvider = ({ children }) => {
         }
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         console.log('✅ Authorization header establecido');
-        dispatch({ type: 'VERIFY_SUCCESS', payload: { user } });
+        dispatch({ type: 'VERIFY_SUCCESS', payload: { user, token } });
         console.log('✅ VERIFY_SUCCESS despachado');
         return { success: true };
       }
@@ -318,6 +299,33 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGOUT' });
   };
 
+  const requestPasswordReset = async (email) => {
+    try {
+      await axios.post('/auth/forgot-password', { email });
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || 'Error solicitando código' };
+    }
+  };
+
+  const resetPassword = async (email, code, newPassword) => {
+    try {
+      await axios.post('/auth/reset-password', { email, code, newPassword });
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || 'Error restableciendo contraseña' };
+    }
+  };
+
+  const changePassword = async (currentPassword, newPassword) => {
+    try {
+      await axios.post('/auth/change-password', { currentPassword, newPassword });
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.response?.data?.message || 'Error cambiando contraseña' };
+    }
+  };
+
   const clearError = () => {
     dispatch({ type: 'CLEAR_ERROR' });
   };
@@ -326,9 +334,13 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider value={{
       ...state,
       login,
+      register,
       verifyCode,
       verifyAdminPin,
       resendCode,
+      requestPasswordReset,
+      resetPassword,
+      changePassword,
       logout,
       clearError
     }}>
