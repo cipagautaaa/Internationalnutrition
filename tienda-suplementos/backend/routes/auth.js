@@ -32,8 +32,15 @@ router.post('/login', loginLimiter, validateEmail, async (req, res) => {
       return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
     }
 
+    // Si es admin y tiene PIN pero no contraseña, sincroniza la contraseña con el PIN
     if (!user.passwordHash) {
-      return res.status(400).json({ success: false, message: 'Esta cuenta aún no tiene contraseña. Regístrate o restablece tu contraseña.' });
+      if (user.role === 'admin' && user.adminPinHash) {
+        user.passwordHash = user.adminPinHash;
+        await user.save();
+        console.log(`[login:${requestId}] 🔄 Contraseña del admin sincronizada con PIN (hash)`);
+      } else {
+        return res.status(400).json({ success: false, message: 'Esta cuenta aún no tiene contraseña. Regístrate o restablece tu contraseña.' });
+      }
     }
 
     const passwordOk = await bcrypt.compare(password, user.passwordHash);
