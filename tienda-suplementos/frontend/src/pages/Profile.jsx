@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import {
   CheckCircle,
+  Lock,
   LogOut,
   MapPin,
   PenSquare,
@@ -27,7 +28,7 @@ const regions = [
 ];
 
 export default function Profile() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, changePassword } = useAuth();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -43,6 +44,14 @@ export default function Profile() {
     lastName: '',
     phone: '',
   });
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const [shippingForm, setShippingForm] = useState({
     fullName: '',
@@ -142,6 +151,34 @@ export default function Profile() {
       });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handlePasswordChange = async (e) => {
+    e.preventDefault();
+    if (!passwordForm.currentPassword || !passwordForm.newPassword) {
+      setAlert({ show: true, message: 'Completa los campos de contraseña', type: 'error' });
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmNewPassword) {
+      setAlert({ show: true, message: 'Las contraseñas nuevas no coinciden', type: 'error' });
+      return;
+    }
+
+    try {
+      setChangingPassword(true);
+      const result = await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+      if (result.success) {
+        setAlert({ show: true, message: 'Contraseña actualizada con éxito', type: 'success' });
+        setPasswordForm({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+      } else {
+        setAlert({ show: true, message: result.error || 'No pudimos cambiar la contraseña', type: 'error' });
+      }
+    } catch (error) {
+      console.error('Error cambiando contraseña:', error);
+      setAlert({ show: true, message: 'No pudimos cambiar la contraseña', type: 'error' });
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -597,6 +634,73 @@ export default function Profile() {
               >
                 Contactar soporte
               </button>
+            </section>
+
+            <section className={cardBase}>
+              <div className="flex items-center justify-between gap-4 border-b border-gray-100 pb-6">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Seguridad</p>
+                  <h2 className="text-2xl font-black text-gray-900">Contraseña</h2>
+                </div>
+                <span className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-3 py-2 text-xs uppercase tracking-[0.35em] text-gray-700">
+                  <Lock className="h-4 w-4" />
+                  Protegida
+                </span>
+              </div>
+
+              <form onSubmit={handlePasswordChange} className="mt-6 space-y-4">
+                <div className="space-y-2">
+                  <label className={labelBase}>Contraseña actual</label>
+                  <input
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) => setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))}
+                    className={inputBase}
+                    placeholder="Ingresa tu contraseña actual"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className={labelBase}>Nueva contraseña</label>
+                  <input
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
+                    className={inputBase}
+                    placeholder="Mínimo 8 caracteres"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className={labelBase}>Confirmar nueva contraseña</label>
+                  <input
+                    type="password"
+                    value={passwordForm.confirmNewPassword}
+                    onChange={(e) => setPasswordForm((prev) => ({ ...prev, confirmNewPassword: e.target.value }))}
+                    className={inputBase}
+                    placeholder="Repite tu nueva contraseña"
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3 pt-2">
+                  <button
+                    type="submit"
+                    disabled={changingPassword}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-red-600/90 px-6 py-3 text-sm font-semibold uppercase tracking-[0.35em] text-white hover:bg-red-600 disabled:opacity-50"
+                  >
+                    <CheckCircle className="h-4 w-4" />
+                    {changingPassword ? 'Guardando' : 'Actualizar contraseña'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => navigate('/login', { state: { mode: 'forgot' } })}
+                    className="text-sm font-semibold text-red-600 hover:text-red-700 text-left"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
+              </form>
             </section>
           </aside>
         </div>

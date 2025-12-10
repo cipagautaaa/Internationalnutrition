@@ -33,10 +33,7 @@ const Header = () => {
   const closeTimerRef = useRef(null);
   const nosotrosCloseTimerRef = useRef(null);
   const [isScrolled, setIsScrolled] = useState(false);
-  const openMobileMenu = (event) => {
-    if (event?.type === 'touchstart') {
-      event.preventDefault();
-    }
+  const openMobileMenu = () => {
     showMobileMenu();
   };
 
@@ -102,10 +99,10 @@ const Header = () => {
             <button
               type="button"
               onClick={openMobileMenu}
-              onTouchStart={openMobileMenu}
               className="text-white p-2 rounded-full bg-white/10"
               style={{ touchAction: 'manipulation' }}
               aria-label="Abrir menú"
+              aria-controls="mobile-nav"
               aria-expanded={isMobileMenuOpen}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

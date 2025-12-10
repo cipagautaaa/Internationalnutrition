@@ -11,14 +11,19 @@ export default function Contact() {
     e.preventDefault();
     setStatus({ loading: true, success: false, error: '' });
     try {
-      const res = await fetch('/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || 'Error enviando mensaje');
+      let data = null;
+      try {
+        data = await res.json();
+      } catch (parseErr) {
+        // Respuesta no JSON; tratamos como error genérico
+      }
+      if (!res.ok || !data?.success) {
+        throw new Error(data?.message || 'No pudimos enviar tu mensaje');
       }
       setStatus({ loading: false, success: true, error: '' });
       setForm({ nombre: '', apellido: '', email: '', mensaje: '' });

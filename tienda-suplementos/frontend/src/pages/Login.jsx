@@ -69,8 +69,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-0 relative z-10 overflow-hidden rounded-3xl shadow-2xl">
+    <div className="min-h-screen flex items-start justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-0 relative z-10 overflow-hidden rounded-3xl shadow-2xl max-h-[calc(100vh-1.5rem)] md:max-h-none">
         {/* Columna izquierda - Información */}
         <div className="hidden md:flex flex-col justify-center text-white bg-gradient-to-br from-gray-900 via-red-900/30 to-gray-900 space-y-6 p-10">
           <div className="space-y-4">
@@ -117,7 +117,7 @@ export default function Login() {
         </div>
 
         {/* Columna derecha - Formulario */}
-        <div className="bg-white rounded-r-3xl shadow-2xl p-8 sm:p-10 space-y-6 relative">
+        <div className="bg-white rounded-3xl md:rounded-r-3xl shadow-2xl p-6 sm:p-8 space-y-5 relative max-h-full overflow-y-auto">
           {/* Botón cerrar */}
           <button
             onClick={() => navigate('/')}
@@ -166,7 +166,7 @@ export default function Login() {
           )}
 
           {step === 'form' && (
-            <form onSubmit={handleRegister} className="space-y-4">
+            <form onSubmit={handleRegister} className="space-y-4 pb-2">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Nombre completo</label>
@@ -174,7 +174,7 @@ export default function Login() {
                     type="text"
                     value={form.fullName}
                     onChange={(e) => setForm((prev) => ({ ...prev, fullName: e.target.value }))}
-                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
                     placeholder="Tu nombre"
                     required
                   />
@@ -185,7 +185,7 @@ export default function Login() {
                     type="tel"
                     value={form.phone}
                     onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
-                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
                     placeholder="3001234567"
                     required
                   />
@@ -199,7 +199,7 @@ export default function Login() {
                     type="email"
                     value={form.email}
                     onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
-                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
                     placeholder="tu@email.com"
                     required
                   />
@@ -210,7 +210,7 @@ export default function Login() {
                     type="date"
                     value={form.birthDate}
                     onChange={(e) => setForm((prev) => ({ ...prev, birthDate: e.target.value }))}
-                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
                     required
                   />
                 </div>
@@ -231,7 +231,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading || !form.fullName || !form.email || !form.phone || !form.birthDate || !form.password}
-                className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
+                className={`w-full rounded-xl px-4 py-3 text-white font-bold text-base transition-all transform ${
                   loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
@@ -248,7 +248,7 @@ export default function Login() {
           )}
 
           {step === 'code' && (
-            <form onSubmit={handleCodeSubmit} className="space-y-5">
+            <form onSubmit={handleCodeSubmit} className="space-y-5 pb-2">
               <div>
                 <label htmlFor="code" className="block text-sm font-semibold text-gray-700 mb-2">
                   Código de verificación
@@ -259,7 +259,7 @@ export default function Login() {
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                   maxLength={6}
-                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-4 text-2xl font-bold tracking-[0.5em] text-center focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-4 text-2xl font-bold tracking-[0.35em] text-center focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
                   placeholder="• • • • • •"
                   required
                 />
@@ -276,7 +276,7 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading || code.length < 4}
-                className={`w-full rounded-xl px-4 py-3.5 text-white font-bold text-base transition-all transform ${
+                className={`w-full rounded-xl px-4 py-3 text-white font-bold text-base transition-all transform ${
                   loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
@@ -308,15 +308,6 @@ export default function Login() {
               </button>
             </div>
           )}
-
-          <div className="pt-6 text-center">
-            <p className="text-sm text-gray-600">
-              ¿Ya tienes una cuenta?{' '}
-              <button className="font-bold text-red-600 hover:text-red-700 transition" onClick={() => navigate('/login')}>
-                Inicia sesión →
-              </button>
-            </p>
-          </div>
         </div>
       </div>
     </div>

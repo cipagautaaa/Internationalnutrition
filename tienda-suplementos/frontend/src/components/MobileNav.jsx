@@ -293,6 +293,7 @@ const MobileNav = ({ isOpen, onClose, isAuthenticated, user, onLogout, onCartCli
       <div className="absolute inset-0 bg-black" />
 
       <aside
+        id="mobile-nav"
         className={`fixed inset-0 left-0 w-full min-h-screen max-h-screen bg-black text-white transform transition-transform duration-300 ease-out flex flex-col ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
