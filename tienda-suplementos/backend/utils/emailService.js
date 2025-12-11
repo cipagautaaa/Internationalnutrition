@@ -200,12 +200,12 @@ const sendVerificationEmail = async (email, verificationCode) => {
   console.log(`📧 [sendVerificationEmail] Transporter creado, intentando sendMail`);
   
   const mailOptions = {
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM || process.env.EMAIL_USER || 'internationalnutritioncol@gmail.com',
     to: email,
-    subject: 'Verificación de Email - SportSupps',
+    subject: 'Verificación de Email - INTSUPPS',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #3b82f6;">¡Bienvenido a SportSupps!</h2>
+        <h2 style="color: #b91c1c;">¡Bienvenido a INTSUPPS!</h2>
         <p>Gracias por registrarte en nuestra tienda de suplementos deportivos.</p>
         <p>Para completar tu registro, por favor ingresa el siguiente código de verificación:</p>
         <div style="background-color: #f3f4f6; padding: 20px; text-align: center; margin: 20px 0;">

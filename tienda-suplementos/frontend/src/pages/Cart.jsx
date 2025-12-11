@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import CartItem from '../components/CartItem';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
+import api from '../services/api';
 
 const Cart = () => {
   const { items, getTotalPrice, addToCart } = useCart();
@@ -18,25 +19,20 @@ const Cart = () => {
     setLoading(true);
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-      const url = `${apiUrl}/products`;
-      
-      console.log('📡 Llamando a:', url);
-      
-      const response = await fetch(url);
-      const data = await response.json();
+      const res = await api.get('/products', { params: { limit: 20, isActive: true } });
+      const data = Array.isArray(res.data?.data) ? res.data.data : [];
 
-      console.log('📦 API Response completa (Cart):', data);
-      console.log('📦 Productos recibidos (Cart):', data?.data?.length || 0);
+      console.log('📦 Productos recibidos (Cart):', data.length || 0);
 
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+      if (data.length > 0) {
         // Obtener IDs de productos en el carrito
         const cartProductIds = items.map(item => item._id || item.id || item.productId).filter(Boolean);
         console.log('🛒 Productos en carrito (IDs):', cartProductIds);
 
         // Filtrar productos que NO están en el carrito
-        let filtered = data.data.filter(product => {
+        let filtered = data.filter(product => {
           if (!product || !product._id) return false;
+          if (product.inStock === false || product.isActive === false) return false;
           return !cartProductIds.includes(product._id);
         });
         
@@ -44,13 +40,13 @@ const Cart = () => {
 
         // Si hay productos, tomar los primeros 5
         if (filtered.length > 0) {
-          const finalProducts = filtered.slice(0, 5);
+          const finalProducts = filtered.slice(0, 6);
           console.log('🎯 Productos finales a mostrar (Cart):', finalProducts);
           setRelatedProducts(finalProducts);
         } else {
           console.log('⚠️ No hay productos después del filtrado (Cart)');
           // Si todos están en el carrito, mostrar algunos de todos modos
-          const someProducts = data.data.slice(0, 5);
+          const someProducts = data.slice(0, 6);
           setRelatedProducts(someProducts);
         }
       } else {

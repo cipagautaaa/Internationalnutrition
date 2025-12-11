@@ -1,11 +1,10 @@
-﻿import React, { useState } from 'react';
-import { Trash2, Minus, Plus, Copy, Tag } from 'lucide-react';
+﻿import React from 'react';
+import { Trash2, Minus, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
 
 const CartItem = ({ item }) => {
   const { removeFromCart, updateQuantity } = useCart();
-  const [showCopyAlert, setShowCopyAlert] = useState(false);
 
   // Clases responsivas para el item del carrito
   const itemClasses = `flex items-center space-x-4 p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow
@@ -23,30 +22,12 @@ const CartItem = ({ item }) => {
     }
   };
 
-  const handleCopy = () => {
-    const textToCopy = `${item.name} - $${formatPrice(item.price)}`;
-    navigator.clipboard.writeText(textToCopy);
-    setShowCopyAlert(true);
-    setTimeout(() => setShowCopyAlert(false), 2000);
-  };
-
-  const handleTag = () => {
-    // Funcionalidad de etiquetar - puedes implementar según necesites
-    console.log('Producto etiquetado:', item.name);
-  };
-
   const originalPrice = item.originalPrice || item.price;
   const discount = originalPrice - item.price;
   const hasDiscount = discount > 0;
 
   return (
-    <div className="p-4 sm:p-5 relative">
-      {showCopyAlert && (
-        <div className="absolute top-2 right-2 bg-green-500 text-white text-xs px-3 py-1 rounded-full shadow-lg z-10">
-          ¡Copiado!
-        </div>
-      )}
-      
+    <div className="p-4 sm:p-5">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         {/* Imagen del producto */}
         <div className="flex-shrink-0">
@@ -74,8 +55,8 @@ const CartItem = ({ item }) => {
               </div>
               {hasDiscount && (
                 <div className="inline-flex items-center gap-1 text-[11px] bg-black text-white px-2 py-1 rounded-full">
-                  <Tag size={12} />
-                  <span>edgarimn (-${formatPrice(discount)})</span>
+                  <span>Ahorro</span>
+                  <span>(-${formatPrice(discount)})</span>
                 </div>
               )}
             </div>
@@ -112,26 +93,6 @@ const CartItem = ({ item }) => {
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Botones de acción rápida */}
-      <div className="flex justify-center gap-4 mt-4">
-        <button
-          onClick={handleCopy}
-          className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors shadow-md"
-          aria-label="Copiar información"
-          title="Copiar"
-        >
-          <Copy size={20} className="text-gray-700" />
-        </button>
-        <button
-          onClick={handleTag}
-          className="w-12 h-12 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors shadow-md"
-          aria-label="Etiquetar producto"
-          title="Etiquetar"
-        >
-          <Tag size={20} className="text-gray-700" />
-        </button>
       </div>
 
       {/* Variantes si existen */}
