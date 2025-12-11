@@ -33,7 +33,7 @@ const infoRows = [
 export default function ComboDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
 
   const [combo, setCombo] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -99,6 +99,7 @@ export default function ComboDetail() {
       isCombo: true,
       category: combo.category,
     });
+    openCart();
   };
 
   const handleBuyNow = () => {

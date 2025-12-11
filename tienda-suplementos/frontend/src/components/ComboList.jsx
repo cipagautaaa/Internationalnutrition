@@ -4,10 +4,29 @@ import api from '../services/api';
 import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '../utils/formatPrice';
 import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
+import { useCart } from '../context/CartContext';
+import ComboQuickView from './ComboQuickView';
 
 // Tarjeta individual de combo en el listado.
 function ComboCard({ combo }) {
+  const { addToCart, openCart } = useCart();
+  const [showQuickView, setShowQuickView] = useState(false);
   const imageSrc = combo?.image || combo?.imageUrl || combo?.cover || combo?.images?.[0] || '';
+
+  const handleAddCombo = () => {
+    if (combo.inStock === false) return;
+    addToCart({
+      _id: combo._id,
+      id: combo._id,
+      name: combo.name,
+      price: combo.price,
+      image: combo.image,
+      quantity: 1,
+      isCombo: true,
+      category: combo.category
+    });
+    openCart();
+  };
 
   return (
     <div className="group relative flex flex-col h-full bg-white border-2 border-gray-300 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:border-red-700 transition-all duration-300 hover:-translate-y-1">
@@ -20,6 +39,17 @@ function ComboCard({ combo }) {
             alt={combo.name}
             loading="lazy"
           />
+
+          {/* Overlay quick view */}
+          <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/25 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); setShowQuickView(true); }}
+              className="transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 bg-white text-gray-900 font-semibold px-5 py-2.5 rounded-xl shadow-lg hover:bg-gray-100"
+            >
+              Vista Rápida
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col flex-1 p-3 sm:p-5 gap-3 bg-gradient-to-b from-white to-gray-50/40">
@@ -45,12 +75,14 @@ function ComboCard({ combo }) {
             </div>
             <button
               type="button"
+              onClick={(e) => { e.preventDefault(); handleAddCombo(); }}
               disabled={!combo.inStock}
               className={`w-11 h-11 flex items-center justify-center rounded-xl border text-sm font-semibold transition-all ${
                 combo.inStock
                   ? 'border-gray-300 text-red-700 hover:bg-red-50'
                   : 'border-gray-200 text-gray-400 cursor-not-allowed'
               }`}
+              aria-label="Agregar combo al carrito"
             >
               <ShoppingCart className="w-5 h-5" />
             </button>
@@ -61,6 +93,10 @@ function ComboCard({ combo }) {
           )}
         </div>
       </Link>
+      </Link>
+
+      {/* Quick view modal */}
+      <ComboQuickView combo={combo} open={showQuickView} onClose={() => setShowQuickView(false)} />
     </div>
   );
 }

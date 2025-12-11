@@ -3,13 +3,15 @@ import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from '../utils/axios';
 import { useCart } from '../context/CartContext';
+import ComboQuickView from './ComboQuickView';
 
 const HomeComboSection = () => {
   const [combos, setCombos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState('Volumen');
   const [imageErrors, setImageErrors] = useState({});
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
+  const [quickCombo, setQuickCombo] = useState(null);
 
   useEffect(() => {
     fetchCombos();
@@ -58,6 +60,7 @@ const HomeComboSection = () => {
       isCombo: true,
       category: combo.category
     });
+    openCart();
   };
 
   return (
@@ -116,7 +119,7 @@ const HomeComboSection = () => {
                 className="group relative bg-white border-2 border-gray-300 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:border-red-700 transition-all duration-500 hover:-translate-y-2 flex flex-col"
               >
                 {/* Imagen del combo */}
-                <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 w-full overflow-hidden sm:aspect-square">
+                  <div className="relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 w-full overflow-hidden sm:aspect-square">
                   {showImage && (
                     <img
                       src={imageSrc}
@@ -148,6 +151,17 @@ const HomeComboSection = () => {
                       </div>
                     </div>
                   )}
+
+                  {/* Overlay vista rápida */}
+                  <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/25 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={(e) => { e.preventDefault(); setQuickCombo(combo); }}
+                      className="transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 bg-white text-gray-900 font-semibold px-5 py-2.5 rounded-xl shadow-lg hover:bg-gray-100"
+                    >
+                      Vista Rápida
+                    </button>
+                  </div>
 
                   {/* Category badge */}
                   <div className="absolute top-4 right-4">
@@ -218,6 +232,8 @@ const HomeComboSection = () => {
             <ArrowRight className="w-5 h-5" />
           </Link>
         </div>
+
+        <ComboQuickView combo={quickCombo} open={!!quickCombo} onClose={() => setQuickCombo(null)} />
       </div>
     </section>
   );

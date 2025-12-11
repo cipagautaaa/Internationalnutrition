@@ -517,12 +517,12 @@ module.exports = {
       throw new Error('Campos incompletos para mensaje de contacto');
     }
     const transporter = await createTransporterAsync();
-    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+    const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'internationalnutritioncol@gmail.com';
     const mailOptions = {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to: adminEmail,
       replyTo: email,
-      subject: `📩 Nuevo mensaje de contacto - ${nombre} ${apellido}`,
+      subject: `📩 [Mensaje de cliente] ${nombre} ${apellido}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width:600px; margin:0 auto;">
           <h2 style="color:#dc2626;">Nuevo mensaje de contacto</h2>

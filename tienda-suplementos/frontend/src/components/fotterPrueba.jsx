@@ -184,7 +184,7 @@ const Footer = () => {
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-gray-400">
                   <Truck className="h-3 w-3 text-red-7000" />
-                  <span>Envío Gratis desde $100k</span>
+                  <span>Envío Gratis </span>
                 </div>
                 <div className="flex items-center space-x-2 text-xs text-gray-400">
                   <Award className="h-3 w-3 text-red-7000" />

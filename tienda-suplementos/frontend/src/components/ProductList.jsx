@@ -15,6 +15,7 @@ const proteinCategoryKeys = new Set(['proteinas', 'proteina']);
 const creatineCategoryKeys = new Set(['creatina', 'creatinas']);
 const preworkoutCategoryKeys = new Set(['pre-entrenos y quemadores', 'pre-entrenos y energia']);
 const healthWellnessCategoryKeys = new Set(['salud y bienestar', 'vitaminas', 'para la salud', 'complementos', 'rendimiento hormonal']);
+const aminoCategoryKeys = new Set(['aminoacidos y recuperadores', 'aminoacidos']);
 
 // Props opcionales: category, search, showVariants (si true expande cada variante como tarjeta independiente)
 const ProductList = ({ category, search, showVariants = false }) => {
@@ -29,7 +30,8 @@ const ProductList = ({ category, search, showVariants = false }) => {
 	const isCreatineCategory = creatineCategoryKeys.has(normalizedCategory);
 	const isPreworkoutCategory = preworkoutCategoryKeys.has(normalizedCategory);
 	const isHealthCategory = healthWellnessCategoryKeys.has(normalizedCategory);
-	const showTypeTabs = isProteinCategory || isCreatineCategory || isPreworkoutCategory || isHealthCategory;
+	const isAminoCategory = aminoCategoryKeys.has(normalizedCategory);
+	const showTypeTabs = isProteinCategory || isCreatineCategory || isPreworkoutCategory || isHealthCategory || isAminoCategory;
 
 	// Importante: TODOS los hooks deben llamarse en el mismo orden en cada render
 	// Calculamos displayProducts con useMemo ANTES de cualquier return condicional

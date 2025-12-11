@@ -2,6 +2,7 @@
 import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
 const HEALTH_TYPES = ['Multivitamínicos', 'Precursores de testosterona', 'Suplementos para la salud'];
+const AMINO_TYPES = ['BCAA y EAA', 'Recuperadores'];
 
 const normalizeText = (value = '') =>
   value
@@ -14,6 +15,7 @@ const normalizeText = (value = '') =>
 const HEALTH_CATEGORY_KEYS = new Set(
   ['Salud y Bienestar', 'Vitaminas', 'Para la salud', 'Complementos', 'Rendimiento hormonal'].map(normalizeText)
 );
+const AMINO_CATEGORY_KEYS = new Set(['Aminoácidos y Recuperadores', 'Aminoácidos'].map(normalizeText));
 
 const HEALTH_MULTIVIT_REGEX = /(multi|vitamin)/i;
 const HEALTH_TESTO_REGEX = /(testo|tribu|zma|andro|mascul|alpha|booster)/i;
@@ -27,6 +29,9 @@ const VISIBLE_TYPES = {
   'Creatinas': ['Monohidratada', 'HCL'],
   'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
   'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa'],
+  // Aminoácidos y Recuperadores
+  'Aminoácidos y Recuperadores': AMINO_TYPES,
+  'Aminoácidos': AMINO_TYPES,
   // Salud y Bienestar + sinónimos legacy
   'Salud y Bienestar': HEALTH_TYPES,
   'Vitaminas': HEALTH_TYPES,
@@ -50,6 +55,33 @@ const VISIBLE_TO_CANONICAL = {
   // Pre-entrenos y Quemadores
   'Pre-entrenos': 'Pre-entrenos',
   'Quemadores de grasa': 'Quemadores de grasa',
+  // Aminoácidos y Recuperadores
+  'BCAA y EAA': 'BCAA y EAA',
+  'BCAA/EAA': 'BCAA y EAA',
+  'BCAA': 'BCAA y EAA',
+  'EAA': 'BCAA y EAA',
+  'Esenciales': 'BCAA y EAA',
+  'Aminoácidos esenciales': 'BCAA y EAA',
+  'Aminoacidos esenciales': 'BCAA y EAA',
+  'Aminoácidos': 'BCAA y EAA',
+  'Aminoacidos': 'BCAA y EAA',
+  'Intra-entreno': 'BCAA y EAA',
+  'Intra entreno': 'BCAA y EAA',
+  'Recuperadores': 'Recuperadores',
+  'Recuperador': 'Recuperadores',
+  'Recuperation': 'Recuperadores',
+  'Recovery': 'Recuperadores',
+  'Recuperación': 'Recuperadores',
+  'Recuperacion': 'Recuperadores',
+  'Glutamina': 'Recuperadores',
+  'Glutaminas': 'Recuperadores',
+  'Post entreno': 'Recuperadores',
+  'Post-entreno': 'Recuperadores',
+  'Post workout': 'Recuperadores',
+  'Post-workout': 'Recuperadores',
+  'Mezclas aminoácidas': 'Recuperadores',
+  'Mezclas aminoacidas': 'Recuperadores',
+  'Carbohidratos post-entreno': 'Recuperadores',
   // Sinónimos comunes que podrían llegar desde UI o BD
   'Monohidratadas': 'Monohidrato',
   'Proteínas limpias': 'Limpia',
@@ -88,6 +120,7 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
   const normalizedCategoryKey = normalizeText(category);
   const baseTypes = VISIBLE_TYPES[category] || VISIBLE_TYPES[normalizedCategoryName] || [];
   const isCreatineCategory = normalizedCategoryKey === 'creatina' || normalizedCategoryKey === 'creatinas';
+  const isAminoCategory = AMINO_CATEGORY_KEYS.has(normalizedCategoryKey);
   const isHealthCategory = HEALTH_CATEGORY_KEYS.has(normalizedCategoryKey);
 
   // Usar una declaración de función (hoisted) para poder llamarla antes de su definición textual
@@ -113,7 +146,7 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
       .filter(Boolean)
       .map(canonical)
   );
-  const types = (isCreatineCategory || isHealthCategory)
+  const types = (isCreatineCategory || isHealthCategory || isAminoCategory)
     ? baseTypes
     : baseTypes.filter(t =>
         t === 'Todas'
@@ -128,6 +161,7 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
     if (cat === 'Proteínas' || cat === 'Proteina' || cat === 'Proteinas') return 'Limpia';
     if (cat === 'Creatina' || cat === 'Creatinas') return 'Monohidratada';
     if (cat === 'Pre-entrenos y Quemadores' || cat === 'Pre-entrenos y Energía') return 'Pre-entrenos';
+    if (AMINO_CATEGORY_KEYS.has(normalizeText(cat))) return 'BCAA y EAA';
     if (HEALTH_CATEGORY_KEYS.has(normalizeText(cat))) return 'Multivitamínicos';
     return null;
   };
@@ -145,6 +179,13 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
       const burnerHints = /(lipo|hydroxi|burn|stack|cut|drene|core|redux|slim|shred|fat\s*burn)/i;
       if (burnerHints.test(n)) return 'Quemadores de grasa';
       return 'Pre-entrenos';
+    }
+    if (AMINO_CATEGORY_KEYS.has(c)) {
+      const recoveryHints = /(gluta|recuper|post|recovery|repair|regen)/i;
+      const bcaaHints = /(bcaa|eaa|amino)/i;
+      if (recoveryHints.test(n)) return 'Recuperadores';
+      if (bcaaHints.test(n)) return 'BCAA y EAA';
+      return getDefaultType(category) || 'BCAA y EAA';
     }
     if (HEALTH_CATEGORY_KEYS.has(c)) {
       if (HEALTH_TESTO_REGEX.test(n)) return 'Precursores de testosterona';

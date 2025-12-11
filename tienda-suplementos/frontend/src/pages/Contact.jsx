@@ -128,11 +128,25 @@ export default function Contact() {
         <div className="border-t border-gray-200 pt-12 space-y-6">
           <p className="text-xs font-semibold tracking-[0.25em] text-gray-500">REDES SOCIALES</p>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-            <div className="space-y-2">
-              <p className="text-gray-900 font-semibold">Instagram</p>
-              <a href="https://instagram.com/internationalnutrition" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-lg font-bold text-red-700 hover:text-red-700">
-                <Instagram className="w-5 h-5" /> @InternationalNutrition
-              </a>
+            <div className="space-y-3">
+              <div className="space-y-2">
+                <p className="text-gray-900 font-semibold">Instagram</p>
+                <a href="https://instagram.com/internationalnutrition" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-lg font-bold text-red-700 hover:text-red-700">
+                  <Instagram className="w-5 h-5" /> @InternationalNutrition
+                </a>
+              </div>
+              <div className="space-y-2">
+                <p className="text-gray-900 font-semibold">WhatsApp</p>
+                <a href="https://wa.me/573006851794" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-lg font-bold text-green-600 hover:text-green-700">
+                  <MessageCircle className="w-5 h-5" /> +57 300 685 1794
+                </a>
+              </div>
+              <div className="space-y-2">
+                <p className="text-gray-900 font-semibold">TikTok</p>
+                <a href="https://www.tiktok.com/@internationalnutrition" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-lg font-bold text-gray-900 hover:text-gray-700">
+                  <span className="text-xl">&#119070;</span> @InternationalNutrition
+                </a>
+              </div>
             </div>
             <p className="text-xs text-gray-500 max-w-md">Síguenos para ver lanzamientos, promociones y consejos diarios de nutrición deportiva.</p>
           </div>

@@ -51,8 +51,8 @@ const ALLOWED_TIPOS_BY_CATEGORY = {
   'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
   'Pre-Workout': ['Pre-entrenos', 'Quemadores de grasa', 'Energizantes y bebidas', 'Termogénicos con cafeína'],
   // Aminoácidos y Recuperadores
-  'Aminoácidos': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
-  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
+  'Aminoácidos': ['BCAA y EAA', 'Recuperadores', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
+  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Recuperadores', 'Glutamina', 'Mezclas aminoácidas', 'Carbohidratos post-entreno'],
   // Salud y Bienestar (fusiona vitaminas, salud y rendimiento hormonal)
   'Vitaminas': HEALTH_TIPOS,
   'Para la salud': HEALTH_TIPOS,

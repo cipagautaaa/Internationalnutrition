@@ -21,9 +21,9 @@ const Locations = () => {
       email: "internationalnutritioncol@gmail.com",
       coordinates: { lat: 5.53565843789193, lng: -73.36111820444094 },
       hours: {
-        weekdays: "Lunes - Viernes: 8:30 AM - 8:00 PM",
-        saturday: "Sábado: 8:30 AM - 8:00 PM",
-        sunday: "Domingo: 10:00 AM - 5:00 PM"
+        weekdays: "Lunes - Viernes: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
+        saturday: "Sábado: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
+        sunday: "Domingo y festivos: 10:00 AM - 5:00 PM"
       },
       isOpen: true,
       rating: 4.9,
@@ -42,9 +42,9 @@ const Locations = () => {
       email: "internationalnutritioncol@gmail.com",
       coordinates: { lat: 5.816389219276386, lng: -73.02995133558204 },
       hours: {
-        weekdays: "Lunes - Viernes: 8:30 AM - 8:00 PM",
-        saturday: "Sábado: 8:30 AM - 8:00 PM",
-        sunday: "Domingo: 10:00 AM - 5:00 PM"
+        weekdays: "Lunes - Viernes: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
+        saturday: "Sábado: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
+        sunday: "Domingo y festivos: 10:00 AM - 5:00 PM"
       },
       isOpen: true,
       rating: 4.9,
@@ -59,7 +59,7 @@ const Locations = () => {
     const days = {
       weekdays: 'Lunes - Viernes',
       saturday: 'Sábado',
-      sunday: 'Domingo'
+      sunday: 'Domingo y festivos'
     };
     return days[dayKey];
   };

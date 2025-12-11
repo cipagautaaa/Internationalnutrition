@@ -1,6 +1,8 @@
-﻿import { ShoppingCart } from 'lucide-react';
+﻿import { ShoppingCart, Eye } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+import QuickAddModal from './QuickAddModal';
 import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 
@@ -8,7 +10,8 @@ const ImplementCard = ({ implement }) => {
   const [selectedSize, setSelectedSize] = useState(implement.sizes?.[0] || null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
-  const { addToCart } = useCart();
+  const { addToCart, openCart } = useCart();
+  const [showPreview, setShowPreview] = useState(false);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-CO', {
@@ -39,6 +42,25 @@ const ImplementCard = ({ implement }) => {
       size: selectedSize,
       isImplement: true
     });
+    openCart();
+  };
+
+  // Adaptamos datos para reutilizar QuickAddModal
+  const modalProduct = {
+    _id: implement._id || implement.id,
+    id: implement._id || implement.id,
+    name: implement.name,
+    description: implement.description || 'Accesorio Wargo listo para tu entrenamiento.',
+    image: implement.image,
+    price: implement.price,
+    variants: Array.isArray(implement.sizes)
+      ? implement.sizes.map((size) => ({
+          _id: `${implement._id || implement.id}-${size}`,
+          size,
+          price: implement.price,
+          inStock: true,
+        }))
+      : [],
   };
 
   return (
@@ -46,6 +68,7 @@ const ImplementCard = ({ implement }) => {
       
       {/* Imagen del implemento */}
       <div className={`relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center overflow-hidden`}>
+        <Link to={`/implementos/${implement._id || implement.id}`} className="absolute inset-0 z-10" aria-label={`Ver ${implement.name}`}></Link>
         {optimizedImage && !imageError ? (
           <img 
             src={optimizedImage} 
@@ -95,9 +118,19 @@ const ImplementCard = ({ implement }) => {
       <div className="flex flex-col flex-1 p-4 sm:p-5 gap-3">
         
         {/* Nombre */}
-        <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 group-hover:text-red-700 transition-colors">
-          {implement.name}
-        </h3>
+        <div className="flex items-start gap-2 justify-between">
+          <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 group-hover:text-red-700 transition-colors">
+            {implement.name}
+          </h3>
+          <button
+            type="button"
+            onClick={() => setShowPreview(true)}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-700 border border-gray-200 hover:border-gray-400"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            Vista previa
+          </button>
+        </div>
 
         {/* Selector de tallas - SIEMPRE VISIBLE */}
         {implement.sizes && implement.sizes.length > 0 && (
@@ -144,6 +177,12 @@ const ImplementCard = ({ implement }) => {
           Envío gratis desde $50.000
         </div>
       </div>
+
+      <QuickAddModal
+        product={modalProduct}
+        open={showPreview}
+        onClose={() => setShowPreview(false)}
+      />
     </div>
   );
 };

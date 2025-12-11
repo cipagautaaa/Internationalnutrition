@@ -129,7 +129,15 @@ const Home = () => {
       return;
     }
 
-    const alreadyDismissed = typeof window !== 'undefined' && sessionStorage.getItem('promoWelcomeDismissed') === '1';
+    let alreadyDismissed = false;
+    try {
+      alreadyDismissed = typeof window !== 'undefined' && sessionStorage.getItem('promoWelcomeDismissed') === '1';
+    } catch (err) {
+      // En algunos navegadores móviles (WebView/Android) el acceso a sessionStorage puede fallar
+      console.warn('No se pudo leer sessionStorage para el popup de bienvenida:', err);
+      alreadyDismissed = false;
+    }
+
     if (alreadyDismissed) return;
 
     const timer = setTimeout(() => setShowPromo(true), 7000);
@@ -243,6 +251,7 @@ const Home = () => {
     try {
       sessionStorage.setItem('promoWelcomeDismissed', '1');
     } catch (err) {
+      // En Android WebView/Incógnito el acceso puede lanzar; no bloquear el cierre
       console.warn('No se pudo registrar el cierre del popup:', err);
     }
   };

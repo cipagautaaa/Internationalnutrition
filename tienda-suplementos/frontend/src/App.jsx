@@ -43,6 +43,7 @@ import RestrictAdmin from './components/RestrictAdmin';
 import Footer from './components/fotterPrueba';
 import Locations from './components/Locations';
 import Implements from './pages/Implements';
+import ImplementDetail from './pages/ImplementDetail';
 // Páginas por categoría
 import Proteinas from './pages/categories/Proteinas';
 import Contact from './pages/Contact';
@@ -119,6 +120,7 @@ function App() {
           <Route path="/combos/volumen" element={<CombosVolumen />} />
           <Route path="/combos/definicion" element={<CombosDefinicion />} />
           <Route path="/implementos" element={<Implements />} />
+          <Route path="/implementos/:id" element={<ImplementDetail />} />
           <Route path="/products/:category" element={<Products />} />
           <Route path="/product/:id" element={<ProductDetail />} />
           <Route path="/combo/:id" element={<ComboDetail />} />

@@ -57,7 +57,7 @@ const FAQ = () => {
       questions: [
         {
           question: '¿Cuánto tarda el envío?',
-          answer: 'Los tiempos de entrega varían según tu ubicación. En Bogotá, las entregas se realizan en 1-3 días hábiles. Para otras ciudades principales, el tiempo estimado es de 3-5 días hábiles. Ciudades más alejadas pueden tardar hasta 7 días hábiles.'
+          answer: 'Los tiempos de entrega varían según tu ubicación. En Tunja, las entregas se realizan el mismo dia. Para otras ciudades principales, el tiempo estimado es de 3-5 días hábiles. Ciudades más alejadas pueden tardar hasta 7 días hábiles.'
         },
         {
           question: '¿Puedo hacer seguimiento a mi pedido?',
@@ -65,7 +65,7 @@ const FAQ = () => {
         },
         {
           question: '¿Cuál es el costo del envío?',
-          answer: 'El costo de envío se calcula automáticamente según tu ubicación y el peso de tu pedido. Ofrecemos envío gratis en compras superiores a $150.000 en ciudades principales.'
+          answer: 'El costo de envío se calcula automáticamente según tu ubicación y el peso de tu pedido. Ofrecemos envío gratis en compras superiores a $80.000 en ciudades principales.'
         },
         {
           question: '¿Entregan en todo Colombia?',

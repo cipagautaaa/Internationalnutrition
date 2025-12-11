@@ -69,6 +69,10 @@ const HEALTH_CATEGORY_KEYS = ['Salud y Bienestar', 'salud y bienestar', 'Vitamin
 const HEALTH_TESTO_TERMS = ['testo', 'tribu', 'zma', 'andro', 'mascul', 'alpha', 'booster'];
 const HEALTH_MULTIVIT_TERMS = ['multivit', 'vitamin'];
 const HEALTH_SUPP_TERMS = ['suplement', 'salud', 'omega', 'magnes', 'miner', 'colageno', 'adaptog', 'immune', 'probio', 'bienestar', 'wellness'];
+const AMINO_TYPES = ['BCAA y EAA', 'Recuperadores'];
+const AMINO_CATEGORY_KEYS = ['Aminoácidos y Recuperadores', 'Aminoácidos'];
+const AMINO_BCAA_TERMS = ['bcaa', 'eaa', 'amino'];
+const AMINO_RECOVERY_TERMS = ['gluta', 'recuper', 'post', 'recovery', 'repair', 'regen'];
 
 // Tipos/Subcategorías por categoría (soporta nuevas y legacy)
 const CATEGORY_TYPES = {
@@ -86,9 +90,9 @@ const CATEGORY_TYPES = {
   'Pre-entrenos y Energía': ['Pre-entrenos', 'Quemadores de grasa'],
   'Pre-Workout': ['Pre-entrenos', 'Quemadores de grasa'],
   // Aminoácidos y Recuperadores
-  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina'],
-  'Aminoácidos': ['BCAA y EAA', 'Glutamina'],
-  'aminoácidos y recuperadores': ['BCAA y EAA', 'Glutamina'],
+  'Aminoácidos y Recuperadores': AMINO_TYPES,
+  'Aminoácidos': AMINO_TYPES,
+  'aminoácidos y recuperadores': AMINO_TYPES,
   // Salud y Bienestar
   'Salud y Bienestar': HEALTH_TYPES,
   'salud y bienestar': HEALTH_TYPES,
@@ -107,6 +111,7 @@ const CATEGORY_TYPES_LOOKUP = Object.entries(CATEGORY_TYPES).reduce((acc, [key, 
 }, {});
 
 const HEALTH_CATEGORY_KEY_SET = new Set(HEALTH_CATEGORY_KEYS.map(normalizeText));
+const AMINO_CATEGORY_KEY_SET = new Set(AMINO_CATEGORY_KEYS.map(normalizeText));
 const includesAny = (text, terms) => {
   if (!text) return false;
   return terms.some(term => text.includes(term));
@@ -125,6 +130,19 @@ const canonicalizeHealthType = (rawType, productName = '') => {
   if (includesAny(normalizedName, HEALTH_SUPP_TERMS)) return 'Suplementos para la salud';
 
   if (normalizedType || normalizedName) return 'Suplementos para la salud';
+  return '';
+};
+
+const canonicalizeAminoType = (rawType, productName = '') => {
+  const normalizedType = normalizeText(rawType);
+  const normalizedName = normalizeText(productName);
+  if (includesAny(normalizedType, AMINO_RECOVERY_TERMS) || includesAny(normalizedName, AMINO_RECOVERY_TERMS)) {
+    return 'Recuperadores';
+  }
+  if (includesAny(normalizedType, AMINO_BCAA_TERMS) || includesAny(normalizedName, AMINO_BCAA_TERMS)) {
+    return 'BCAA y EAA';
+  }
+  if (normalizedType || normalizedName) return 'BCAA y EAA';
   return '';
 };
 
@@ -293,8 +311,10 @@ export default function AdminProducts() {
     const typesForCategory = getCategoryTypes(normalizedCategoryName);
     const rawType = (product?.tipo || '').trim();
     const isHealthCategory = HEALTH_CATEGORY_KEY_SET.has(normalizeText(product?.category)) || HEALTH_CATEGORY_KEY_SET.has(normalizeText(normalizedCategoryName));
+    const isAminoCategory = AMINO_CATEGORY_KEY_SET.has(normalizeText(product?.category)) || AMINO_CATEGORY_KEY_SET.has(normalizeText(normalizedCategoryName));
     const inferredHealthType = isHealthCategory ? canonicalizeHealthType(rawType, product?.name) : '';
-    const effectiveType = inferredHealthType || rawType;
+    const inferredAminoType = isAminoCategory ? canonicalizeAminoType(rawType, product?.name) : '';
+    const effectiveType = inferredHealthType || inferredAminoType || rawType;
 
     if (effectiveType) {
       if (typesForCategory?.length) {

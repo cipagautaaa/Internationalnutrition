@@ -5,7 +5,7 @@ const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[120] flex items-start justify-center px-3 sm:px-6 py-6 overflow-y-auto">
+    <div className="fixed inset-0 z-[150] flex items-start justify-center px-3 sm:px-6 py-6 overflow-y-auto pointer-events-auto">
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
       <div className="relative max-w-3xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2 md:h-[520px] max-h-[calc(100vh-2rem)]">

@@ -1,11 +1,35 @@
 ﻿import { useEffect, useState } from 'react';
 import api from '../services/api';
 import ImplementCard from '../components/ImplementCard';
+import FAQSection from '../components/FAQSection';
 
 const Implements = () => {
   const [implementsList, setImplementsList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const faqItems = [
+    {
+      question: '¿Qué productos incluye Wargo y accesorios para gym?',
+      answer: 'Cinturones, straps, muñequeras, guantes, ganchos, bandas y rodillos; todo pensado para soporte, grip y movilidad en fuerza, cross y home gym.'
+    },
+    {
+      question: '¿Cómo elijo la talla correcta del cinturón o guantes?',
+      answer: 'Mide tu cintura de entrenamiento (no la de pantalón) y revisa la guía de tallas. En guantes y straps, elige la talla que ajuste sin pellizcar.'
+    },
+    {
+      question: '¿Sirven para levantamientos pesados?',
+      answer: 'Sí. Los cinturones y muñequeras brindan soporte en sentadilla, press y peso muerto; los straps/ ganchos ayudan a mantener el agarre en series largas.'
+    },
+    {
+      question: '¿Cómo cuidar los accesorios?',
+      answer: 'Limpia con paño húmedo y seca al aire; evita lavadora o secadora para no dañar costuras o velcros. Guarda lejos de humedad prolongada.'
+    },
+    {
+      question: '¿Cuándo usar bandas o rodillos?',
+      answer: 'Bandas para activación y calentamiento; rodillos para liberar tensión y recuperación post-entreno. Úsalos 5-10 minutos antes o después de la sesión.'
+    }
+  ];
 
   useEffect(() => {
     const fetchImplements = async () => {
@@ -100,6 +124,10 @@ const Implements = () => {
           </div>
         </>
       )}
+
+      <div className="mt-14">
+        <FAQSection title="Preguntas frecuentes sobre Wargo y accesorios" items={faqItems} />
+      </div>
     </div>
   );
 };

@@ -20,6 +20,7 @@ const normalizeKey = (value = '') =>
     .trim();
 
 const HEALTH_TYPES = ['Multivitamínicos', 'Precursores de testosterona', 'Suplementos para la salud'];
+const AMINO_TYPES = ['BCAA y EAA', 'Recuperadores'];
 
 // Tipos/Subcategorías por categoría (sincronizado con AdminProducts.jsx)
 const CATEGORY_TYPES = {
@@ -30,7 +31,7 @@ const CATEGORY_TYPES = {
   // Pre-entrenos y Quemadores
   'Pre-entrenos y Quemadores': ['Pre-entrenos', 'Quemadores de grasa'],
   // Aminoácidos y Recuperadores
-  'Aminoácidos y Recuperadores': ['BCAA y EAA', 'Glutamina'],
+  'Aminoácidos y Recuperadores': AMINO_TYPES,
   // Salud y Bienestar
   'Salud y Bienestar': HEALTH_TYPES,
   'Vitaminas': HEALTH_TYPES,

@@ -25,7 +25,7 @@ const ShippingPolicy = () => {
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">Costos de envío</h2>
               <ul className="list-disc pl-5 space-y-2">
-                <li>Envío gratis desde $100.000 en compras dentro de nuestra cobertura estándar.</li>
+                <li>Envío gratis desde $80.000 en compras dentro de nuestra cobertura estándar.</li>
                 <li>Para pedidos menores o zonas especiales, el costo se calcula en el checkout antes de pagar.</li>
               </ul>
             </section>
