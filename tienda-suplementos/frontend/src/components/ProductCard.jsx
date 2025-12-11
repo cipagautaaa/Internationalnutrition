@@ -7,19 +7,26 @@ import { formatPrice } from '../utils/formatPrice';
 import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
-          to={detailPath}
-          className={`block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center`}
-    .toString()
+// Normaliza texto eliminando espacios extra, tildes y pasando a minúsculas
+const normalizeText = (text) => {
+  if (!text) return '';
+  return String(text)
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
     .toLowerCase()
-          <img
-            src={displayImage || '/placeholder-product.jpg'}
-            alt={product.name}
-            className={`${PRODUCT_IMAGE_BASE} group-hover:scale-105 transition-transform duration-500 relative z-10 px-3 py-3 sm:p-5`}
-            loading="lazy"
-            onError={(e) => {
-              e.target.src = '/placeholder-product.jpg';
-            }}
-          />
+    .trim();
+};
+
+// Verifica si alguna palabra clave aparece en el texto
+const includesAny = (text, keywords = []) => keywords.some((kw) => text.includes(kw));
+
+// Define el tipo mostrado en la tarjeta a partir de categoría/nombre/tipo
+const deriveProductType = (product) => {
+  if (!product) return null;
+
+  const healthOverride = resolveHealthTypeOverride(product);
+  if (healthOverride) return healthOverride;
+
   const category = normalizeText(product.category);
   const rawType = normalizeText(product.tipo);
   const name = normalizeText(product.name);
