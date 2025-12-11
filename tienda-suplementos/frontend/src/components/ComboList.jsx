@@ -93,7 +93,6 @@ function ComboCard({ combo }) {
           )}
         </div>
       </Link>
-      </Link>
 
       {/* Quick view modal */}
       <ComboQuickView combo={combo} open={showQuickView} onClose={() => setShowQuickView(false)} />
