@@ -43,6 +43,7 @@ const WompiCheckout = () => {
     productSubtotal: 0,
     comboSubtotal: 0,
   });
+  const [message, setMessage] = useState('');
   // const [loadingProfile, setLoadingProfile] = useState(true); // eliminado por no usarse en UI
   const [errors, setErrors] = useState({});
 
@@ -249,16 +250,16 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   const productSubtotal = productItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const comboSubtotal = comboItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const subtotal = productSubtotal + comboSubtotal;
+  const hasProductItems = productSubtotal > 0;
+  const hasComboItems = comboSubtotal > 0;
 
   const productDiscount = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
   const comboDiscount = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
   const discountAmount = productDiscount + comboDiscount;
   const totalConDescuento = Math.max(0, subtotal - discountAmount);
 
-  // Secciones internas para descuento y totales
-  const DiscountCodeSection = () => {
-    const [message, setMessage] = useState('');
-
+  // Helper para renderizar el bloque de código de descuento sin remounts que quiten el foco
+  const renderDiscountCodeSection = () => {
     const applyDiscount = () => {
       const code = discountCode.trim().toUpperCase();
       if (!code) {
@@ -328,7 +329,7 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
     );
   };
 
-  const TotalsSection = () => (
+  const renderTotalsSection = () => (
     <div className="space-y-3">
       <div className="flex justify-between text-sm text-gray-700">
         <span>Subtotal productos</span>
@@ -338,17 +339,17 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         <span>Subtotal combos</span>
         <span>${comboSubtotal.toLocaleString('es-CO')}</span>
       </div>
-      {discount.applied && (
-        <>
-          <div className="flex justify-between text-sm text-green-700">
-            <span>Descuento productos (20%)</span>
-            <span>- ${productDiscount.toLocaleString('es-CO')}</span>
-          </div>
-          <div className="flex justify-between text-sm text-green-700">
-            <span>Descuento combos (5%)</span>
-            <span>- ${comboDiscount.toLocaleString('es-CO')}</span>
-          </div>
-        </>
+      {discount.applied && hasProductItems && (
+        <div className="flex justify-between text-sm text-green-700">
+          <span>Descuento productos (20%)</span>
+          <span>- ${productDiscount.toLocaleString('es-CO')}</span>
+        </div>
+      )}
+      {discount.applied && hasComboItems && (
+        <div className="flex justify-between text-sm text-green-700">
+          <span>Descuento combos (5%)</span>
+          <span>- ${comboDiscount.toLocaleString('es-CO')}</span>
+        </div>
       )}
       <div className="flex justify-between text-base font-semibold text-gray-900 pt-2 border-t border-gray-200">
         <span>Total</span>
@@ -622,10 +623,10 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
                 </div>
 
                 {/* Código de descuento */}
-                <DiscountCodeSection />
+                {renderDiscountCodeSection()}
 
                 {/* Totales */}
-                <TotalsSection />
+                {renderTotalsSection()}
 
                 {/* Mensaje seguridad */}
                 <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-600">

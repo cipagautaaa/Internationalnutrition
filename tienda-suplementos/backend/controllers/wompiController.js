@@ -29,6 +29,8 @@ const createWompiTransactionHandler = async (req, res) => {
 
     // Procesar y validar productos
     let totalAmount = 0;
+    let productSubtotal = 0;
+    let comboSubtotal = 0;
     const orderItems = [];
 
     for (const item of items) {
@@ -100,15 +102,33 @@ const createWompiTransactionHandler = async (req, res) => {
         ? item.price
         : (product ? product.price : combo ? combo.price : implement.price);
 
-      totalAmount += unitPrice * item.quantity;
+      const lineTotal = unitPrice * item.quantity;
+      totalAmount += lineTotal;
+
+      // Clasificar subtotales por tipo para descuentos diferenciados
+      if (kind === 'Combo' || item.isCombo) {
+        comboSubtotal += lineTotal;
+      } else {
+        productSubtotal += lineTotal;
+      }
+
       orderItems.push({ product: product ? product._id : combo ? combo._id : implement._id, kind, quantity: item.quantity, price: unitPrice });
     }
 
     // Aplicar descuentos simples (ejemplo)
     let discountAmount = 0;
-    if (discountCode === 'CUIDADOCONLOSJOJOS') {
+    let productDiscount = 0;
+    let comboDiscount = 0;
+
+    if (discountCode === 'INTSUPPS20') {
+      productDiscount = Math.round(productSubtotal * 0.20);
+      comboDiscount = Math.round(comboSubtotal * 0.05);
+      discountAmount = productDiscount + comboDiscount;
+    } else if (discountCode === 'CUIDADOCONLOSJOJOS') {
       discountAmount = Math.round(totalAmount * 0.15);
+      productDiscount = discountAmount;
     }
+
     const netTotal = Math.max(0, totalAmount - discountAmount);
 
     const mappedShippingAddress = {
