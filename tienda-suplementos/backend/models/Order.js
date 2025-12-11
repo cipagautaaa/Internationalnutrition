@@ -14,7 +14,7 @@ const orderSchema = new mongoose.Schema({
     },
     kind: {
       type: String,
-      enum: ['Product', 'Combo'],
+      enum: ['Product', 'Combo', 'Implement'],
       default: 'Product'
     },
     quantity: {

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Combo = require('../models/Combo');
+const Implement = require('../models/Implement');
 const { sendNewOrderNotificationToAdmin, sendOrderConfirmationToCustomer } = require('../utils/emailService');
 const {
   createWompiTransaction,
@@ -34,6 +35,7 @@ const createWompiTransactionHandler = async (req, res) => {
       const productId = item.productId || item.id || item._id;
       let product = null;
       let combo = null;
+      let implement = null;
       let kind = 'Product';
 
       try {
@@ -61,11 +63,24 @@ const createWompiTransactionHandler = async (req, res) => {
             kind = 'Combo';
           }
         }
+
+        // Si tampoco es combo, intentar como implemento (Wargo y accesorios)
+        if (!product && !combo) {
+          if (mongoose.Types.ObjectId.isValid(productId)) {
+            implement = await Implement.findById(productId);
+          }
+          if (!implement) {
+            implement = await Implement.findOne({ name: item.name });
+          }
+          if (implement) {
+            kind = 'Implement';
+          }
+        }
       } catch (error) {
         console.error('❌ Error buscando producto/combo:', error);
       }
 
-      if (!product && !combo) {
+      if (!product && !combo && !implement) {
         return res.status(400).json({ success: false, message: `Producto ${item.name || productId} no encontrado. Verifica que el producto esté disponible.` });
       }
 
@@ -77,12 +92,16 @@ const createWompiTransactionHandler = async (req, res) => {
         return res.status(400).json({ success: false, message: `El combo ${combo.name} no está disponible` });
       }
 
+      if (implement && implement.isActive === false) {
+        return res.status(400).json({ success: false, message: `El accesorio ${implement.name} no está disponible` });
+      }
+
       const unitPrice = typeof item.price === 'number'
         ? item.price
-        : (product ? product.price : combo.price);
+        : (product ? product.price : combo ? combo.price : implement.price);
 
       totalAmount += unitPrice * item.quantity;
-      orderItems.push({ product: product ? product._id : combo._id, kind, quantity: item.quantity, price: unitPrice });
+      orderItems.push({ product: product ? product._id : combo ? combo._id : implement._id, kind, quantity: item.quantity, price: unitPrice });
     }
 
     // Aplicar descuentos simples (ejemplo)

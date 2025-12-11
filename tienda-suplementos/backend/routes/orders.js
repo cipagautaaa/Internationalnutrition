@@ -2,6 +2,8 @@ const express = require('express');
 const { protect } = require('../middleware/auth');
 const Order = require('../models/Order');
 const Product = require('../models/Product');
+const Combo = require('../models/Combo');
+const Implement = require('../models/Implement');
 const { sendNewOrderNotificationToAdmin, sendOrderConfirmationToCustomer } = require('../utils/emailService');
 
 const router = express.Router();
@@ -32,28 +34,66 @@ router.post('/create', protect, async (req, res) => {
     const orderItems = [];
 
     for (const item of items) {
-      const product = await Product.findById(item.productId);
-      if (!product) {
+      const productId = item.productId || item.id || item._id;
+      let product = null;
+      let combo = null;
+      let implement = null;
+      let kind = 'Product';
+
+      if (productId) {
+        product = await Product.findById(productId);
+        if (!product) combo = await Combo.findById(productId);
+        if (!product && !combo) implement = await Implement.findById(productId);
+      }
+
+      if (!product && !combo && !implement) {
         return res.status(400).json({
           success: false,
-          message: `Producto ${item.productId} no encontrado`
+          message: `Producto ${productId} no encontrado`
         });
       }
 
-      if (product.stock < item.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `Stock insuficiente para ${product.name}`
-        });
+      if (product) {
+        kind = 'Product';
+        if (product.stock < item.quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Stock insuficiente para ${product.name}`
+          });
+        }
       }
 
-      const itemTotal = product.price * item.quantity;
+      if (combo) {
+        kind = 'Combo';
+        if (combo.inStock === false) {
+          return res.status(400).json({
+            success: false,
+            message: `El combo ${combo.name} no está disponible`
+          });
+        }
+      }
+
+      if (implement) {
+        kind = 'Implement';
+        if (implement.isActive === false) {
+          return res.status(400).json({
+            success: false,
+            message: `El accesorio ${implement.name} no está disponible`
+          });
+        }
+      }
+
+      const unitPrice = typeof item.price === 'number'
+        ? item.price
+        : (product ? product.price : combo ? combo.price : implement.price);
+      const itemTotal = unitPrice * item.quantity;
       calculatedTotal += itemTotal;
 
       orderItems.push({
-        product: product._id,
+        product: product ? product._id : combo ? combo._id : implement._id,
+        kind,
         quantity: item.quantity,
-        price: product.price
+        price: unitPrice
       });
     }
 
