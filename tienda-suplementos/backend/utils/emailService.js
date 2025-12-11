@@ -252,12 +252,12 @@ const sendPasswordResetEmail = async (email, verificationCode) => {
   const transporter = await createTransporterAsync();
 
   const mailOptions = {
-    from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM || process.env.EMAIL_USER || 'internationalnutritioncol@gmail.com',
     to: email,
-    subject: 'Recupera tu contraseña - SportSupps',
+    subject: 'Recupera tu contraseña - INTSUPPS',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-        <h2 style="color: #3b82f6;">Recupera tu acceso</h2>
+        <h2 style="color: #b91c1c;">Recupera tu acceso en INTSUPPS</h2>
         <p>Usa el siguiente código para restablecer tu contraseña. Si no solicitaste este cambio, ignora este correo.</p>
         <div style="background-color: #f3f4f6; padding: 20px; text-align: center; margin: 20px 0;">
           <h1 style="color: #3b82f6; font-size: 32px; margin: 0; letter-spacing: 5px;">${verificationCode}</h1>
