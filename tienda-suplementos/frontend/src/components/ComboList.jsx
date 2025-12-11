@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { ShoppingCart } from 'lucide-react';
 import { formatPrice } from '../utils/formatPrice';
-import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
+import { PRODUCT_IMAGE_ASPECT, PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 import { useCart } from '../context/CartContext';
 import ComboQuickView from './ComboQuickView';
 
@@ -31,10 +31,10 @@ function ComboCard({ combo }) {
   return (
     <div className="group relative flex flex-col h-full bg-white border-2 border-gray-300 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl hover:border-red-700 transition-all duration-300 hover:-translate-y-1">
       <Link to={`/combo/${combo._id || combo.id}`} className="flex-1 flex flex-col">
-        <div className={`relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} max-sm:min-h-0 max-sm:h-auto flex items-center justify-center`}>
+        <div className={`relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} ${PRODUCT_IMAGE_ASPECT} flex items-center justify-center`}>
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_55%)] pointer-events-none" />
           <img
-            className={`${PRODUCT_IMAGE_BASE} max-sm:h-auto p-3 sm:p-5 group-hover:scale-105 transition-transform duration-500 relative z-10 drop-shadow-md`}
+            className={`${PRODUCT_IMAGE_BASE} p-3 sm:p-5 group-hover:scale-105 transition-transform duration-500 relative z-10 drop-shadow-md`}
             src={imageSrc || '/placeholder-product.png'}
             alt={combo.name}
             loading="lazy"

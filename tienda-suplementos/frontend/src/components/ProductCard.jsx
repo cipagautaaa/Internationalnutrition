@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import QuickAddModal from './QuickAddModal';
 import { useAuth } from '../context/AuthContext';
 import { formatPrice } from '../utils/formatPrice';
-import { PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
+import { PRODUCT_IMAGE_ASPECT, PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
 // Normaliza texto eliminando espacios extra, tildes y pasando a minúsculas
@@ -201,7 +201,7 @@ const ProductCard = ({ product, isCombo = false }) => {
       {/* Imagen con hover zoom y Quick View */}
       <Link
         to={detailPath}
-        className={`block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} flex items-center justify-center`}
+        className={`block relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} ${PRODUCT_IMAGE_ASPECT} flex items-center justify-center`}
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
         <img

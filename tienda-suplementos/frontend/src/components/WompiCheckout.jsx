@@ -7,7 +7,7 @@ import { getWhatsappUrl } from '../utils/whatsapp';
 import logoImg from '../assets/images/Captura_de_pantalla_2025-08-09_192459-removebg-preview.png';
 
 const WompiCheckout = () => {
-  const { items, clearCart, getTotalPrice } = useCart();
+  const { items, clearCart } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -34,7 +34,15 @@ const WompiCheckout = () => {
   const [loading, setLoading] = useState(false);
   // Descuento
   const [discountCode, setDiscountCode] = useState('');
-  const [discount, setDiscount] = useState({ type: null, value: 0, amount: 0, applied: false, code: '' });
+  const [discount, setDiscount] = useState({
+    applied: false,
+    code: '',
+    productDiscount: 0,
+    comboDiscount: 0,
+    totalDiscount: 0,
+    productSubtotal: 0,
+    comboSubtotal: 0,
+  });
   // const [loadingProfile, setLoadingProfile] = useState(true); // eliminado por no usarse en UI
   const [errors, setErrors] = useState({});
 
@@ -101,13 +109,12 @@ const WompiCheckout = () => {
   const handleTransferencia = () => {
     // Preparar mensaje para WhatsApp
     const productosTexto = items.map(item => 
-      `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toLocaleString('es-CO')}`
+      `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toLocaleString('es-CO')}${item.isCombo ? ' [Combo]' : ''}`
     ).join('\n');
     
-    const subtotal = getTotalPrice();
-    const discountAmount = discount.applied
-      ? (discount.type === 'percent' ? Math.round(subtotal * (discount.value / 100)) : Math.min(subtotal, discount.value))
-      : 0;
+    const prodDisc = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
+    const combDisc = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
+    const discountAmount = prodDisc + combDisc;
     const totalConDescuento = Math.max(0, subtotal - discountAmount);
     
     const mensaje = `¡Hola! 👋
@@ -117,7 +124,7 @@ Quiero realizar una compra por transferencia bancaria:
 *📋 DATOS DEL PEDIDO:*
 ${productosTexto}
 
-*💰 Total: $${totalConDescuento.toLocaleString('es-CO')} COP*${discount.applied ? `\n(Descuento ${discount.code}: -$${discountAmount.toLocaleString('es-CO')})` : ''}
+*💰 Total: $${totalConDescuento.toLocaleString('es-CO')} COP*${discount.applied ? `\n(Descuento ${discount.code}: Productos -$${prodDisc.toLocaleString('es-CO')} / Combos -$${combDisc.toLocaleString('es-CO')})` : ''}
 
 *📦 DATOS DE ENVÍO:*
 • Nombre: ${customerData.fullName}
@@ -155,10 +162,9 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
     setLoading(true);
     
     try {
-      const subtotal = getTotalPrice();
-      const discountAmount = discount.applied
-        ? (discount.type === 'percent' ? Math.round(subtotal * (discount.value / 100)) : Math.min(subtotal, discount.value))
-        : 0;
+      const productDiscountCalc = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
+      const comboDiscountCalc = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
+      const discountAmount = productDiscountCalc + comboDiscountCalc;
       const totalConDescuento = Math.max(0, subtotal - discountAmount);
       // Preparar datos para la transacción Wompi
       const transactionData = {
@@ -170,8 +176,20 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         })),
         customerData,
         shippingAddress,
+        subtotal,
+        productSubtotal,
+        comboSubtotal,
         total: totalConDescuento,
-        discount: discount.applied ? { code: discount.code, type: discount.type, value: discount.value, amount: discountAmount } : null,
+        discount: discount.applied
+          ? {
+              code: discount.code,
+              productDiscount: productDiscountCalc,
+              comboDiscount: comboDiscountCalc,
+              totalDiscount: discountAmount,
+              productSubtotal,
+              comboSubtotal,
+            }
+          : null,
         reference: `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         paymentMethod: 'wompi' // Siempre wompi para pagos online
       };
@@ -224,19 +242,22 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   ];
 
   // Helpers de totales
-  const subtotal = getTotalPrice();
-  const discountAmount = discount.applied
-    ? (discount.type === 'percent' ? Math.round(subtotal * (discount.value / 100)) : Math.min(subtotal, discount.value))
-    : 0;
+  const itemsWithFlags = Array.isArray(items) ? items : [];
+  const productItems = itemsWithFlags.filter((item) => !item.isCombo);
+  const comboItems = itemsWithFlags.filter((item) => item.isCombo);
+
+  const productSubtotal = productItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const comboSubtotal = comboItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = productSubtotal + comboSubtotal;
+
+  const productDiscount = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
+  const comboDiscount = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
+  const discountAmount = productDiscount + comboDiscount;
   const totalConDescuento = Math.max(0, subtotal - discountAmount);
 
   // Secciones internas para descuento y totales
   const DiscountCodeSection = () => {
     const [message, setMessage] = useState('');
-
-    const knownCodes = {
-      'CUIDADOCONLOSJOJOS': { type: 'percent', value: 15 },
-    };
 
     const applyDiscount = () => {
       const code = discountCode.trim().toUpperCase();
@@ -244,17 +265,36 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         setMessage('Ingresa un código.');
         return;
       }
-      if (!knownCodes[code]) {
+      if (code !== 'INTSUPPS20') {
         setMessage('Código inválido o expirado.');
         return;
       }
-      const conf = knownCodes[code];
-      setDiscount({ type: conf.type, value: conf.value, amount: 0, applied: true, code });
+
+      const prodDisc = Math.round(productSubtotal * 0.20);
+      const combDisc = Math.round(comboSubtotal * 0.05);
+
+      setDiscount({
+        applied: true,
+        code,
+        productDiscount: prodDisc,
+        comboDiscount: combDisc,
+        totalDiscount: prodDisc + combDisc,
+        productSubtotal,
+        comboSubtotal,
+      });
       setMessage('Descuento aplicado.');
     };
 
     const removeDiscount = () => {
-      setDiscount({ type: null, value: 0, amount: 0, applied: false, code: '' });
+      setDiscount({
+        applied: false,
+        code: '',
+        productDiscount: 0,
+        comboDiscount: 0,
+        totalDiscount: 0,
+        productSubtotal: 0,
+        comboSubtotal: 0,
+      });
       setDiscountCode('');
       setMessage('');
     };
@@ -282,7 +322,7 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         </div>
         {message && <p className="text-sm mt-2 text-gray-600">{message}</p>}
         {discount.applied && (
-          <p className="text-sm mt-2 text-green-700">Código "{discount.code}" aplicado.</p>
+          <p className="text-sm mt-2 text-green-700">Código "{discount.code}" aplicado. Productos -20%, Combos -5%.</p>
         )}
       </div>
     );
@@ -291,14 +331,24 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   const TotalsSection = () => (
     <div className="space-y-3">
       <div className="flex justify-between text-sm text-gray-700">
-        <span>Subtotal</span>
-        <span>${subtotal.toLocaleString('es-CO')}</span>
+        <span>Subtotal productos</span>
+        <span>${productSubtotal.toLocaleString('es-CO')}</span>
+      </div>
+      <div className="flex justify-between text-sm text-gray-700">
+        <span>Subtotal combos</span>
+        <span>${comboSubtotal.toLocaleString('es-CO')}</span>
       </div>
       {discount.applied && (
-        <div className="flex justify-between text-sm text-green-700">
-          <span>Descuento ({discount.code})</span>
-          <span>- ${discountAmount.toLocaleString('es-CO')}</span>
-        </div>
+        <>
+          <div className="flex justify-between text-sm text-green-700">
+            <span>Descuento productos (20%)</span>
+            <span>- ${productDiscount.toLocaleString('es-CO')}</span>
+          </div>
+          <div className="flex justify-between text-sm text-green-700">
+            <span>Descuento combos (5%)</span>
+            <span>- ${comboDiscount.toLocaleString('es-CO')}</span>
+          </div>
+        </>
       )}
       <div className="flex justify-between text-base font-semibold text-gray-900 pt-2 border-t border-gray-200">
         <span>Total</span>
