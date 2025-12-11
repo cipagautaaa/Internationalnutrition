@@ -35,7 +35,7 @@ const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
               Disfruta de un 20% de descuento en tu primera compra
             </h2>
             <p className="text-white/80 text-sm sm:text-base max-w-md">
-              Activa tu beneficio y te llevamos directo al registro. Solo para nuevas cuentas sin sesión iniciada.
+             Registrate y recibe tu beneficio, solo para nuevas cuentas.
             </p>
           </div>
 
