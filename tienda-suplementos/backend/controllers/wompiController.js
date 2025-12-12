@@ -236,10 +236,14 @@ const wompiWebhookHandler = async (req, res) => {
         order.wompiTransactionId = transaction.id;
       }
       
-      // Mapear estados de Wompi
+      // Mapear estados de Wompi (case-insensitive)
       const previousStatus = order.paymentStatus;
+      const transactionStatus = (transaction.status || '').toUpperCase();
       
-      if (transaction.status === 'APPROVED') {
+      console.log(`🔄 [WEBHOOK] Estado transacción recibido: "${transaction.status}" → "${transactionStatus}"`);
+      
+      if (transactionStatus === 'APPROVED') {
+        console.log('✅ [WEBHOOK] Transacción APROBADA');
         order.paymentStatus = 'paid';
         order.status = 'processing';
         
@@ -254,20 +258,53 @@ const wompiWebhookHandler = async (req, res) => {
         
         // Enviar emails de confirmación
         try {
+          console.log('📧 [WEBHOOK] Iniciando envío de emails para orden:', order._id);
+          
+          // Poblar user e items.product
           await order.populate('user');
           await order.populate('items.product');
-          await sendNewOrderNotificationToAdmin(order, order.user);
-          await sendOrderConfirmationToCustomer(order, order.user);
+          
+          // Obtener información del usuario
+          const userInfo = order.user;
+          
+          if (!userInfo) {
+            console.error('❌ [WEBHOOK] Error: No se pudo obtener info del usuario para orden:', order._id);
+            throw new Error('Usuario no encontrado para la orden');
+          }
+          
+          console.log('📧 [WEBHOOK] Info del usuario obtenida:', {
+            email: userInfo.email,
+            firstName: userInfo.firstName,
+            lastName: userInfo.lastName
+          });
+          
+          console.log('📧 [WEBHOOK] Enviando notificación al admin...');
+          await sendNewOrderNotificationToAdmin(order, userInfo);
+          console.log('✅ [WEBHOOK] Notificación al admin enviada correctamente');
+          
+          console.log('📧 [WEBHOOK] Enviando confirmación al cliente...');
+          await sendOrderConfirmationToCustomer(order, userInfo);
+          console.log('✅ [WEBHOOK] Confirmación al cliente enviada correctamente');
+          
+          console.log('✅ [WEBHOOK] Todos los emails enviados exitosamente para orden:', order._id);
         } catch (emailError) {
-          console.error('Error enviando correos en webhook:', emailError);
+          console.error('❌ [WEBHOOK] Error enviando correos:', {
+            orderId: order._id,
+            error: emailError?.message || emailError,
+            stack: emailError?.stack
+          });
         }
         
-      } else if (transaction.status === 'DECLINED' || transaction.status === 'ERROR') {
+      } else if (transactionStatus === 'DECLINED' || transactionStatus === 'ERROR') {
+        console.log('❌ [WEBHOOK] Transacción RECHAZADA o ERROR');
         order.paymentStatus = 'failed';
         order.status = 'cancelled';
         
-      } else if (transaction.status === 'PENDING') {
+      } else if (transactionStatus === 'PENDING') {
+        console.log('⏳ [WEBHOOK] Transacción PENDIENTE');
         order.paymentStatus = 'pending';
+      } else {
+        console.log('❓ [WEBHOOK] Estado desconocido:', transactionStatus);
       }
 
       await order.save();

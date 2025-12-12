@@ -291,9 +291,19 @@ const sendPasswordResetEmail = async (email, verificationCode) => {
 
 // Enviar notificación de nueva orden al administrador
 const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
+  console.log('📧 [sendNewOrderNotificationToAdmin] INICIANDO...');
+  console.log('📧 [sendNewOrderNotificationToAdmin] Order ID:', order._id);
+  console.log('📧 [sendNewOrderNotificationToAdmin] User Info:', {
+    email: userInfo?.email,
+    firstName: userInfo?.firstName,
+    lastName: userInfo?.lastName
+  });
+  
   const transporter = await createTransporterAsync();
   
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+  console.log('📧 [sendNewOrderNotificationToAdmin] Admin Email:', adminEmail);
+  console.log('📧 [sendNewOrderNotificationToAdmin] Email From:', process.env.EMAIL_FROM || process.env.EMAIL_USER);
   
   const orderItemsHtml = order.items.map(item => `
     <tr>
@@ -405,6 +415,10 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
 
 // Enviar confirmación de orden al cliente
 const sendOrderConfirmationToCustomer = async (order, userInfo) => {
+  console.log('📧 [sendOrderConfirmationToCustomer] INICIANDO...');
+  console.log('📧 [sendOrderConfirmationToCustomer] Order ID:', order._id);
+  console.log('📧 [sendOrderConfirmationToCustomer] Sending to:', userInfo?.email);
+  
   const transporter = await createTransporterAsync();
   
   const orderItemsHtml = order.items.map(item => `
