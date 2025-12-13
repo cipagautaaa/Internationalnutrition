@@ -326,22 +326,37 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
 
     console.log('?? Variantes finales a enviar:', cleanVariants.length, cleanVariants);
 
-    const payload = {
-      ...form,
-      size: (form.size || '').trim(),
-      price: Number(form.price),
-      originalPrice: form.originalPrice === '' || form.originalPrice === null || form.originalPrice === undefined ? null : Number(form.originalPrice),
-      inStock: form.inStock !== false,
-      variants: cleanVariants.map(v => ({
+    const baseSize = (form.size || '').trim() || (cleanVariants[0]?.size || '').trim() || 'Único';
+    const basePrice = Number(form.price || cleanVariants[0]?.price);
+    if (Number.isNaN(basePrice)) {
+      alert('El precio es requerido y debe ser numérico.');
+      return;
+    }
+
+    const variantsPayload = cleanVariants.map(v => {
+      const variantPrice = Number(v.price ?? basePrice);
+      if (Number.isNaN(variantPrice)) {
+        throw new Error('Cada variante debe tener un precio numérico.');
+      }
+      return {
         _id: v._id,
         name: v.name,
         description: v.description,
-        price: Number(v.price),
+        price: variantPrice,
         originalPrice: v.originalPrice === '' || v.originalPrice === null || v.originalPrice === undefined ? null : Number(v.originalPrice),
-        size: v.size,
-        image: v.image,
+        size: (v.size || '').trim(),
+        image: v.image?.trim() || '',
         inStock: v.inStock
-      })),
+      };
+    });
+
+    const payload = {
+      ...form,
+      size: baseSize,
+      price: basePrice,
+      originalPrice: form.originalPrice === '' || form.originalPrice === null || form.originalPrice === undefined ? null : Number(form.originalPrice),
+      inStock: form.inStock !== false,
+      variants: variantsPayload,
       flavors: (() => {
         const cleaned = (form.flavors || []).map(f => f.trim()).filter(Boolean);
         return cleaned.length ? cleaned : ['Sin sabor'];
@@ -353,7 +368,11 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
       delete payload.tipo;
     }
     delete payload.baseSize;
-    onSave(payload);
+    try {
+      onSave(payload);
+    } catch (err) {
+      alert(err.message || 'Revisa tamaño y precio de las variantes.');
+    }
   };
 
   return (
