@@ -240,6 +240,18 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
     }
   };
 
+  const handleVariantPaste = (idx, event) => {
+    const items = event?.clipboardData?.items;
+    if (!items) return;
+    const imageItem = Array.from(items).find((item) => item.type?.startsWith('image/'));
+    if (!imageItem) return;
+    event.preventDefault();
+    const file = imageItem.getAsFile();
+    if (file) {
+      handleVariantImageUpload(idx, file);
+    }
+  };
+
   const addVariant = () => {
     setForm(f => ({
       ...f,
@@ -801,6 +813,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                   <input 
                     value={v.image} 
                     onChange={e=>updateVariant(idx,'image', e.target.value)} 
+                    onPaste={(e)=>handleVariantPaste(idx, e)}
                     className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
                     placeholder="URL de la imagen" 
                   />
@@ -825,6 +838,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
                         handleVariantImageUpload(idx, e.dataTransfer.files[0]);
                       }
                     }}
+                    onPaste={(e)=>handleVariantPaste(idx, e)}
                     className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg px-4 py-4 transition-all ${
                       dragActiveVariant === idx
                         ? 'border-red-700 bg-red-50'
