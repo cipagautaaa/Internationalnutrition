@@ -244,7 +244,7 @@ const wompiWebhookHandler = async (req, res) => {
       
       if (transactionStatus === 'APPROVED') {
         console.log('✅ [WEBHOOK] Transacción APROBADA');
-        order.paymentStatus = 'paid';
+        order.paymentStatus = 'APPROVED';
         order.status = 'processing';
         
         // Solo descontar stock de productos unitarios (no combos) si el pago no estaba aprobado previamente
