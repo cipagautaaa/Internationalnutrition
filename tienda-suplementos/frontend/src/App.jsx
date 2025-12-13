@@ -56,6 +56,7 @@ import Salud from './pages/categories/Salud';
 import Comida from './pages/categories/Comida';
 import CombosVolumen from './pages/CombosVolumen';
 import CombosDefinicion from './pages/CombosDefinicion';
+import About from './pages/About';
 
 
 function App() {
@@ -109,6 +110,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/about" element={<About />} />
           {/* Rutas específicas por categoría */}
           <Route path="/products/proteinas" element={<Proteinas />} />
           <Route path="/products/creatina" element={<Creatina />} />
