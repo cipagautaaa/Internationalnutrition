@@ -212,8 +212,8 @@ const ImplementsPanel = () => {
         </div>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4">
+      <div className="grid lg:grid-cols-2 gap-6 lg:h-[calc(100vh-260px)]">
+        <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-xl shadow-sm p-5 space-y-4 lg:overflow-y-auto lg:pr-2">
           <h3 className="text-lg font-semibold text-gray-800">
             {editing ? `Editar ${IMPLEMENTS_LABEL}` : `Nuevo ${IMPLEMENTS_LABEL}`}
           </h3>
@@ -417,7 +417,7 @@ const ImplementsPanel = () => {
           </div>
         </form>
 
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-0 overflow-hidden">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-0 overflow-hidden lg:overflow-y-auto lg:pl-2">
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
               <thead className="bg-gray-100 text-left text-xs uppercase tracking-wide text-gray-600">
