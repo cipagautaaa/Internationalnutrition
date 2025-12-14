@@ -379,17 +379,21 @@ export default function AdminProducts() {
       const fullProduct = data?.data || product;
       console.log('?? Producto completo desde API:', fullProduct);
       console.log('?? Variantes completas desde API:', fullProduct?.variants);
+      // IMPORTANTE: Siempre usar el _id del producto primario (el que devuelve la API agregada)
+      // para que el PUT se haga al producto base, no a una variante
       setEditing(fullProduct);
       setForm({
         name: fullProduct?.name || '',
         description: fullProduct?.description || '',
         price: fullProduct?.price ?? '',
+        originalPrice: fullProduct?.originalPrice ?? '',
+        category: fullProduct?.category || selectedCategory || 'Proteínas',
         tipo: fullProduct?.tipo || '',  // Usar directamente el tipo del producto, no getProductType
         image: fullProduct?.image || '',
         inStock: fullProduct?.inStock !== false,
         isActive: fullProduct?.isActive ?? true,
-        size: fullProduct?.size || '',
-        baseSize: fullProduct?.baseSize || '',
+        size: fullProduct?.size || fullProduct?.baseSize || '',
+        baseSize: fullProduct?.baseSize || fullProduct?.size || '',
         // CRÍTICO: Usar las variantes del producto completo cargado desde la API
         variants: Array.isArray(fullProduct?.variants) 
           ? fullProduct.variants.map(v => ({
