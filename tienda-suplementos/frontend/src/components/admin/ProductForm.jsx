@@ -241,11 +241,13 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
   };
 
   const handleVariantPaste = (idx, event) => {
+    if (idx === undefined || idx === null) return;
     const items = event?.clipboardData?.items;
     if (!items) return;
     const imageItem = Array.from(items).find((item) => item.type?.startsWith('image/'));
     if (!imageItem) return;
     event.preventDefault();
+    event.stopPropagation();
     const file = imageItem.getAsFile();
     if (file) {
       handleVariantImageUpload(idx, file);
