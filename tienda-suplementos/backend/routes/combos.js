@@ -25,6 +25,11 @@ const upload = multer({
 
 // Función helper para subir a ImageKit
 const uploadToImageKit = async (buffer, fileName) => {
+  // Verificar que ImageKit esté configurado
+  if (!imagekit) {
+    throw new Error('ImageKit no está configurado. Configura las variables IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY y IMAGEKIT_URL_ENDPOINT.');
+  }
+  
   try {
     const result = await imagekit.upload({
       file: buffer.toString('base64'),
