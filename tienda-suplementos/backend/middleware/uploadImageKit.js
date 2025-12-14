@@ -29,6 +29,11 @@ const multerUpload = multer({
 
 // Función para subir a ImageKit
 const uploadToImageKit = async (fileBuffer, fileName, folder = 'suplementos/productos') => {
+  // Verificar que ImageKit esté configurado
+  if (!imagekit) {
+    throw new Error('ImageKit no está configurado. Configura las variables IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY y IMAGEKIT_URL_ENDPOINT.');
+  }
+  
   try {
     const result = await imagekit.upload({
       file: fileBuffer.toString('base64'),
