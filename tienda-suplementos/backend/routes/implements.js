@@ -4,7 +4,7 @@ const router = express.Router();
 const { protect } = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const implementsController = require('../controllers/implementController');
-const upload = require('../middleware/uploadCloudinary');
+const upload = require('../middleware/uploadImageKit');
 
 // IMPORTANTE: Rutas específicas ANTES que rutas parametrizadas
 // POST /api/implements/upload-image - subir imagen a Cloudinary
@@ -19,13 +19,13 @@ router.post('/upload-image', protect, isAdmin, upload.single('image'), async (re
       return res.status(400).json({ success: false, message: 'No se proporciono imagen' });
     }
     
-    const imageUrl = req.file.path;
-    console.log('✅ [upload-image] Imagen subida a Cloudinary:', imageUrl);
+    const imageUrl = req.file.path || req.file.url;
+    console.log('✅ [upload-image] Imagen subida a ImageKit:', imageUrl);
     
     res.json({
       success: true,
       imageUrl: imageUrl,
-      message: 'Imagen subida exitosamente a Cloudinary'
+      message: 'Imagen subida exitosamente a ImageKit'
     });
   } catch (error) {
     console.error('❌ [upload-image] Error:', error.message || error);

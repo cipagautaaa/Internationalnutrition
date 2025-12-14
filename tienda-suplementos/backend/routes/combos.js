@@ -4,9 +4,9 @@ const Combo = require('../models/Combo');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const multer = require('multer');
-const cloudinary = require('../config/cloudinary');
+const imagekit = require('../config/imagekit');
 
-// Configuración de Multer para memoria (Cloudinary)
+// Configuración de Multer para memoria (ImageKit)
 const storage = multer.memoryStorage();
 
 const upload = multer({
@@ -23,21 +23,20 @@ const upload = multer({
   }
 });
 
-// Función helper para subir a Cloudinary
-const uploadToCloudinary = (buffer) => {
-  return new Promise((resolve, reject) => {
-    const uploadStream = cloudinary.uploader.upload_stream(
-      {
-        folder: 'combos',
-        resource_type: 'auto'
-      },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result.secure_url);
-      }
-    );
-    uploadStream.end(buffer);
-  });
+// Función helper para subir a ImageKit
+const uploadToImageKit = async (buffer, fileName) => {
+  try {
+    const result = await imagekit.upload({
+      file: buffer.toString('base64'),
+      fileName: fileName || `combo_${Date.now()}`,
+      folder: 'combos',
+      useUniqueFileName: true,
+    });
+    return result.url;
+  } catch (error) {
+    console.error('❌ Error subiendo a ImageKit:', error);
+    throw error;
+  }
 };
 
 // GET todos los combos o filtrar por categoría
@@ -85,10 +84,10 @@ router.post('/', auth.protect, isAdmin, upload.single('image'), async (req, res)
       inStock: inStock === 'true' || inStock === true,
     };
     
-    // Si hay imagen, subirla a Cloudinary
+    // Si hay imagen, subirla a ImageKit
     if (req.file) {
-      console.log('📸 Subiendo imagen a Cloudinary...');
-      const imageUrl = await uploadToCloudinary(req.file.buffer);
+      console.log('📸 Subiendo imagen a ImageKit...');
+      const imageUrl = await uploadToImageKit(req.file.buffer, req.file.originalname);
       comboData.image = imageUrl;
       console.log('✅ Imagen subida:', imageUrl);
     }
@@ -150,10 +149,10 @@ router.put('/:id', auth.protect, isAdmin, upload.single('image'), async (req, re
       combo.products = typeof products === 'string' ? JSON.parse(products) : products;
     }
     
-    // Si hay archivo nuevo, subir a Cloudinary
+    // Si hay archivo nuevo, subir a ImageKit
     if (req.file) {
-      console.log('📸 Subiendo nueva imagen a Cloudinary...');
-      const imageUrl = await uploadToCloudinary(req.file.buffer);
+      console.log('📸 Subiendo nueva imagen a ImageKit...');
+      const imageUrl = await uploadToImageKit(req.file.buffer, req.file.originalname);
       combo.image = imageUrl;
       console.log('✅ Nueva imagen subida:', imageUrl);
     }

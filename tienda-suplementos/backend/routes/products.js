@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Product = require('../models/Product');
 const { protect } = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
-const upload = require('../middleware/uploadCloudinary');
+const upload = require('../middleware/uploadImageKit');
 
 const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
 
@@ -192,14 +192,13 @@ router.post('/upload-image', protect, isAdmin, upload.single('image'), async (re
       return res.status(400).json({ success: false, message: 'No se recibió ningún archivo' });
     }
 
-    // Retornar la URL de Cloudinary
-    const imageUrl = req.file.path;
+    // Retornar la URL de ImageKit
+    const imageUrl = req.file.path || req.file.url;
     
     res.json({
       success: true,
       imageUrl: imageUrl,
-      publicId: req.file.filename,
-      message: 'Imagen subida exitosamente a Cloudinary'
+      message: 'Imagen subida exitosamente a ImageKit'
     });
   } catch (error) {
     console.error('Error al subir imagen:', error);
