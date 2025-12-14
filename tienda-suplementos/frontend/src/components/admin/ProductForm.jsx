@@ -200,7 +200,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
       }
     } catch (error) {
       console.error('Error al subir imagen:', error);
-      setImageError(error.response?.data?.message || 'Error al subir la imagen');
+      setImageError(error.message || error.response?.data?.message || 'Error al subir la imagen');
     } finally {
       setUploadingImage(false);
     }
@@ -234,7 +234,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
       }
     } catch (error) {
       console.error('Error al subir imagen de variante:', error);
-      setVariantImageError({ ...variantImageError, [idx]: error.response?.data?.message || 'Error al subir la imagen' });
+      setVariantImageError({ ...variantImageError, [idx]: error.message || error.response?.data?.message || 'Error al subir la imagen' });
     } finally {
       setUploadingVariantImage(null);
     }
