@@ -82,6 +82,11 @@ export const uploadImage = async (file) => {
     if (error.response?.status === 401) {
       throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
     }
+    // Detectar error de Cloudinary deshabilitado
+    const errorMsg = error.response?.data?.message || error.message || '';
+    if (errorMsg.includes('cloud_name') || errorMsg.includes('disabled') || errorMsg.includes('Cloudinary')) {
+      throw new Error('El servicio de imágenes no está disponible. Usa una URL externa (ej: imgbb.com, imgur.com) y pégala en el campo de URL.');
+    }
     throw error;
   }
 };
@@ -119,6 +124,11 @@ export const uploadImplementImage = async (file) => {
     console.error('Error al subir imagen:', error);
     if (error.response?.status === 401) {
       throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
+    }
+    // Detectar error de Cloudinary deshabilitado
+    const errorMsg = error.response?.data?.message || error.message || '';
+    if (errorMsg.includes('cloud_name') || errorMsg.includes('disabled') || errorMsg.includes('Cloudinary')) {
+      throw new Error('El servicio de imágenes no está disponible. Usa una URL externa (ej: imgbb.com, imgur.com) y pégala en el campo de URL.');
     }
     throw error;
   }
