@@ -337,8 +337,12 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
 
     const variantsPayload = cleanVariants.map(v => {
       const variantPrice = Number(v.price ?? basePrice);
+      const variantSize = (v.size || '').trim() || baseSize;
       if (Number.isNaN(variantPrice)) {
         throw new Error('Cada variante debe tener un precio numérico.');
+      }
+      if (!variantSize) {
+        throw new Error('Cada variante debe tener un tamaño.');
       }
       return {
         _id: v._id,
@@ -346,7 +350,7 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
         description: v.description,
         price: variantPrice,
         originalPrice: v.originalPrice === '' || v.originalPrice === null || v.originalPrice === undefined ? null : Number(v.originalPrice),
-        size: (v.size || '').trim(),
+        size: variantSize,
         image: v.image?.trim() || '',
         inStock: v.inStock
       };
