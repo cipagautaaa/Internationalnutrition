@@ -198,6 +198,15 @@ const ProductCard = ({ product, isCombo = false }) => {
         )}
       </div>
 
+      {/* Badge ENVIO GRATIS para combos */}
+      {isCombo && (
+        <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-10">
+          <span className="bg-yellow-400 text-gray-900 text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-lg">
+            ENVIO GRATIS
+          </span>
+        </div>
+      )}
+
       {/* Imagen con hover zoom y Quick View */}
       <Link
         to={detailPath}
@@ -335,6 +344,17 @@ const ProductCard = ({ product, isCombo = false }) => {
                 )}
               </button>
             )}
+
+            {/* Botón carrito para combos - móvil */}
+            {!isAdmin && isCombo && (
+              <Link
+                to={detailPath}
+                className="sm:hidden flex items-center justify-center gap-2 font-bold text-xs rounded-xl transition-all duration-300 w-11 h-11 shrink-0 bg-red-700 hover:bg-red-800 text-white shadow-md hover:shadow-lg hover:scale-105"
+                aria-label="Ver combo"
+              >
+                <ShoppingCart className="w-5 h-5" />
+              </Link>
+            )}
           </div>
 
           {/* CTA completo en desktop - Ocultar si es admin */}
@@ -363,6 +383,18 @@ const ProductCard = ({ product, isCombo = false }) => {
                 </>
               )}
             </button>
+          )}
+
+          {/* Botón carrito para combos - desktop */}
+          {!isAdmin && isCombo && (
+            <Link
+              to={detailPath}
+              className="hidden sm:flex w-full items-center justify-center gap-2 font-bold text-sm py-2.5 px-4 rounded-xl transition-all duration-300 bg-red-700 hover:bg-red-800 text-white shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              aria-label="Ver combo"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              Ver Combo
+            </Link>
           )}
         </div>
 
