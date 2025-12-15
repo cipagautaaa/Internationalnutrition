@@ -26,6 +26,10 @@ const implementSchema = new mongoose.Schema(
       trim: true,
       default: [],
     },
+    hasSizes: {
+      type: Boolean,
+      default: true,
+    },
     image: {
       type: String,
       default: 'https://via.placeholder.com/300?text=Wargo+accesorio'
