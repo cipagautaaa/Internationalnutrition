@@ -44,7 +44,15 @@ const HomeComboSection = () => {
     }
   };
 
-  const filteredCombos = combos.filter(combo => combo.category === activeCategory).slice(0, 4);
+  // Filtrar por categoría y re-ordenar por precio ascendente para garantizar orden correcto
+  const filteredCombos = combos
+    .filter(combo => combo.category === activeCategory)
+    .sort((a, b) => {
+      const priceA = Number(a?.price) || Number.MAX_SAFE_INTEGER;
+      const priceB = Number(b?.price) || Number.MAX_SAFE_INTEGER;
+      return priceA - priceB;
+    })
+    .slice(0, 4);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-CO', {
