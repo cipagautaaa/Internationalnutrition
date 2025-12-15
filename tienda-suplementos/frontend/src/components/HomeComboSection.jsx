@@ -17,25 +17,14 @@ const HomeComboSection = () => {
     fetchCombos();
   }, []);
 
+  // v2 - Ordenamiento por precio ascendente - 15 dic 2025 18:45
   const fetchCombos = async () => {
     setLoading(true);
     try {
       const response = await axios.get('/combos');
       const combosData = Array.isArray(response.data) ? response.data : response.data.data || response.data.combos || [];
-      // Ordenar siempre por precio ascendente dentro de cada categoría (más baratos primero)
-      const sortedCombos = combosData
-        .slice()
-        .sort((a, b) => {
-          const priceA = Number(a?.price) || Number.MAX_SAFE_INTEGER;
-          const priceB = Number(b?.price) || Number.MAX_SAFE_INTEGER;
-          if (priceA !== priceB) return priceA - priceB;
-          // Desempate estable por orden explícito y fecha
-          if (a.orden !== undefined && b.orden !== undefined && a.orden !== b.orden) {
-            return a.orden - b.orden;
-          }
-          return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
-        });
-      setCombos(sortedCombos);
+      console.log('📦 Combos cargados del API:', combosData.length);
+      setCombos(combosData);
     } catch (error) {
       console.error('Error cargando combos:', error);
       setCombos([]);
@@ -44,17 +33,17 @@ const HomeComboSection = () => {
     }
   };
 
-  // Filtrar por categoría y ordenar por precio ascendente con useMemo
+  // Filtrar por categoría y ordenar SIEMPRE por precio ascendente
   const filteredCombos = useMemo(() => {
+    if (!combos.length) return [];
+    
     const filtered = combos
       .filter(combo => combo.category === activeCategory)
-      .sort((a, b) => {
-        const priceA = Number(a?.price) || Number.MAX_SAFE_INTEGER;
-        const priceB = Number(b?.price) || Number.MAX_SAFE_INTEGER;
-        return priceA - priceB;
-      })
+      .slice() // crear copia para no mutar
+      .sort((a, b) => (a.price || 0) - (b.price || 0))
       .slice(0, 4);
-    console.log('🏠 Home Combos ordenados:', activeCategory, filtered.map(c => ({ name: c.name, price: c.price })));
+    
+    console.log('🏠 HOME Combos filtrados y ordenados:', activeCategory, filtered.map(c => `${c.name}: $${c.price}`));
     return filtered;
   }, [combos, activeCategory]);
 
