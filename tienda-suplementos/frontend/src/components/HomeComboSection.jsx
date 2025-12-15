@@ -163,47 +163,50 @@ const HomeComboSection = () => {
                     </button>
                   </div>
 
-                  {/* Category badge */}
-                  <div className="absolute top-4 right-4 flex flex-col gap-2">
-                    <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-700 text-white text-xs font-semibold">
-                      {combo.category}
-                    </span>
-                    <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-400 text-gray-900 text-xs font-bold">
+                  {/* Etiqueta ENVIO GRATIS */}
+                  <div className="absolute top-3 right-3 z-20">
+                    <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-400 text-gray-900 text-xs font-bold shadow-lg">
                       ENVIO GRATIS
                     </span>
                   </div>
                 </div>
 
-                {/* Divisor */}
-                <div className="h-[2px] bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-
                 {/* Contenido */}
-                <div className="flex flex-col p-3 sm:p-4 gap-2">
+                <div className="flex flex-col p-4 sm:p-5 gap-3 flex-1">
+                  {/* Categoría */}
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-1 bg-red-700 rounded-full"></span>
+                    <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                      COMBO {combo.category?.toUpperCase()}
+                    </span>
+                  </div>
+
                   {/* Nombre */}
-                  <h3 className="text-sm sm:text-base font-bold text-gray-900 line-clamp-2 group-hover:text-red-700 transition-colors min-h-[2rem]">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 line-clamp-2 group-hover:text-red-700 transition-colors">
                     {combo.name}
                   </h3>
 
                   {/* Descripción productos */}
-                  <p className="hidden sm:block text-xs text-gray-600 line-clamp-2 min-h-[2rem]">
+                  <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 flex-1">
                     {combo.description}
                   </p>
 
-                  {/* Precio + CTA inline */}
-                  <div className="mt-auto flex items-center justify-between gap-3">
-                    <p className="text-xl sm:text-2xl font-bold text-red-700">
+                  {/* Precio + Botón carrito */}
+                  <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+                    <p className="text-xl sm:text-2xl font-bold text-gray-900">
                       {formatPrice(combo.price)}
                     </p>
                     <button 
                       onClick={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         if (combo.inStock === false) return;
                         handleAddComboToCart(combo);
                       }}
-                      className={`w-11 h-11 flex items-center justify-center rounded-xl border text-sm font-semibold transition-all ${
+                      className={`w-12 h-12 flex items-center justify-center rounded-xl text-sm font-semibold transition-all shadow-md ${
                         combo.inStock === false
-                          ? 'border-gray-200 text-gray-400 cursor-not-allowed'
-                          : 'border-gray-300 text-red-700 hover:bg-red-50'
+                          ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                          : 'bg-red-700 text-white hover:bg-red-800 hover:shadow-lg hover:scale-105'
                       }`}
                       aria-label="Agregar combo al carrito"
                     >
