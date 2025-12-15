@@ -129,12 +129,9 @@ export default function ComboList({ category }) {
             .sort((a, b) => {
               const priceA = Number(a?.price) || Number.MAX_SAFE_INTEGER;
               const priceB = Number(b?.price) || Number.MAX_SAFE_INTEGER;
-              if (priceA !== priceB) return priceA - priceB;
-              if (a.orden !== undefined && b.orden !== undefined && a.orden !== b.orden) {
-                return a.orden - b.orden;
-              }
-              return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+              return priceA - priceB;
             });
+          console.log('🔢 Combos ordenados por precio:', sorted.map(c => ({ name: c.name, price: c.price })));
           setCombos(sorted);
         }
       } catch {

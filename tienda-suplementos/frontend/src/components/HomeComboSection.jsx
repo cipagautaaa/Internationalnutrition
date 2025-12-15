@@ -49,11 +49,12 @@ const HomeComboSection = () => {
     const filtered = combos
       .filter(combo => combo.category === activeCategory)
       .sort((a, b) => {
-        const priceA = typeof a?.price === 'number' ? a.price : Number(a?.price) || Number.MAX_SAFE_INTEGER;
-        const priceB = typeof b?.price === 'number' ? b.price : Number(b?.price) || Number.MAX_SAFE_INTEGER;
+        const priceA = Number(a?.price) || Number.MAX_SAFE_INTEGER;
+        const priceB = Number(b?.price) || Number.MAX_SAFE_INTEGER;
         return priceA - priceB;
       })
       .slice(0, 4);
+    console.log('🏠 Home Combos ordenados:', activeCategory, filtered.map(c => ({ name: c.name, price: c.price })));
     return filtered;
   }, [combos, activeCategory]);
 
