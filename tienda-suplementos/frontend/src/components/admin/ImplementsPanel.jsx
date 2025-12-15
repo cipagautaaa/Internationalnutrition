@@ -4,13 +4,14 @@ import { uploadImplementImage } from '../../services/api';
 
 const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
 
-const emptyImplement = { name: '', size: '', price: '', originalPrice: '', image: '', sizes: [], isActive: true };
+const emptyImplement = { name: '', size: '', price: '', originalPrice: '', image: '', sizes: [], hasSizes: true, isActive: true };
 
 const mapImplement = (item) => ({
   id: item.id || item._id,
   name: item.name || '',
   size: item.size || '',
   sizes: item.sizes || [],
+  hasSizes: item.hasSizes !== false,
   price: item.price || 0,
   originalPrice: item.originalPrice || '',
   image: item.image || '',
@@ -124,8 +125,9 @@ const ImplementsPanel = () => {
       setError(null);
       const payload = {
         name: form.name.trim(),
-        size: form.size.trim(),
+        size: form.hasSizes ? form.size.trim() : '',
         price: parseFloat(form.price),
+        hasSizes: form.hasSizes,
         isActive: form.isActive,
       };
       if (form.originalPrice && parseFloat(form.originalPrice) > 0) {
@@ -134,8 +136,10 @@ const ImplementsPanel = () => {
       if (form.image && form.image.trim()) {
         payload.image = form.image.trim();
       }
-      if (Array.isArray(form.sizes) && form.sizes.length > 0) {
+      if (form.hasSizes && Array.isArray(form.sizes) && form.sizes.length > 0) {
         payload.sizes = form.sizes;
+      } else if (!form.hasSizes) {
+        payload.sizes = [];
       }
       if (editing) {
         await axios.put(`/implements/${editing.id}`, payload);
@@ -158,6 +162,7 @@ const ImplementsPanel = () => {
       name: item.name, 
       size: item.size,
       sizes: item.sizes || [],
+      hasSizes: item.hasSizes !== false,
       price: item.price || '', 
       originalPrice: item.originalPrice || '',
       image: item.image || '',
@@ -358,34 +363,50 @@ const ImplementsPanel = () => {
             </label>
           </label>
 
-          {/* Tallas */}
-          <label className="flex flex-col gap-1 text-sm text-gray-700">
-            <span>Tallas Disponibles (S, M, L, XL)</span>
-            <div className="flex flex-wrap gap-2">
-              {['S', 'M', 'L', 'XL'].map((size) => (
-                <button
-                  key={size}
-                  type="button"
-                  onClick={() => {
-                    const updated = form.sizes.includes(size)
-                      ? form.sizes.filter((s) => s !== size)
-                      : [...form.sizes, size];
-                    setForm((prev) => ({ ...prev, sizes: updated }));
-                  }}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
-                    form.sizes.includes(size)
-                      ? 'bg-red-700 text-white'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  {size}
-                </button>
-              ))}
+          {/* Checkbox para indicar si tiene tallas */}
+          <label className="inline-flex items-center gap-3 text-sm text-gray-700 select-none bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <input
+              type="checkbox"
+              checked={form.hasSizes}
+              onChange={(e) => setForm((prev) => ({ ...prev, hasSizes: e.target.checked, sizes: e.target.checked ? prev.sizes : [] }))}
+              className="h-5 w-5 accent-red-700"
+            />
+            <div>
+              <span className="font-medium">Este producto tiene tallas</span>
+              <p className="text-xs text-gray-500">Desactiva si el producto no maneja tallas (ej: termos, shakers, lazos)</p>
             </div>
-            <span className="text-xs text-gray-500">
-              Seleccionadas: {form.sizes.length > 0 ? form.sizes.join(', ') : 'ninguna'}
-            </span>
           </label>
+
+          {/* Tallas - Solo visible si hasSizes está activo */}
+          {form.hasSizes && (
+            <label className="flex flex-col gap-1 text-sm text-gray-700">
+              <span>Tallas Disponibles (S, M, L, XL)</span>
+              <div className="flex flex-wrap gap-2">
+                {['S', 'M', 'L', 'XL'].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => {
+                      const updated = form.sizes.includes(size)
+                        ? form.sizes.filter((s) => s !== size)
+                        : [...form.sizes, size];
+                      setForm((prev) => ({ ...prev, sizes: updated }));
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                      form.sizes.includes(size)
+                        ? 'bg-red-700 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+              <span className="text-xs text-gray-500">
+                Seleccionadas: {form.sizes.length > 0 ? form.sizes.join(', ') : 'ninguna'}
+              </span>
+            </label>
+          )}
 
           <label className="inline-flex items-center gap-3 text-sm text-gray-700 select-none">
             <input

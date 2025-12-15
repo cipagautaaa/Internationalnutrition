@@ -50,6 +50,13 @@ function ComboCard({ combo }) {
               Vista Rápida
             </button>
           </div>
+
+          {/* Badge ENVIO GRATIS */}
+          <div className="absolute top-3 right-3">
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-400 text-gray-900 text-xs font-bold">
+              ENVIO GRATIS
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col flex-1 p-3 sm:p-5 gap-3 bg-gradient-to-b from-white to-gray-50/40">

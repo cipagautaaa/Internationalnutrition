@@ -53,7 +53,8 @@ const ImplementCard = ({ implement }) => {
     description: implement.description || 'Accesorio Wargo listo para tu entrenamiento.',
     image: implement.image,
     price: implement.price,
-    variants: Array.isArray(implement.sizes)
+    hasSizes: implement.hasSizes !== false,
+    variants: implement.hasSizes !== false && Array.isArray(implement.sizes)
       ? implement.sizes.map((size) => ({
           _id: `${implement._id || implement.id}-${size}`,
           size,
@@ -132,8 +133,8 @@ const ImplementCard = ({ implement }) => {
           </button>
         </div>
 
-        {/* Selector de tallas - SIEMPRE VISIBLE */}
-        {implement.sizes && implement.sizes.length > 0 && (
+        {/* Selector de tallas - Solo si hasSizes es true y tiene tallas */}
+        {implement.hasSizes !== false && implement.sizes && implement.sizes.length > 0 && (
           <div className="w-full">
             <label className="block text-xs font-semibold text-gray-700 mb-2">
               📏 Talla
@@ -166,7 +167,7 @@ const ImplementCard = ({ implement }) => {
         {/* Botón */}
         <button
           onClick={handleAddToCart}
-          className="w-full bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm active:scale-95 flex items-center justify-center gap-2"
+          className="w-full mt-auto bg-red-700 hover:bg-red-800 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 text-sm active:scale-95 flex items-center justify-center gap-2"
         >
           <ShoppingCart className="w-4 h-4" />
           <span>Agregar al Carrito</span>
@@ -174,7 +175,7 @@ const ImplementCard = ({ implement }) => {
 
         {/* Info adicional */}
         <div className="text-xs text-gray-500 text-center pt-2">
-          Envío gratis desde $50.000
+          Envío gratis
         </div>
       </div>
 

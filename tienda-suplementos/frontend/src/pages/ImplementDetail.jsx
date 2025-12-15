@@ -40,10 +40,12 @@ export default function ImplementDetail() {
 
   const sizeOptions = useMemo(() => {
     if (!item) return [];
+    // Si hasSizes es false, no mostrar opciones de talla
+    if (item.hasSizes === false) return [];
     if (Array.isArray(item.sizes) && item.sizes.length) {
       return item.sizes.map((size) => ({ key: size, label: size }));
     }
-    return [{ key: 'unico', label: 'Único' }];
+    return [];
   }, [item]);
 
   const handleAdd = () => {

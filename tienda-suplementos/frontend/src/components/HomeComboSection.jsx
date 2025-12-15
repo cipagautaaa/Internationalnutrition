@@ -164,9 +164,12 @@ const HomeComboSection = () => {
                   </div>
 
                   {/* Category badge */}
-                  <div className="absolute top-4 right-4">
+                  <div className="absolute top-4 right-4 flex flex-col gap-2">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-700 text-white text-xs font-semibold">
                       {combo.category}
+                    </span>
+                    <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-400 text-gray-900 text-xs font-bold">
+                      ENVIO GRATIS
                     </span>
                   </div>
                 </div>

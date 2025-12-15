@@ -37,7 +37,7 @@ const timeline = [
   },
   {
     title: 'Documentación y entrega',
-    detail: 'Semanas 12-15: hardening de seguridad, validaciones, manuales técnicos y de usuario, y preparación de despliegue.'
+    detail: 'Semanas 12-15: hardening de seguridad, validaaciones, manuales técnicos y de usuario, y preparación de despliegue.'
   }
 ];
 
