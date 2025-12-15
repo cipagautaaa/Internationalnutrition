@@ -22,13 +22,19 @@ const HomeComboSection = () => {
     try {
       const response = await axios.get('/combos');
       const combosData = Array.isArray(response.data) ? response.data : response.data.data || response.data.combos || [];
-      // Ordenar por el campo 'orden' si existe, sino por createdAt
-      const sortedCombos = combosData.sort((a, b) => {
-        if (a.orden !== undefined && b.orden !== undefined) {
-          return a.orden - b.orden;
-        }
-        return new Date(b.createdAt) - new Date(a.createdAt);
-      });
+      // Ordenar siempre por precio ascendente dentro de cada categoría (más baratos primero)
+      const sortedCombos = combosData
+        .slice()
+        .sort((a, b) => {
+          const priceA = Number(a?.price) || Number.MAX_SAFE_INTEGER;
+          const priceB = Number(b?.price) || Number.MAX_SAFE_INTEGER;
+          if (priceA !== priceB) return priceA - priceB;
+          // Desempate estable por orden explícito y fecha
+          if (a.orden !== undefined && b.orden !== undefined && a.orden !== b.orden) {
+            return a.orden - b.orden;
+          }
+          return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+        });
       setCombos(sortedCombos);
     } catch (error) {
       console.error('Error cargando combos:', error);

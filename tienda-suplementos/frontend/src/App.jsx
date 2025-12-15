@@ -159,7 +159,7 @@ function App() {
           <Route path="/admin/page-management" element={<RequireAdmin><AdminPageManagement /></RequireAdmin>} />
         </Routes>
       </main>
-      <WhatsappFloatButton />
+      {!isAdminRoute && <WhatsappFloatButton />}
       {!hideFooter && <Footer />}
       <CookieConsent />
     </div>
