@@ -11,6 +11,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 import { CLOUDINARY_ASSETS } from '../config/cloudinaryAssets';
 import bannerPromoFallback from '../assets/images/foto2.jpg';
+import heroVideoLocal from '../assets/images/d74e90ff5ff8439aa70ba7559fa09ab7.HD-720p-4.5Mbps-51800263.mp4';
 import { getWhatsappUrl } from '../utils/whatsapp';
 import PromoWelcomeModal from '../components/PromoWelcomeModal';
 
@@ -291,7 +292,7 @@ const Home = () => {
           webkit-playsinline="true"
           aria-hidden="true"
         >
-          <source src={CLOUDINARY_ASSETS.videos.heroVideo} type="video/mp4" />
+          <source src={heroVideoLocal} type="video/mp4" />
         </video>
 
         {/* Overlay para mejorar contraste y empujar el foco visual */}
