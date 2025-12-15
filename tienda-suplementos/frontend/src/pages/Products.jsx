@@ -256,7 +256,7 @@ export default function Products() {
 						{implementsList.length === 0 ? (
 							<p className="text-gray-500">No hay Wargo y accesorios disponibles.</p>
 						) : (
-							<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+							<div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
 								{implementsList.filter(Boolean).map(item => (
 									<ImplementCard key={item.id || item._id} implement={item} />
 								))}
