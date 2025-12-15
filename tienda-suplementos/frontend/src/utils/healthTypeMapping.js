@@ -23,6 +23,7 @@ const HEALTH_TYPE_SETS = {
     'NUTRA C',
     'VITAMINA C IMN',
     'KORAGEM',
+    'KORAGEEM',
     'SHIELD',
     'OMEGA 3 IMN'
   ])

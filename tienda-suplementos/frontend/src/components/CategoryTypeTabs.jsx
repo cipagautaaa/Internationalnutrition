@@ -60,6 +60,10 @@ const VISIBLE_TO_CANONICAL = {
   'BCAA/EAA': 'BCAA y EAA',
   'BCAA': 'BCAA y EAA',
   'EAA': 'BCAA y EAA',
+  'bcaa': 'BCAA y EAA',
+  'eaa': 'BCAA y EAA',
+  'bcaa y eaa': 'BCAA y EAA',
+  'bcaas': 'BCAA y EAA',
   'Esenciales': 'BCAA y EAA',
   'Aminoácidos esenciales': 'BCAA y EAA',
   'Aminoacidos esenciales': 'BCAA y EAA',
@@ -73,15 +77,27 @@ const VISIBLE_TO_CANONICAL = {
   'Recovery': 'Recuperadores',
   'Recuperación': 'Recuperadores',
   'Recuperacion': 'Recuperadores',
+  'recuperadores': 'Recuperadores',
+  'recuperador': 'Recuperadores',
+  'recovery': 'Recuperadores',
+  'recuperacion': 'Recuperadores',
+  'recuperación': 'Recuperadores',
   'Glutamina': 'Recuperadores',
   'Glutaminas': 'Recuperadores',
+  'glutamina': 'Recuperadores',
+  'glutaminas': 'Recuperadores',
   'Post entreno': 'Recuperadores',
   'Post-entreno': 'Recuperadores',
   'Post workout': 'Recuperadores',
   'Post-workout': 'Recuperadores',
+  'post entreno': 'Recuperadores',
+  'post-entreno': 'Recuperadores',
+  'post workout': 'Recuperadores',
   'Mezclas aminoácidas': 'Recuperadores',
   'Mezclas aminoacidas': 'Recuperadores',
+  'mezclas aminoacidas': 'Recuperadores',
   'Carbohidratos post-entreno': 'Recuperadores',
+  'carbohidratos post-entreno': 'Recuperadores',
   // Sinónimos comunes que podrían llegar desde UI o BD
   'Monohidratadas': 'Monohidrato',
   'Proteínas limpias': 'Limpia',
@@ -181,8 +197,8 @@ export default function CategoryTypeTabs({ category, products, onFilteredProduct
       return 'Pre-entrenos';
     }
     if (AMINO_CATEGORY_KEYS.has(c)) {
-      const recoveryHints = /(gluta|recuper|post|recovery|repair|regen)/i;
-      const bcaaHints = /(bcaa|eaa|amino)/i;
+      const recoveryHints = /(gluta|recuper|post|recovery|repair|regen|carb)/i;
+      const bcaaHints = /(bcaa|eaa)/i;
       if (recoveryHints.test(n)) return 'Recuperadores';
       if (bcaaHints.test(n)) return 'BCAA y EAA';
       return getDefaultType(category) || 'BCAA y EAA';
