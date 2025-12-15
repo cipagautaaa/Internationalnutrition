@@ -140,7 +140,7 @@ const Home = () => {
 
     if (alreadyDismissed) return;
 
-    const timer = setTimeout(() => setShowPromo(true), 7000);
+    const timer = setTimeout(() => setShowPromo(true), 5000);
     return () => clearTimeout(timer);
   }, [isAuthenticated]);
 

@@ -16,11 +16,11 @@ const WhatsappFloatButton = () => {
     display: isMobileMenuOpen ? 'none' : 'block',
   }), [isMobileMenuOpen]);
 
-  // Abrir automáticamente después de 5 segundos
+  // Abrir automáticamente después de 3 segundos
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowMessage(true);
-    }, 5000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, []);
