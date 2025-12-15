@@ -36,7 +36,8 @@ const Home = () => {
     { name: 'Sede Duitama', video: videoDuitamaLocal, type: 'video' }
   ];
 
-  const promoImageSrc = CLOUDINARY_ASSETS.images?.foto2 || bannerPromoFallback;
+  // Usar directamente la imagen local para evitar errores 401 de Cloudinary
+  const promoImageSrc = bannerPromoFallback;
   const advisoryWhatsappLink = useMemo(
     () => getWhatsappUrl('Hola, necesito asesoría para elegir mis suplementos.'),
     []
