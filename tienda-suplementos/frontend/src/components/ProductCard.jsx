@@ -205,7 +205,7 @@ const ProductCard = ({ product, isCombo = false }) => {
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(220,38,38,0.05),transparent_50%)] pointer-events-none"></div>
         <img
-          className={`${PRODUCT_IMAGE_BASE} group-hover:scale-105 transition-transform duration-500 relative z-10 px-3 py-3 sm:p-5`}
+          className={`${PRODUCT_IMAGE_BASE} group-hover:scale-105 transition-transform duration-500 relative z-10 px-2 py-2 sm:p-4`}
           src={displayImage || '/placeholder-product.png'}
           alt={product.name}
         />
