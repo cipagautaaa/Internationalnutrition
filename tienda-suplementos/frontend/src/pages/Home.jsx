@@ -11,7 +11,9 @@ import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 import { CLOUDINARY_ASSETS } from '../config/cloudinaryAssets';
 import bannerPromoFallback from '../assets/images/foto2.jpg';
-import heroVideoLocal from '../assets/images/d74e90ff5ff8439aa70ba7559fa09ab7.HD-720p-4.5Mbps-51800263.mp4';
+import heroVideoLocal from '../assets/images/video portada.mp4';
+import videoTunjaLocal from '../assets/images/videotunja.mp4';
+import videoDuitamaLocal from '../assets/images/videoduitama.mp4';
 import { getWhatsappUrl } from '../utils/whatsapp';
 import PromoWelcomeModal from '../components/PromoWelcomeModal';
 
@@ -30,8 +32,8 @@ const Home = () => {
   const [showPromo, setShowPromo] = useState(false);
 
   const stores = [
-    { name: 'Sede Tunja', video: CLOUDINARY_ASSETS.videos.videoTunja, type: 'video' },
-    { name: 'Sede Duitama', video: CLOUDINARY_ASSETS.videos.videoDuitama, type: 'video' }
+    { name: 'Sede Tunja', video: videoTunjaLocal, type: 'video' },
+    { name: 'Sede Duitama', video: videoDuitamaLocal, type: 'video' }
   ];
 
   const promoImageSrc = CLOUDINARY_ASSETS.images?.foto2 || bannerPromoFallback;
