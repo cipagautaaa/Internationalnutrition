@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from '../utils/axios';
@@ -44,15 +44,18 @@ const HomeComboSection = () => {
     }
   };
 
-  // Filtrar por categoría y re-ordenar por precio ascendente para garantizar orden correcto
-  const filteredCombos = combos
-    .filter(combo => combo.category === activeCategory)
-    .sort((a, b) => {
-      const priceA = Number(a?.price) || Number.MAX_SAFE_INTEGER;
-      const priceB = Number(b?.price) || Number.MAX_SAFE_INTEGER;
-      return priceA - priceB;
-    })
-    .slice(0, 4);
+  // Filtrar por categoría y ordenar por precio ascendente con useMemo
+  const filteredCombos = useMemo(() => {
+    const filtered = combos
+      .filter(combo => combo.category === activeCategory)
+      .sort((a, b) => {
+        const priceA = typeof a?.price === 'number' ? a.price : Number(a?.price) || Number.MAX_SAFE_INTEGER;
+        const priceB = typeof b?.price === 'number' ? b.price : Number(b?.price) || Number.MAX_SAFE_INTEGER;
+        return priceA - priceB;
+      })
+      .slice(0, 4);
+    return filtered;
+  }, [combos, activeCategory]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-CO', {
