@@ -39,7 +39,7 @@ const infoRows = [
 export default function ProductDetail() {
 	const { id } = useParams();
 	const navigate = useNavigate();
-	const { addToCart } = useCart();
+	const { addToCart, openCart } = useCart();
 	const { isAuthenticated, user } = useAuth();
 	const isAdmin = isAuthenticated && user?.role === 'admin';
 
@@ -150,6 +150,7 @@ export default function ProductDetail() {
 			quantity
 		};
 		addToCart(item);
+		openCart();
 	};
 
 	const handleBuyNow = () => {

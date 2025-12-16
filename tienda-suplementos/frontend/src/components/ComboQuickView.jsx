@@ -48,8 +48,8 @@ export default function ComboQuickView({ combo, open, onClose }) {
 
   return createPortal(
     <div className="fixed inset-0 z-[120] flex items-center justify-center px-3 sm:px-6">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-200 animate-fade-in">
+      <div className="absolute inset-0 bg-black/75 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-gray-200 animate-fade-in">
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-red-700 via-red-600 to-amber-500" aria-hidden="true" />
 
         <button
@@ -61,9 +61,9 @@ export default function ComboQuickView({ combo, open, onClose }) {
           <X className="w-5 h-5" />
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1.05fr_1fr] gap-0 md:gap-6 p-6 md:p-8">
-          <div className="flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 rounded-2xl border border-gray-100 p-4">
-            <div className="w-full aspect-[4/5] max-h-[360px] flex items-center justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-[1.05fr_1fr] gap-4 md:gap-6 p-4 md:p-8">
+          <div className="flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 rounded-2xl border border-gray-100 p-3 md:p-4">
+            <div className="w-full aspect-[4/5] max-h-[280px] md:max-h-[360px] flex items-center justify-center">
               {displayImage && (
                 <img src={displayImage} alt={combo.name} className="object-contain w-full h-full drop-shadow-xl" />
               )}

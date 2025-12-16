@@ -16,7 +16,7 @@ const PromoFloatButton = ({ onClick, show }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`
-        fixed bottom-6 left-6 z-[100]
+        fixed left-6 z-40
         flex items-center gap-2
         bg-gradient-to-r from-red-600 to-red-700
         text-white font-bold text-sm
@@ -28,6 +28,7 @@ const PromoFloatButton = ({ onClick, show }) => {
       `}
       style={{
         animation: isHovered ? 'none' : 'bounce-gentle 2s ease-in-out infinite',
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
       }}
       aria-label="Obtener descuento del 20%"
     >
