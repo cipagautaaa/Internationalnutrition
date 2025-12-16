@@ -355,20 +355,7 @@ const CartDrawer = () => {
                   </button>
                 </div>
 
-                {/* Métodos de pago */}
-                <div className="flex items-center justify-center gap-3 mt-4 pt-4 border-t">
-                  <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">≡</span>
-                  </div>
-                  <div className="px-3 py-1 border rounded text-xs font-semibold">Nequi</div>
-                  <div className="px-3 py-1 border rounded text-xs font-semibold">Daviplata</div>
-                  <div className="px-3 py-1 border rounded text-xs font-semibold">Addi</div>
-                  <div className="px-3 py-1 border rounded text-xs font-semibold text-blue-900">VISA</div>
-                </div>
-
-                <div className="text-center mt-3 text-xs text-gray-500">
-                  intsupp.co
-                </div>
+                {/* Métodos de pago removidos */}
               </>
             )}
           </div>

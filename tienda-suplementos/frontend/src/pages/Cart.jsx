@@ -269,21 +269,7 @@ const Cart = () => {
             </Link>
           </div>
 
-          {/* Métodos de pago */}
-            <div className="mt-6 pt-6 border-t">
-              <p className="text-xs text-gray-600 mb-3 text-center">Métodos de pago aceptados:</p>
-              <div className="flex items-center justify-center gap-2 flex-wrap text-xs">
-                <div className="px-3 py-1.5 border rounded-full font-semibold">Nequi</div>
-                <div className="px-3 py-1.5 border rounded-full font-semibold">Daviplata</div>
-                <div className="px-3 py-1.5 border rounded-full font-semibold">Addi</div>
-                <div className="px-3 py-1.5 border rounded-full font-semibold text-blue-900">VISA</div>
-              </div>
-          </div>
-        </div>
-
-        <div className="text-center mt-6 text-sm text-gray-500">
-          <p>imnnutrition.co</p>
-          <p className="mt-2">Compra segura y protegida</p>
+          {/* Métodos de pago removidos */}
         </div>
       </div>
     </div>
