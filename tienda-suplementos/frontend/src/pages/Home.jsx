@@ -264,7 +264,6 @@ const Home = () => {
   const handleOpenPromo = () => {
     setShowPromo(true);
   };
-  };
 
   const handleClaimPromo = () => {
     handleClosePromo();
