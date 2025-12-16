@@ -16,6 +16,7 @@ import videoTunjaLocal from '../assets/images/videotunja.mp4';
 import videoDuitamaLocal from '../assets/images/videoduitama.mp4';
 import { getWhatsappUrl } from '../utils/whatsapp';
 import PromoWelcomeModal from '../components/PromoWelcomeModal';
+import PromoFloatButton from '../components/PromoFloatButton';
 
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
@@ -260,6 +261,11 @@ const Home = () => {
     }
   };
 
+  const handleOpenPromo = () => {
+    setShowPromo(true);
+  };
+  };
+
   const handleClaimPromo = () => {
     handleClosePromo();
     navigate('/sign-in', { state: { from: location.pathname } });
@@ -271,6 +277,11 @@ const Home = () => {
         open={!isAuthenticated && showPromo}
         onClose={handleClosePromo}
         onClaim={handleClaimPromo}
+      />
+      {/* Botón flotante "Ahorra 20%" - solo si no autenticado y modal cerrado */}
+      <PromoFloatButton 
+        show={!isAuthenticated && !showPromo} 
+        onClick={handleOpenPromo} 
       />
       {/* Hero Section Limpio */}
       <section
