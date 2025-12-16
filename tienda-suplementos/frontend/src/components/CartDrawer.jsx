@@ -1,16 +1,31 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
-import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { X, ChevronLeft, ChevronRight, AlertTriangle, Truck, Gift } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import CartItem from './CartItem';
 import { formatPrice } from '../utils/formatPrice';
 import api from '../services/api';
+import { 
+  FREE_SHIPPING_THRESHOLD, 
+  MINIMUM_ORDER_AMOUNT, 
+  hasFreeShipping, 
+  amountForFreeShipping, 
+  freeShippingProgress 
+} from '../utils/shippingCalculator';
 
 const CartDrawer = () => {
   const { isCartOpen, closeCart, items, getTotalPrice, addToCart } = useCart();
+  const navigate = useNavigate();
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [showMinimumWarning, setShowMinimumWarning] = useState(false);
+
+  const totalPrice = getTotalPrice();
+  const isFreeShipping = hasFreeShipping(totalPrice);
+  const amountNeeded = amountForFreeShipping(totalPrice);
+  const progressPercent = freeShippingProgress(totalPrice);
+  const meetsMinimum = totalPrice >= MINIMUM_ORDER_AMOUNT;
 
   // Obtener productos relacionados reales de la base de datos
   const fetchRelatedProducts = useCallback(async () => {
@@ -111,6 +126,17 @@ const CartDrawer = () => {
     await fetchRelatedProducts();
   };
 
+  const handleCheckout = (e) => {
+    if (!meetsMinimum) {
+      e.preventDefault();
+      setShowMinimumWarning(true);
+      setTimeout(() => setShowMinimumWarning(false), 5000);
+      return;
+    }
+    closeCart();
+    navigate('/wompi-checkout');
+  };
+
   return (
     <>
       {/* Backdrop */}
@@ -131,11 +157,52 @@ const CartDrawer = () => {
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
-          <h2 className="text-base font-semibold uppercase tracking-wide">Carrito de Compras</h2>
+          <h2 className="text-base font-semibold uppercase tracking-wide">
+            {items.length} {items.length === 1 ? 'item' : 'items'} en el carrito
+          </h2>
           <button onClick={closeCart} className="p-2 rounded hover:bg-gray-100" aria-label="Cerrar">
             <X size={24} />
           </button>
         </div>
+
+        {/* Barra de progreso de envío gratis */}
+        {items.length > 0 && (
+          <div className="px-4 py-3 bg-gray-50 border-b">
+            {/* Barra de progreso */}
+            <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+              <div 
+                className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
+                  isFreeShipping ? 'bg-green-500' : 'bg-gradient-to-r from-green-400 to-green-500'
+                }`}
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+            
+            {/* Mensaje */}
+            {isFreeShipping ? (
+              <div className="flex items-center justify-center gap-2 text-green-600 font-medium text-sm">
+                <Gift size={16} />
+                <span>¡Has desbloqueado el <strong>envío gratuito</strong>!</span>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-gray-700">
+                  ¡Estás a <span className="font-bold text-green-600">${formatPrice(amountNeeded)}</span> de adquirir envío gratuito!
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Mensaje de ánimo si no tiene envío gratis */}
+        {items.length > 0 && !isFreeShipping && (
+          <div className="px-4 py-2 bg-amber-50 border-b border-amber-100">
+            <p className="text-xs text-amber-800 text-center">
+              <Truck className="inline w-4 h-4 mr-1" />
+              Ofrecemos envío gratis, pero tu compra aún es pequeña. ¡Anímate a potenciar tus ganancias y llenar tu carrito!
+            </p>
+          </div>
+        )}
 
         {/* Content */}
         <div className="flex flex-col h-[calc(100%-64px)]">
@@ -256,6 +323,17 @@ const CartDrawer = () => {
                   </div>
                 </div>
 
+                {/* Advertencia de monto mínimo */}
+                {showMinimumWarning && (
+                  <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+                    <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-red-700">
+                      <p className="font-semibold">Monto mínimo no alcanzado</p>
+                      <p>El pedido mínimo es de <strong>${formatPrice(MINIMUM_ORDER_AMOUNT)}</strong>. Te faltan <strong>${formatPrice(MINIMUM_ORDER_AMOUNT - totalPrice)}</strong> para continuar.</p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Botones de acción */}
                 <div className="space-y-3">
                   <Link
@@ -265,13 +343,16 @@ const CartDrawer = () => {
                   >
                     Ver Carrito
                   </Link>
-                  <Link
-                    to="/wompi-checkout"
-                    className="block w-full px-4 py-3 rounded-lg bg-cyan-500 text-white text-center hover:bg-cyan-600 transition-colors font-medium uppercase tracking-wide"
-                    onClick={closeCart}
+                  <button
+                    onClick={handleCheckout}
+                    className={`block w-full px-4 py-3 rounded-lg text-white text-center transition-colors font-medium uppercase tracking-wide flex items-center justify-center gap-2 ${
+                      meetsMinimum 
+                        ? 'bg-black hover:bg-gray-800' 
+                        : 'bg-gray-400 cursor-not-allowed'
+                    }`}
                   >
-                    Finalizar Compra
-                  </Link>
+                    🔒 Paga de forma segura
+                  </button>
                 </div>
 
                 {/* Métodos de pago */}
@@ -286,7 +367,7 @@ const CartDrawer = () => {
                 </div>
 
                 <div className="text-center mt-3 text-xs text-gray-500">
-                  imnnutrition.co
+                  intsupp.co
                 </div>
               </>
             )}

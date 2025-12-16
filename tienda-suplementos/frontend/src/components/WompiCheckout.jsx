@@ -5,6 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { getWhatsappUrl } from '../utils/whatsapp';
 import logoImg from '../assets/images/Captura_de_pantalla_2025-08-09_192459-removebg-preview.png';
+import { 
+  FREE_SHIPPING_THRESHOLD, 
+  MINIMUM_ORDER_AMOUNT,
+  hasFreeShipping, 
+  getShippingCost,
+  COLOMBIA_DEPARTMENTS 
+} from '../utils/shippingCalculator';
 
 const WompiCheckout = () => {
   const { items, clearCart } = useCart();
@@ -115,8 +122,13 @@ const WompiCheckout = () => {
     
     const prodDisc = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
     const combDisc = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
-    const discountAmount = prodDisc + combDisc;
-    const totalConDescuento = Math.max(0, subtotal - discountAmount);
+    const discountAmountTransf = prodDisc + combDisc;
+    const shippingForTransf = isFreeShipping ? 0 : shippingCost;
+    const totalFinalTransf = Math.max(0, subtotal - discountAmountTransf) + shippingForTransf;
+    
+    const envioTexto = isFreeShipping 
+      ? '🎁 Envío: GRATIS' 
+      : `🚚 Envío (${shippingAddress.region || 'Colombia'}): $${shippingForTransf.toLocaleString('es-CO')}`;
     
     const mensaje = `¡Hola! 👋
 
@@ -124,8 +136,9 @@ Quiero realizar una compra por transferencia bancaria:
 
 *📋 DATOS DEL PEDIDO:*
 ${productosTexto}
+${envioTexto}
 
-*💰 Total: $${totalConDescuento.toLocaleString('es-CO')} COP*${discount.applied ? `\n(Descuento ${discount.code}: Productos -$${prodDisc.toLocaleString('es-CO')} / Combos -$${combDisc.toLocaleString('es-CO')})` : ''}
+*💰 Total: $${totalFinalTransf.toLocaleString('es-CO')} COP*${discount.applied ? `\n(Descuento ${discount.code}: Productos -$${prodDisc.toLocaleString('es-CO')} / Combos -$${combDisc.toLocaleString('es-CO')})` : ''}
 
 *📦 DATOS DE ENVÍO:*
 • Nombre: ${customerData.fullName}
@@ -165,8 +178,11 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
     try {
       const productDiscountCalc = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
       const comboDiscountCalc = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
-      const discountAmount = productDiscountCalc + comboDiscountCalc;
-      const totalConDescuento = Math.max(0, subtotal - discountAmount);
+      const discountAmountCalc = productDiscountCalc + comboDiscountCalc;
+      // Calcular envío para este envío
+      const shippingForOrder = isFreeShipping ? 0 : shippingCost;
+      const totalFinal = Math.max(0, subtotal - discountAmountCalc) + shippingForOrder;
+      
       // Preparar datos para la transacción Wompi
       const transactionData = {
         items: items.map(item => ({
@@ -180,13 +196,15 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         subtotal,
         productSubtotal,
         comboSubtotal,
-        total: totalConDescuento,
+        shippingCost: shippingForOrder,
+        isFreeShipping,
+        total: totalFinal,
         discount: discount.applied
           ? {
               code: discount.code,
               productDiscount: productDiscountCalc,
               comboDiscount: comboDiscountCalc,
-              totalDiscount: discountAmount,
+              totalDiscount: discountAmountCalc,
               productSubtotal,
               comboSubtotal,
             }
@@ -253,10 +271,14 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   const hasProductItems = productSubtotal > 0;
   const hasComboItems = comboSubtotal > 0;
 
+  // Cálculo de envío
+  const isFreeShipping = hasFreeShipping(subtotal);
+  const shippingCost = isFreeShipping ? 0 : getShippingCost(shippingAddress.region);
+
   const productDiscount = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
   const comboDiscount = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
   const discountAmount = productDiscount + comboDiscount;
-  const totalConDescuento = Math.max(0, subtotal - discountAmount);
+  const totalConDescuento = Math.max(0, subtotal - discountAmount) + shippingCost;
 
   // Helper para renderizar el bloque de código de descuento sin remounts que quiten el foco
   const renderDiscountCodeSection = () => {
@@ -349,6 +371,20 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         <div className="flex justify-between text-sm text-green-700">
           <span>Descuento combos (5%)</span>
           <span>- ${comboDiscount.toLocaleString('es-CO')}</span>
+        </div>
+      )}
+      {/* Costo de envío */}
+      <div className="flex justify-between text-sm text-gray-700">
+        <span>Envío {shippingAddress.region ? `(${shippingAddress.region})` : ''}</span>
+        {isFreeShipping ? (
+          <span className="text-green-600 font-medium">¡GRATIS!</span>
+        ) : (
+          <span>${shippingCost.toLocaleString('es-CO')}</span>
+        )}
+      </div>
+      {!isFreeShipping && (
+        <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+          💡 Agrega ${(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString('es-CO')} más para obtener envío gratis
         </div>
       )}
       <div className="flex justify-between text-base font-semibold text-gray-900 pt-2 border-t border-gray-200">
