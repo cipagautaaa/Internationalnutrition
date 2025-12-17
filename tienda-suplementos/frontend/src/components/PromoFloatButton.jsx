@@ -16,24 +16,24 @@ const PromoFloatButton = ({ onClick, show }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`
-        fixed left-6 z-40
+        fixed left-4 md:left-6 z-30
         flex items-center gap-2
         bg-gradient-to-r from-red-600 to-red-700
-        text-white font-bold text-sm
-        px-4 py-3 rounded-full
-        shadow-lg shadow-red-600/40
+        text-white font-bold text-xs md:text-sm
+        px-3 py-2.5 md:px-4 md:py-3 rounded-full
+        shadow-lg shadow-red-600/30
         transition-all duration-300
-        hover:scale-105 hover:shadow-xl hover:shadow-red-600/50
+        hover:scale-105 hover:shadow-xl hover:shadow-red-600/40
         animate-bounce-slow
       `}
       style={{
         animation: isHovered ? 'none' : 'bounce-gentle 2s ease-in-out infinite',
-        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 88px)',
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + clamp(18px, 4vw, 36px))',
       }}
       aria-label="Obtener descuento del 20%"
     >
-      <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-        <Percent className="w-4 h-4" />
+      <div className="w-7 h-7 md:w-8 md:h-8 bg-white/20 rounded-full flex items-center justify-center">
+        <Percent className="w-3.5 h-3.5 md:w-4 md:h-4" />
       </div>
       <span className="uppercase tracking-wide">Ahorra 20%</span>
       

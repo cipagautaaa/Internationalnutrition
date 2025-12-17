@@ -27,10 +27,19 @@ export default function Login() {
   }, [step]);
 
   const isPasswordStrong = (pwd) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(pwd || '');
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test((email || '').trim());
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setMessage(null);
+    const emailTrimmed = form.email.trim();
+    if (!isValidEmail(emailTrimmed)) {
+      setMessage({ type: 'error', text: 'Ingresa un correo válido (sin espacios, con @ y dominio).' });
+      return;
+    }
+    if (emailTrimmed !== form.email) {
+      setForm((prev) => ({ ...prev, email: emailTrimmed }));
+    }
     if (!isPasswordStrong(form.password)) {
       setMessage({
         type: 'error',
