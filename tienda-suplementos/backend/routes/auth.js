@@ -477,7 +477,6 @@ router.post('/change-password', protect, async (req, res) => {
   }
 });
 
-module.exports = router;
 // ================== ADMIN PIN EXTRA SECURITY ==================
 
 // Establecer (o cambiar) PIN admin (requiere estar logueado con token normal y ser admin)
@@ -691,3 +690,5 @@ router.post('/test-email', async (req, res) => {
     });
   }
 });
+
+module.exports = router;
