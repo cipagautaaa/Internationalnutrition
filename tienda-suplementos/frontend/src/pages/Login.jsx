@@ -95,7 +95,7 @@ export default function Login() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                 </svg>
               </div>
-              <span className="text-gray-200">Envío gratis desde $0</span>
+              <span className="text-gray-200">Envío gratis desde $80.000</span>
             </div>
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-red-600/20 rounded-full flex items-center justify-center">

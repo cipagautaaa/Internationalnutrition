@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import headerImg from '../assets/images/logo-largo-int-removebg-preview.png';
 
@@ -11,6 +12,8 @@ export default function LoginSimple() {
   const [code, setCode] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [message, setMessage] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showResetPassword, setShowResetPassword] = useState(false);
   const { login, loading, pendingAdminPin, verifyAdminPin, error, clearError, requestPasswordReset, resetPassword } = useAuth();
   const [pin, setPin] = useState('');
   const [pinMessage, setPinMessage] = useState(null);
@@ -186,7 +189,7 @@ export default function LoginSimple() {
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="w-full rounded-xl border-2 border-gray-200 pl-12 pr-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                        className="w-full rounded-xl border-2 border-gray-200 pl-12 pr-12 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
                         placeholder="tu@email.com"
                         required
                       />
@@ -204,7 +207,7 @@ export default function LoginSimple() {
                         </svg>
                       </div>
                       <input
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -212,6 +215,14 @@ export default function LoginSimple() {
                         placeholder="Ingresa tu contraseña"
                         required
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                        aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      >
+                        {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
                     </div>
                     <div className="mt-2 text-right text-sm">
                       <button type="button" className="text-red-600 hover:text-red-700 font-semibold" onClick={() => setMode('forgot')}>
@@ -297,14 +308,24 @@ export default function LoginSimple() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Nueva contraseña</label>
-                    <input
-                      type="password"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
-                      placeholder="Mínimo 8 caracteres, mayúscula, minúscula y número"
-                      required
-                    />
+                    <div className="relative">
+                      <input
+                        type={showResetPassword ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 pr-12 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                        placeholder="Mínimo 8 caracteres, mayúscula, minúscula y número"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowResetPassword((prev) => !prev)}
+                        className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                        aria-label={showResetPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      >
+                        {showResetPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                      </button>
+                    </div>
                   </div>
                   <button
                     type="submit"

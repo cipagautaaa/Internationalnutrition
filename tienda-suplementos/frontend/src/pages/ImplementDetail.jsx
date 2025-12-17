@@ -116,7 +116,7 @@ export default function ImplementDetail() {
                 <span className="text-4xl font-black text-gray-900">${formatPrice(item.price || 0)}</span>
                 <span className="text-xs font-semibold px-2 py-1 rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700">Stock listo</span>
               </div>
-              <p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $0</p>
+              <p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $80.000</p>
             </div>
 
             {sizeOptions.length > 0 && (

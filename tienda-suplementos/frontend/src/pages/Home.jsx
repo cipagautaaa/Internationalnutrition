@@ -325,7 +325,7 @@ const Home = () => {
               
               {/* Subheadline simple */}
               <p className="text-white/75 text-sm sm:text-base lg:text-base leading-relaxed font-light px-2">
-                Calidad premium, envío gratis y garantía de resultados
+                Calidad premium, envío gratis desde $80.000 y garantía de resultados
               </p>
 
               {/* CTA limpio */}
@@ -420,7 +420,7 @@ const Home = () => {
                 Envío Gratis
               </h3>
               <p className="text-gray-600 font-light">
-                Desde $0 en 24-48h
+                Desde $80.000 en 24-48h
               </p>
             </div>
 

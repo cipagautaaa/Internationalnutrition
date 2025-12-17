@@ -202,7 +202,7 @@ export default function ProductDetail() {
 			{selectedSize && !selectedSize.__isBase && (
 				<p className="text-xs text-gray-600">Precio aplicado para {selectedSize.size}</p>
 			)}
-			<p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $0</p>
+			<p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $80.000</p>
 		</div>
 	);
 

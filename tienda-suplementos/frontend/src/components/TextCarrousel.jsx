@@ -2,7 +2,7 @@
 
 // Mensajes base del carrusel
 const ITEMS = [
-  { id: 'envio', text: 'Tu envío es gratis desde $0', icon: 'truck', color: 'text-red-700' },
+  { id: 'envio', text: 'Tu envío es gratis desde $80.000', icon: 'truck', color: 'text-red-700' },
   { id: 'ahorro', text: 'Compra más, ahorra más', icon: 'bag', color: 'text-white' },
   { id: 'combos', text: 'Combos imperdibles HOY', icon: 'lock', color: 'text-red-700' }
 ];

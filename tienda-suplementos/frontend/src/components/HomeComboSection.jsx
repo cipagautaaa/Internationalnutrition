@@ -173,7 +173,7 @@ const HomeComboSection = () => {
                   {/* Etiqueta ENVIO GRATIS */}
                   <div className="absolute top-3 right-3 z-20">
                     <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-yellow-400 text-gray-900 text-xs font-bold shadow-lg">
-                      ENVIO GRATIS
+                      ENVÍO GRATIS +$80k
                     </span>
                   </div>
                 </div>

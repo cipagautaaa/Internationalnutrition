@@ -17,7 +17,7 @@ const AnnouncementBanner = () => {
       icon: Gift
     },
     {
-      text: 'Tu envío es gratis desde $0',
+      text: 'Tu envío es gratis desde $80.000',
       link: '/envios',
       icon: ShieldCheck
     }

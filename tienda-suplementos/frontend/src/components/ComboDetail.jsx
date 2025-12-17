@@ -143,7 +143,7 @@ export default function ComboDetail() {
         {formattedOriginal && <span className="text-base text-gray-400 line-through">{formattedOriginal}</span>}
       </div>
       {savings && <p className="text-sm text-emerald-600 font-semibold">Ahorra ${formatPrice(savings)} pesos</p>}
-      <p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $0</p>
+      <p className="text-xs text-gray-600">Impuestos incluidos · Envío gratis desde $80.000</p>
     </div>
   );
 

@@ -175,7 +175,7 @@ const ImplementCard = ({ implement }) => {
 
         {/* Info adicional */}
         <div className="text-xs text-gray-500 text-center pt-2">
-          Envío gratis
+          Envío gratis +$80k
         </div>
       </div>
 

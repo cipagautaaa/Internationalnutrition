@@ -185,7 +185,7 @@ const Checkout = () => {
             </div>
             <div className="flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg border border-blue-200">
               <TruckIcon className="w-5 h-5" />
-              <span className="text-sm font-semibold">Envío Gratis</span>
+              <span className="text-sm font-semibold">Envío Gratis +$80k</span>
             </div>
           </div>
         </div>
@@ -446,7 +446,7 @@ const Checkout = () => {
               </div>
               <div className="flex items-center gap-2 text-xs text-gray-600">
                 <TruckIcon className="w-4 h-4 text-green-600" />
-                <span>Envío gratis en 24-48h</span>
+                <span>Envío gratis desde $80.000</span>
               </div>
             </div>
           </div>

@@ -199,7 +199,7 @@ const CartDrawer = () => {
           <div className="px-4 py-2 bg-amber-50 border-b border-amber-100">
             <p className="text-xs text-amber-800 text-center">
               <Truck className="inline w-4 h-4 mr-1" />
-              Ofrecemos envío gratis, pero tu compra aún es pequeña. ¡Anímate a potenciar tus ganancias y llenar tu carrito!
+              Ofrecemos envío gratis desde $80.000. ¡Anímate a potenciar tus ganancias y llenar tu carrito!
             </p>
           </div>
         )}

@@ -112,11 +112,30 @@ const createTransporterAsync = async () => {
           console.warn('⚠️ [SendGrid] SENDGRID_API_KEY faltante, devolviendo skip');
           return { skipped: true, messageId: 'skipped' };
         }
+        
+        const fromEmail = opts.from || process.env.EMAIL_FROM || 'noreply@example.com';
+        const fromName = process.env.EMAIL_FROM_NAME || 'International Nutrition';
+        const replyToEmail = process.env.EMAIL_REPLY_TO || process.env.EMAIL_FROM || fromEmail;
+        
         const payload = {
           personalizations: [{ to: [{ email: Array.isArray(opts.to) ? opts.to[0] : opts.to }] }],
-          from: { email: opts.from || process.env.EMAIL_FROM || 'noreply@example.com' },
+          from: { email: fromEmail, name: fromName },
+          reply_to: { email: replyToEmail, name: fromName },
           subject: opts.subject,
-          content: [{ type: 'text/html', value: opts.html }]
+          content: [{ type: 'text/html', value: opts.html }],
+          // Headers adicionales para mejorar deliverability y evitar spam
+          headers: {
+            'X-Priority': '1',
+            'X-Mailer': 'INTSUPPS-Ecommerce'
+          },
+          // Categorías para tracking en SendGrid
+          categories: ['order-notification', 'intsupps'],
+          // Mail settings para mejorar reputación
+          mail_settings: {
+            bypass_list_management: { enable: false },
+            bypass_spam_management: { enable: false },
+            bypass_bounce_management: { enable: false }
+          }
         };
         const res = await axios.post('https://api.sendgrid.com/v3/mail/send', payload, {
           headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
@@ -325,7 +344,7 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
   const mailOptions = {
     from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
     to: adminEmail,
-    subject: `🛒 Nueva Orden Recibida - #${order.orderNumber || order._id.toString().slice(-8).toUpperCase()}`,
+    subject: `Orden #${order.orderNumber || order._id.toString().slice(-8).toUpperCase()} - $${order.totalAmount.toLocaleString('es-CO')} COP`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px;">
         <div style="background-color: #3b82f6; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
