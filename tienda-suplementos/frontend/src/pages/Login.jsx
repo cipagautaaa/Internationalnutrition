@@ -34,7 +34,7 @@ export default function Login() {
     setMessage(null);
     const emailTrimmed = form.email.trim();
     if (!isValidEmail(emailTrimmed)) {
-      setMessage({ type: 'error', text: 'Ingresa un correo válido (sin espacios, con @ y dominio).' });
+      setMessage({ type: 'error', text: 'Ingresa un correo válido (sin espacios, con @ y dominio).', timestamp: Date.now() });
       return;
     }
     if (emailTrimmed !== form.email) {
@@ -43,16 +43,17 @@ export default function Login() {
     if (!isPasswordStrong(form.password)) {
       setMessage({
         type: 'error',
-        text: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.'
+        text: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.',
+        timestamp: Date.now()
       });
       return;
     }
     const result = await register(form);
     if (result.success) {
-      setMessage({ type: 'success', text: '¡Genial! Te enviamos un código de verificación. Revisa spam/promociones.' });
+      setMessage({ type: 'success', text: '¡Genial! Te enviamos un código de verificación. Revisa spam/promociones.', timestamp: Date.now() });
       setStep('code');
     } else {
-      setMessage({ type: 'error', text: result.error || 'No pudimos enviar el código.' });
+      setMessage({ type: 'error', text: result.error || 'No pudimos enviar el código.', timestamp: Date.now() });
     }
   };
 
@@ -61,10 +62,10 @@ export default function Login() {
     setMessage(null);
     const result = await verifyCode(form.email, code.trim());
     if (result.success) {
-      setMessage({ type: 'success', text: '¡Listo! Cuenta verificada y sesión iniciada.' });
+      setMessage({ type: 'success', text: '¡Listo! Cuenta verificada y sesión iniciada.', timestamp: Date.now() });
       setStep('success');
     } else {
-      setMessage({ type: 'error', text: result.error || 'Código inválido.' });
+      setMessage({ type: 'error', text: result.error || 'Código inválido.', timestamp: Date.now() });
     }
   };
 
@@ -73,12 +74,12 @@ export default function Login() {
     try {
       const r = await resendCode(form.email);
       if (r.success) {
-        setMessage({ type: 'success', text: 'Nuevo código enviado. Revisa spam/promociones.' });
+        setMessage({ type: 'success', text: 'Nuevo código enviado. Revisa spam/promociones.', timestamp: Date.now() });
       } else {
-        setMessage({ type: 'error', text: r.error || 'No se pudo reenviar.' });
+        setMessage({ type: 'error', text: r.error || 'No se pudo reenviar.', timestamp: Date.now() });
       }
     } catch (err) {
-      setMessage({ type: 'error', text: err.message || 'Error reenviando.' });
+      setMessage({ type: 'error', text: err.message || 'Error reenviando.', timestamp: Date.now() });
     }
   };
 

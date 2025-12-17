@@ -23,24 +23,6 @@ const IMAGEKIT_BASE = 'https://ik.imagekit.io/International';
  */
 
 export const IMAGEKIT_ASSETS = {
-  // VIDEOS - Con transformaciones de optimización
-  // 🔧 REEMPLAZA estos paths con los de tus videos subidos a ImageKit
-  videos: {
-    // Video hero - mejor calidad
-    heroVideo: `${IMAGEKIT_BASE}/videos/video_portada.mp4?tr=q-80`,
-    // Videos de tiendas - compresión moderada
-    videoTunja: `${IMAGEKIT_BASE}/videos/videotunja.mp4?tr=q-70`,
-    videoDuitama: `${IMAGEKIT_BASE}/videos/videoduitama.mp4?tr=q-70`,
-  },
-
-  // POSTERS/THUMBNAILS de videos (generados automáticamente por ImageKit)
-  // ImageKit genera thumbnails de videos añadiendo /ik-thumbnail.jpg
-  videoPosters: {
-    heroVideo: `${IMAGEKIT_BASE}/videos/video_portada.mp4/ik-thumbnail.jpg?tr=w-1920,h-1080,fo-auto`,
-    videoTunja: `${IMAGEKIT_BASE}/videos/videotunja.mp4/ik-thumbnail.jpg?tr=w-800,h-600,fo-auto`,
-    videoDuitama: `${IMAGEKIT_BASE}/videos/videoduitama.mp4/ik-thumbnail.jpg?tr=w-800,h-600,fo-auto`,
-  },
-
   // IMÁGENES ESTÁTICAS (Home y tiendas)
   images: {
     foto1: `${IMAGEKIT_BASE}/imagenes/foto1.jpg?tr=w-1200,h-800,fo-auto,q-auto`,
@@ -72,11 +54,7 @@ export const IMAGEKIT_ASSETS = {
  *    - c-maintain_ratio: mantener proporción
  *    - so-{seconds}: snapshot de video en segundo específico
  *
- * 2. THUMBNAILS DE VIDEO:
- *    - Añadir /ik-thumbnail.jpg al final de cualquier URL de video
- *    - Ejemplo: /video.mp4/ik-thumbnail.jpg
- *
- * 3. VENTAJAS DE IMAGEKIT:
+ * 2. VENTAJAS DE IMAGEKIT:
  *    ✅ CDN Global: servido desde datacenter más cercano
  *    ✅ Compresión automática de videos
  *    ✅ Generación de thumbnails automática
@@ -84,18 +62,8 @@ export const IMAGEKIT_ASSETS = {
  *    ✅ Caché agresivo en CDN
  *    ✅ Soporte para WebP y AVIF
  *
- * 4. SUBIR VIDEOS A IMAGEKIT:
- *    - Ve a: https://imagekit.io/dashboard/media-library
- *    - Crea carpeta "videos" 
- *    - Sube: video_portada.mp4, videotunja.mp4, videoduitama.mp4
- *    - Copia las URLs y actualiza este archivo
- *
- * 5. ESTRUCTURA RECOMENDADA EN IMAGEKIT:
+ * 3. ESTRUCTURA RECOMENDADA EN IMAGEKIT:
  *    /
- *    ├── videos/
- *    │   ├── video_portada.mp4
- *    │   ├── videotunja.mp4
- *    │   └── videoduitama.mp4
  *    ├── imagenes/
  *    │   ├── foto1.jpg
  *    │   ├── foto2.jpg
