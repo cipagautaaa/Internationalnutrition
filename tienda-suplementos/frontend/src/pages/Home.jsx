@@ -7,13 +7,11 @@ import FeaturedTypeTabs from '../components/FeaturedTypeTabs';
 import CategoryCarouselClean from '../components/CategoryCarouselClean';
 import ProcessSection from '../components/ProcessSection';
 import HomeComboSection from '../components/HomeComboSection';
+import LazyVideo from '../components/LazyVideo';
 import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
-import { CLOUDINARY_ASSETS } from '../config/cloudinaryAssets';
+import { IMAGEKIT_ASSETS } from '../config/imagekitAssets';
 import bannerPromoFallback from '../assets/images/foto2.jpg';
-import heroVideoLocal from '../assets/images/video portada.mp4';
-import videoTunjaLocal from '../assets/images/videotunja.mp4';
-import videoDuitamaLocal from '../assets/images/videoduitama.mp4';
 import { getWhatsappUrl } from '../utils/whatsapp';
 import PromoWelcomeModal from '../components/PromoWelcomeModal';
 import PromoFloatButton from '../components/PromoFloatButton';
@@ -33,8 +31,18 @@ const Home = () => {
   const [showPromo, setShowPromo] = useState(false);
 
   const stores = [
-    { name: 'Sede Tunja', video: videoTunjaLocal, type: 'video' },
-    { name: 'Sede Duitama', video: videoDuitamaLocal, type: 'video' }
+    { 
+      name: 'Sede Tunja', 
+      video: IMAGEKIT_ASSETS.videos.videoTunja, 
+      poster: IMAGEKIT_ASSETS.videoPosters.videoTunja,
+      type: 'video' 
+    },
+    { 
+      name: 'Sede Duitama', 
+      video: IMAGEKIT_ASSETS.videos.videoDuitama, 
+      poster: IMAGEKIT_ASSETS.videoPosters.videoDuitama,
+      type: 'video' 
+    }
   ];
 
   // Usar directamente la imagen local para evitar errores 401 de Cloudinary
@@ -299,13 +307,14 @@ const Home = () => {
           muted
           defaultMuted
           playsInline
-          preload="auto"
+          preload="metadata"
+          poster={IMAGEKIT_ASSETS.videoPosters.heroVideo}
           onLoadedData={ensureHeroVideoPlays}
           playsinline="true"
           webkit-playsinline="true"
           aria-hidden="true"
         >
-          <source src={heroVideoLocal} type="video/mp4" />
+          <source src={IMAGEKIT_ASSETS.videos.heroVideo} type="video/mp4" />
         </video>
 
         {/* Overlay para mejorar contraste y empujar el foco visual */}
@@ -560,22 +569,21 @@ const Home = () => {
                 key={store.name}
                 className="group relative overflow-hidden rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-2"
               >
-                {/* Imagen o Video de fondo */}
+                {/* Imagen o Video de fondo - Lazy Loading */}
                 <div className="relative h-72 sm:h-[420px] overflow-hidden">
                   {store.type === 'video' ? (
-                    <video 
+                    <LazyVideo 
                       src={store.video}
-                      autoPlay
-                      loop
-                      muted
-                      playsInline
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      poster={store.poster}
+                      className="w-full h-full transition-transform duration-700 group-hover:scale-110"
+                      rootMargin="300px"
                     />
                   ) : (
                     <img 
                       src={store.image} 
                       alt={store.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      loading="lazy"
                     />
                   )}
                   {/* Overlay gradiente */}

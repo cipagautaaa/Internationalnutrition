@@ -26,13 +26,16 @@ export default function Login() {
     setMessage(null);
   }, [step]);
 
-  const isPasswordStrong = (pwd) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(pwd || '');
+  const isPasswordStrong = (pwd) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(pwd || '');
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setMessage(null);
     if (!isPasswordStrong(form.password)) {
-      setMessage({ type: 'error', text: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula y un número.' });
+      setMessage({
+        type: 'error',
+        text: 'La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.'
+      });
       return;
     }
     const result = await register(form);

@@ -202,7 +202,7 @@ const ProductCard = ({ product, isCombo = false }) => {
       {isCombo && (
         <div className="absolute top-2 sm:top-4 right-2 sm:right-4 z-30">
           <span className="bg-yellow-400 text-gray-900 text-[9px] sm:text-xs font-bold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-lg">
-            ENVÍO GRATIS +$80k
+            ENVÍO GRATIS
           </span>
         </div>
       )}

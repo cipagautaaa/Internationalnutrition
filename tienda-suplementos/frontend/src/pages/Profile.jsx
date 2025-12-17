@@ -15,9 +15,9 @@ import Alert from '../components/Alert';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
-const cardBase = 'rounded-[32px] border border-gray-200 bg-white p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.08)] backdrop-blur';
-const labelBase = 'flex items-center gap-2 text-xs tracking-[0.35em] uppercase text-gray-500 mb-3';
-const inputBase = 'w-full rounded-2xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-500';
+const cardBase = 'rounded-2xl sm:rounded-[32px] border border-gray-200 bg-white p-4 sm:p-6 md:p-8 shadow-[0_10px_30px_rgba(0,0,0,0.06)] sm:shadow-[0_20px_50px_rgba(0,0,0,0.08)] backdrop-blur';
+const labelBase = 'flex items-center gap-2 text-[10px] sm:text-xs tracking-[0.3em] sm:tracking-[0.35em] uppercase text-gray-500 mb-2 sm:mb-3';
+const inputBase = 'w-full rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-500';
 
 const regions = [
   'Amazonas', 'Antioquia', 'Arauca', 'Atlántico', 'Bolívar', 'Boyacá', 'Caldas', 'Caquetá',
@@ -233,38 +233,38 @@ export default function Profile() {
           onClose={() => setAlert({ show: false, message: '', type: 'info' })}
         />
 
-        <section className={`${cardBase} flex flex-col gap-6 md:flex-row md:items-center`}>
-          <div className="flex flex-1 items-center gap-5">
-            <div className="relative">
-              <div className="h-20 w-20 rounded-full bg-gradient-to-b from-red-500 to-red-700 flex items-center justify-center shadow-[0_20px_45px_rgba(255,0,63,0.25)]">
-                <UserCircle className="h-12 w-12" />
+        <section className={`${cardBase} flex flex-col gap-4 sm:gap-6`}>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
+            <div className="relative flex-shrink-0 self-start sm:self-center">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full bg-gradient-to-b from-red-500 to-red-700 flex items-center justify-center shadow-[0_20px_45px_rgba(255,0,63,0.25)]">
+                <UserCircle className="h-9 w-9 sm:h-12 sm:w-12" />
               </div>
               {profile?.isEmailVerified && (
-                <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 p-1.5">
-                  <CheckCircle className="h-4 w-4" />
+                <span className="absolute -bottom-1 -right-1 rounded-full bg-emerald-500 p-1 sm:p-1.5">
+                  <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4" />
                 </span>
               )}
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-[0.5em] text-gray-500 mb-1">Perfil</p>
-              <h1 className="text-3xl font-black text-gray-900">
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.4em] sm:tracking-[0.5em] text-gray-500 mb-1">Perfil</p>
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-gray-900 truncate">
                 {profile?.firstName && profile?.lastName
                   ? `${profile.firstName} ${profile.lastName}`
                   : 'Mi perfil'}
               </h1>
-              <div className="mt-3 flex flex-wrap gap-2 text-xs uppercase tracking-[0.35em] text-gray-500">
-                {profile?.email && <span className="text-gray-700">{profile.email}</span>}
+              <div className="mt-2 sm:mt-3 flex flex-col sm:flex-row sm:flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.35em] text-gray-500">
+                {profile?.email && <span className="text-gray-700 truncate max-w-[200px] sm:max-w-none">{profile.email}</span>}
                 {joinDate && (
-                  <span className="rounded-full border border-gray-200 bg-gray-100 px-3 py-1 text-gray-700">
+                  <span className="rounded-full border border-gray-200 bg-gray-100 px-2 sm:px-3 py-0.5 sm:py-1 text-gray-700 w-fit">
                     Miembro · {joinDate}
                   </span>
                 )}
               </div>
             </div>
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <span
-              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm uppercase tracking-[0.35em] ${
+              className={`inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-full border px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-sm uppercase tracking-[0.3em] sm:tracking-[0.35em] ${
                 profile?.isEmailVerified
                   ? 'border-emerald-200 text-emerald-700 bg-emerald-50'
                   : 'border-amber-200 text-amber-700 bg-amber-50'
@@ -274,9 +274,9 @@ export default function Profile() {
             </span>
             <button
               onClick={handleLogout}
-              className="inline-flex items-center gap-2 rounded-2xl bg-red-600 px-6 py-3 text-sm font-semibold uppercase tracking-[0.35em] text-white hover:bg-red-500"
+              className="inline-flex items-center justify-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-red-600 px-4 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold uppercase tracking-[0.3em] sm:tracking-[0.35em] text-white hover:bg-red-500"
             >
-              <LogOut className="h-4 w-4" />
+              <LogOut className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Salir
             </button>
           </div>
@@ -285,14 +285,14 @@ export default function Profile() {
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             <section className={cardBase}>
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Datos</p>
-                  <h2 className="text-2xl font-black text-gray-900">Información personal</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-b border-gray-100 pb-4 sm:pb-6">
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-400">Datos</p>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-black text-gray-900">Información personal</h2>
                 </div>
                 <button
                   onClick={() => setEditing((prev) => !prev)}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs uppercase tracking-[0.35em] text-gray-700 hover:bg-gray-50"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl border border-gray-200 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.35em] text-gray-700 hover:bg-gray-50 flex-shrink-0"
                 >
                   {editing ? (
                     <>
@@ -389,14 +389,14 @@ export default function Profile() {
             </section>
 
             <section className={cardBase}>
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Direcciones</p>
-                  <h2 className="text-2xl font-black text-gray-900">Información de envío</h2>
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 border-b border-gray-100 pb-4 sm:pb-6">
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-400">Direcciones</p>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-black text-gray-900">Información de envío</h2>
                 </div>
                 <button
                   onClick={() => setEditingShipping((prev) => !prev)}
-                  className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-2 text-xs uppercase tracking-[0.35em] text-gray-700 hover:bg-gray-50"
+                  className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl border border-gray-200 px-3 sm:px-4 py-1.5 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.35em] text-gray-700 hover:bg-gray-50 flex-shrink-0"
                 >
                   {editingShipping ? (
                     <>
@@ -583,23 +583,23 @@ export default function Profile() {
             </section>
           </div>
 
-          <aside className="space-y-6">
+          <aside className="space-y-4 sm:space-y-6">
             <section className={cardBase}>
-              <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Accesos</p>
-              <div className="mt-4 space-y-3">
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-400">Accesos</p>
+              <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
                 {quickActions.map(({ label, hint, icon: Icon, action }) => (
                   <button
                     key={label}
                     onClick={action}
-                    className="flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-white px-4 py-3 text-left transition hover:bg-gray-50"
+                    className="flex w-full items-center justify-between rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-left transition hover:bg-gray-50"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-gray-100">
-                        <Icon className="h-5 w-5 text-gray-800" />
+                    <div className="flex items-center gap-2.5 sm:gap-3">
+                      <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-100">
+                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-800" />
                       </span>
                       <div>
-                        <p className="text-base font-semibold text-gray-900">{label}</p>
-                        <p className="text-xs text-gray-500">{hint}</p>
+                        <p className="text-sm sm:text-base font-semibold text-gray-900">{label}</p>
+                        <p className="text-[10px] sm:text-xs text-gray-500">{hint}</p>
                       </div>
                     </div>
                     <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -611,39 +611,39 @@ export default function Profile() {
             </section>
 
             <section className={`${cardBase} bg-gradient-to-br from-white to-gray-50`}>
-              <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Actividad</p>
-              <div className="mt-4 grid grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-3xl font-black text-gray-900">0</p>
-                  <p className="mt-2 text-xs uppercase tracking-[0.3em] text-gray-500">Pedidos</p>
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-400">Actividad</p>
+              <div className="mt-3 sm:mt-4 grid grid-cols-2 gap-2 sm:gap-4">
+                <div className="rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
+                  <p className="text-2xl sm:text-3xl font-black text-gray-900">0</p>
+                  <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-gray-500">Pedidos</p>
                 </div>
-                <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-3xl font-black text-gray-900">$0</p>
-                  <p className="mt-2 text-xs uppercase tracking-[0.3em] text-gray-500">Total</p>
+                <div className="rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-50 p-3 sm:p-4">
+                  <p className="text-2xl sm:text-3xl font-black text-gray-900">$0</p>
+                  <p className="mt-1 sm:mt-2 text-[10px] sm:text-xs uppercase tracking-[0.25em] sm:tracking-[0.3em] text-gray-500">Total</p>
                 </div>
               </div>
             </section>
 
             <section className={cardBase}>
-              <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Soporte</p>
-              <h3 className="mt-3 text-2xl font-black text-gray-900">¿Necesitas ayuda?</h3>
-              <p className="mt-2 text-sm text-gray-600">Escríbenos y te guiamos en minutos.</p>
+              <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-400">Soporte</p>
+              <h3 className="mt-2 sm:mt-3 text-lg sm:text-xl md:text-2xl font-black text-gray-900">¿Necesitas ayuda?</h3>
+              <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-gray-600">Escríbenos y te guiamos en minutos.</p>
               <button
                 onClick={() => navigate('/contact')}
-                className="mt-6 w-full rounded-2xl border border-gray-200 px-5 py-3 text-sm uppercase tracking-[0.35em] text-gray-800 hover:bg-gray-50"
+                className="mt-4 sm:mt-6 w-full rounded-xl sm:rounded-2xl border border-gray-200 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm uppercase tracking-[0.3em] sm:tracking-[0.35em] text-gray-800 hover:bg-gray-50"
               >
                 Contactar soporte
               </button>
             </section>
 
             <section className={cardBase}>
-              <div className="flex items-center justify-between gap-4 border-b border-gray-100 pb-6">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.4em] text-gray-400">Seguridad</p>
-                  <h2 className="text-2xl font-black text-gray-900">Contraseña</h2>
+              <div className="flex items-center justify-between gap-3 sm:gap-4 border-b border-gray-100 pb-4 sm:pb-6">
+                <div className="min-w-0">
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-400">Seguridad</p>
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-black text-gray-900">Contraseña</h2>
                 </div>
-                <span className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-3 py-2 text-xs uppercase tracking-[0.35em] text-gray-700">
-                  <Lock className="h-4 w-4" />
+                <span className="inline-flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl border border-gray-200 px-2.5 sm:px-3 py-1.5 sm:py-2 text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.35em] text-gray-700 flex-shrink-0">
+                  <Lock className="h-3 w-3 sm:h-4 sm:w-4" />
                   Protegida
                 </span>
               </div>

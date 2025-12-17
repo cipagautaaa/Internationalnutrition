@@ -4,12 +4,30 @@
  * Fácil de mantener: solo cambiar URLs cuando subes nuevo contenido
  */
 
+// Base de Cloudinary para transformaciones
+const CLOUDINARY_BASE = 'https://res.cloudinary.com/dlopfk5uj';
+
+// Transformaciones de video para optimización
+// q_auto = calidad automática, f_auto = formato automático (webm para navegadores modernos)
+// vc_auto = codec automático, br_2m = bitrate máximo 2mbps para reducir peso
+const VIDEO_TRANSFORMS = 'q_auto,f_auto,vc_auto';
+const VIDEO_TRANSFORMS_HERO = 'q_auto:good,f_auto,vc_auto'; // Mejor calidad para hero
+
 export const CLOUDINARY_ASSETS = {
-  // VIDEOS
+  // VIDEOS - Con transformaciones de optimización
   videos: {
-    heroVideo: 'https://res.cloudinary.com/dlopfk5uj/video/upload/v1764283011/video_portada_zpsjqf.mp4',
-    videoTunja: 'https://res.cloudinary.com/dlopfk5uj/video/upload/v1764283756/videotunja_pst8hl.mp4',
-    videoDuitama: 'https://res.cloudinary.com/dlopfk5uj/video/upload/v1764283600/videoduitama_j8wknh.mp4',
+    // Video hero con buena calidad (es lo primero que ve el usuario)
+    heroVideo: `${CLOUDINARY_BASE}/video/upload/${VIDEO_TRANSFORMS_HERO}/v1764283011/video_portada_zpsjqf.mp4`,
+    // Videos de tiendas con compresión más agresiva (están más abajo en la página)
+    videoTunja: `${CLOUDINARY_BASE}/video/upload/${VIDEO_TRANSFORMS}/v1764283756/videotunja_pst8hl.mp4`,
+    videoDuitama: `${CLOUDINARY_BASE}/video/upload/${VIDEO_TRANSFORMS}/v1764283600/videoduitama_j8wknh.mp4`,
+  },
+
+  // POSTERS/THUMBNAILS de videos (primer frame del video, optimizado como imagen)
+  videoPosters: {
+    heroVideo: `${CLOUDINARY_BASE}/video/upload/so_0,f_auto,q_auto,w_1920,h_1080,c_fill/v1764283011/video_portada_zpsjqf.jpg`,
+    videoTunja: `${CLOUDINARY_BASE}/video/upload/so_0,f_auto,q_auto,w_800,h_600,c_fill/v1764283756/videotunja_pst8hl.jpg`,
+    videoDuitama: `${CLOUDINARY_BASE}/video/upload/so_0,f_auto,q_auto,w_800,h_600,c_fill/v1764283600/videoduitama_j8wknh.jpg`,
   },
 
   // IMÁGENES ESTÁTICAS (Home y tiendas)
