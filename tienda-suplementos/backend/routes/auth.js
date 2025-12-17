@@ -649,3 +649,45 @@ router.post('/admin/disable-pin', protect, async (req, res) => {
     res.status(500).json({ success: false, message: 'Error interno del servidor' });
   }
 });
+
+// TEST: Endpoint para probar envío de emails (solo desarrollo/debug)
+router.post('/test-email', async (req, res) => {
+  const { email } = req.body;
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'Email requerido' });
+  }
+  
+  console.log(`🧪 [test-email] Probando envío a: ${email}`);
+  
+  try {
+    const testCode = '123456';
+    const result = await sendVerificationEmail(email, testCode);
+    
+    console.log(`🧪 [test-email] Resultado:`, JSON.stringify(result, null, 2));
+    
+    if (result?.skipped) {
+      return res.json({
+        success: false,
+        message: 'Email saltado (configuración faltante)',
+        details: result
+      });
+    }
+    
+    return res.json({
+      success: true,
+      message: 'Email enviado correctamente',
+      details: {
+        messageId: result?.messageId,
+        accepted: result?.accepted,
+        rejected: result?.rejected
+      }
+    });
+  } catch (error) {
+    console.error(`🧪 [test-email] ERROR:`, error);
+    return res.status(500).json({
+      success: false,
+      message: 'Error enviando email',
+      error: error.message || String(error)
+    });
+  }
+});
