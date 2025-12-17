@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import headerImg from '../assets/images/logo-largo-int-removebg-preview.png';
 
@@ -17,6 +18,7 @@ export default function Login() {
   const [code, setCode] = useState('');
   const [step, setStep] = useState(location.state?.step === 'code' ? 'code' : 'form'); // 'form' | 'code' | 'success'
   const [message, setMessage] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
   const { register, verifyCode, resendCode, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -218,14 +220,24 @@ export default function Login() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">Contraseña</label>
-                <input
-                  type="password"
-                  value={form.password}
-                  onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                  className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
-                  placeholder="Mínimo 8 caracteres, mayúscula, minúscula y número"
-                  required
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    value={form.password}
+                    onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                    className="w-full rounded-xl border-2 border-gray-200 px-4 py-3.5 pr-12 text-base focus:border-red-600 focus:ring-4 focus:ring-red-100 transition-all"
+                    placeholder="Mínimo 8 caracteres, mayúscula, minúscula y número"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
+                </div>
               </div>
 
               <button

@@ -149,14 +149,14 @@ const CartDrawer = () => {
 
       {/* Drawer */}
       <aside
-        className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white shadow-2xl z-[9999] transform transition-transform duration-300 ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white shadow-2xl z-[9999] transform transition-transform duration-300 flex flex-col ${
           isCartOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         role="dialog"
         aria-label="Carrito"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b">
+        <div className="flex-shrink-0 flex items-center justify-between p-4 border-b">
           <h2 className="text-base font-semibold uppercase tracking-wide">
             {items.length} {items.length === 1 ? 'item' : 'items'} en el carrito
           </h2>
@@ -167,7 +167,7 @@ const CartDrawer = () => {
 
         {/* Barra de progreso de envío gratis */}
         {items.length > 0 && (
-          <div className="px-4 py-3 bg-gray-50 border-b">
+          <div className="flex-shrink-0 px-4 py-3 bg-gray-50 border-b">
             {/* Barra de progreso */}
             <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
               <div 
@@ -196,7 +196,7 @@ const CartDrawer = () => {
 
         {/* Mensaje de ánimo si no tiene envío gratis */}
         {items.length > 0 && !isFreeShipping && (
-          <div className="px-4 py-2 bg-amber-50 border-b border-amber-100">
+          <div className="flex-shrink-0 px-4 py-2 bg-amber-50 border-b border-amber-100">
             <p className="text-xs text-amber-800 text-center">
               <Truck className="inline w-4 h-4 mr-1" />
               Ofrecemos envío gratis desde $80.000. ¡Anímate a potenciar tus ganancias y llenar tu carrito!
@@ -205,7 +205,7 @@ const CartDrawer = () => {
         )}
 
         {/* Content */}
-        <div className="flex flex-col h-[calc(100%-64px)]">
+        <div className="flex flex-col flex-1 overflow-hidden">
           <div className="flex-1 overflow-y-auto">
             {items.length === 0 ? (
               <div className="p-6 text-gray-600 text-center">Tu carrito está vacío.</div>
@@ -309,7 +309,7 @@ const CartDrawer = () => {
           </div>
 
           {/* Footer */}
-          <div className="p-4 border-t bg-white">
+          <div className="flex-shrink-0 p-4 border-t bg-white">
             {items.length > 0 && (
               <>
                 {/* Subtotal con descuento */}
