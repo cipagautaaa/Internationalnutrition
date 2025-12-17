@@ -147,22 +147,26 @@ const createTransporterAsync = async () => {
     };
   }
 
-  if (provider === 'ethereal') {
-    return nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS
-      },
-      logger: String(process.env.EMAIL_DEBUG || 'false') === 'true',
-      debug: String(process.env.EMAIL_DEBUG || 'false') === 'true'
-    });
-  }
-
-  // Si no hay provider y no estamos en producción, crear cuenta Ethereal para pruebas
-  if (!provider && process.env.NODE_ENV !== 'production') {
+  // Ethereal o desarrollo sin provider: crear cuenta automática si no hay credenciales
+  if (provider === 'ethereal' || (!provider && process.env.NODE_ENV !== 'production')) {
+    // Si hay credenciales Ethereal manuales, usarlas
+    if (process.env.EMAIL_USER && process.env.EMAIL_PASS) {
+      console.log('[Email] Usando credenciales Ethereal manuales:', process.env.EMAIL_USER);
+      return nodemailer.createTransport({
+        host: 'smtp.ethereal.email',
+        port: 587,
+        secure: false,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS
+        },
+        logger: String(process.env.EMAIL_DEBUG || 'false') === 'true',
+        debug: String(process.env.EMAIL_DEBUG || 'false') === 'true'
+      });
+    }
+    
+    // Si no hay credenciales, crear cuenta de prueba automática
+    console.log('[Email] Creando cuenta Ethereal automática para pruebas...');
     const testAccount = await nodemailer.createTestAccount();
     console.log('[Email] Usando cuenta Ethereal de prueba:', testAccount.user);
     return nodemailer.createTransport({

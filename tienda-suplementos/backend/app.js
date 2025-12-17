@@ -78,6 +78,47 @@ app.use('/api/contact', contactRoutes);
 // Health
 app.get('/api/health', (req, res) => res.json({ message: 'Servidor funcionando correctamente' }));
 
+// Email Status (para diagnóstico)
+app.get('/api/email-status', (req, res) => {
+  const provider = process.env.EMAIL_PROVIDER || 'NO_CONFIGURADO';
+  const hasSendGrid = Boolean(process.env.SENDGRID_API_KEY);
+  const hasGmail = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  const hasResend = Boolean(process.env.RESEND_API_KEY);
+  const emailFrom = process.env.EMAIL_FROM || 'NO_CONFIGURADO';
+  const adminEmail = process.env.ADMIN_EMAIL || 'NO_CONFIGURADO';
+  
+  // Determinar estado
+  let status = 'ERROR';
+  let message = 'Configuración de email incompleta';
+  
+  if (provider === 'sendgrid' && hasSendGrid) {
+    status = 'OK';
+    message = 'SendGrid configurado correctamente';
+  } else if (provider === 'gmail' && hasGmail) {
+    status = 'OK';
+    message = 'Gmail configurado correctamente';
+  } else if (provider === 'resend' && hasResend) {
+    status = 'OK';
+    message = 'Resend configurado correctamente';
+  } else if (provider === 'ethereal') {
+    status = 'TEST';
+    message = 'Usando Ethereal (solo pruebas)';
+  }
+  
+  res.json({
+    status,
+    message,
+    config: {
+      provider,
+      sendgrid: hasSendGrid ? '✅ API Key presente' : '❌ Faltante',
+      gmail: hasGmail ? '✅ Credenciales presentes' : '❌ Faltante',
+      resend: hasResend ? '✅ API Key presente' : '❌ Faltante',
+      emailFrom: emailFrom ? emailFrom.substring(0, 20) + '...' : 'NO_CONFIGURADO',
+      adminEmail: adminEmail ? adminEmail.substring(0, 10) + '...' : 'NO_CONFIGURADO'
+    }
+  });
+});
+
 // Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
