@@ -83,6 +83,12 @@ app.get('/api/email-status', (req, res) => {
   const provider = process.env.EMAIL_PROVIDER || 'NO_CONFIGURADO';
   const hasSendGrid = Boolean(process.env.SENDGRID_API_KEY);
   const hasGmail = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
+  const hasGmailOauth = Boolean(
+    process.env.GMAIL_CLIENT_ID &&
+    process.env.GMAIL_CLIENT_SECRET &&
+    process.env.GMAIL_REFRESH_TOKEN &&
+    process.env.EMAIL_USER
+  );
   const hasResend = Boolean(process.env.RESEND_API_KEY);
   const emailFrom = process.env.EMAIL_FROM || 'NO_CONFIGURADO';
   const adminEmail = process.env.ADMIN_EMAIL || 'NO_CONFIGURADO';
@@ -94,6 +100,9 @@ app.get('/api/email-status', (req, res) => {
   if (provider === 'sendgrid' && hasSendGrid) {
     status = 'OK';
     message = 'SendGrid configurado correctamente';
+  } else if ((provider === 'gmail-oauth' || provider === 'gmail_oauth') && hasGmailOauth) {
+    status = 'OK';
+    message = 'Gmail OAuth configurado correctamente';
   } else if (provider === 'gmail' && hasGmail) {
     status = 'OK';
     message = 'Gmail configurado correctamente';
@@ -112,6 +121,7 @@ app.get('/api/email-status', (req, res) => {
       provider,
       sendgrid: hasSendGrid ? '✅ API Key presente' : '❌ Faltante',
       gmail: hasGmail ? '✅ Credenciales presentes' : '❌ Faltante',
+      gmailOauth: hasGmailOauth ? '✅ Credenciales presentes' : '❌ Faltante',
       resend: hasResend ? '✅ API Key presente' : '❌ Faltante',
       emailFrom: emailFrom ? emailFrom.substring(0, 20) + '...' : 'NO_CONFIGURADO',
       adminEmail: adminEmail ? adminEmail.substring(0, 10) + '...' : 'NO_CONFIGURADO'

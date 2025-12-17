@@ -1,5 +1,6 @@
 const nodemailer = require('nodemailer');
 const axios = require('axios');
+const { google } = require('googleapis');
 
 console.log('📧 EmailService v2 con SendGrid cargado');
 console.log(`📧 EMAIL_PROVIDER=${process.env.EMAIL_PROVIDER || 'NO_CONFIGURADO'}`);
@@ -11,9 +12,24 @@ try {
   console.log('📧 Env keys presentes (parciales):', relevant);
 } catch {}
 
+// Helper: base64url encode for Gmail API
+const encodeGmailMessage = (message) => Buffer.from(message)
+  .toString('base64')
+  .replace(/\+/g, '-')
+  .replace(/\//g, '_')
+  .replace(/=+$/, '');
+
 // Helper: detect if email creds are properly configured
 const canSendEmails = () => {
   const provider = (process.env.EMAIL_PROVIDER || '').toLowerCase();
+  if (provider === 'gmail-oauth' || provider === 'gmail_oauth') {
+    return Boolean(
+      process.env.GMAIL_CLIENT_ID &&
+      process.env.GMAIL_CLIENT_SECRET &&
+      process.env.GMAIL_REFRESH_TOKEN &&
+      process.env.EMAIL_USER
+    );
+  }
   if (provider === 'gmail') {
     return Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
   }
@@ -57,6 +73,57 @@ const createTransporterAsync = async () => {
     } else {
       console.log('📧 AUTO-DETECT: Usando Ethereal para testing');
       provider = 'ethereal';
+    }
+  }
+
+  // Gmail con OAuth2 vía API HTTP (evita SMTP bloqueado en Railway)
+  if (provider === 'gmail-oauth' || provider === 'gmail_oauth') {
+    const clientId = process.env.GMAIL_CLIENT_ID;
+    const clientSecret = process.env.GMAIL_CLIENT_SECRET;
+    const refreshToken = process.env.GMAIL_REFRESH_TOKEN;
+    const user = process.env.EMAIL_USER;
+    const fromEmail = process.env.EMAIL_FROM || user;
+    const fromName = process.env.EMAIL_FROM_NAME || 'International Nutrition';
+
+    if (!clientId || !clientSecret || !refreshToken || !user) {
+      console.warn('⚠️ EMAIL_PROVIDER=gmail-oauth pero faltan credenciales OAuth. Fallback a SendGrid.');
+      provider = 'sendgrid';
+    } else {
+      console.log('📧 Usando Gmail OAuth2 vía API HTTP');
+      const oauth2Client = new google.auth.OAuth2(clientId, clientSecret);
+      oauth2Client.setCredentials({ refresh_token: refreshToken });
+
+      return {
+        sendMail: async (opts) => {
+          const to = Array.isArray(opts.to) ? opts.to[0] : opts.to;
+          const replyToEmail = process.env.EMAIL_REPLY_TO || fromEmail;
+          const subject = opts.subject || '';
+          const html = opts.html || '';
+
+          const headers = [
+            `From: ${fromName} <${fromEmail}>`,
+            `To: ${to}`,
+            `Subject: ${subject}`,
+            replyToEmail ? `Reply-To: ${replyToEmail}` : null,
+            'MIME-Version: 1.0',
+            'Content-Type: text/html; charset="UTF-8"'
+          ].filter(Boolean);
+
+          const message = [...headers, '', html].join('\n');
+
+          const raw = encodeGmailMessage(message);
+
+          try {
+            const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+            const res = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } });
+            return { messageId: res.data?.id || 'gmail-api', accepted: [to], rejected: [] };
+          } catch (err) {
+            console.error('❌ [Gmail API] Error enviando:', err.response?.data || err.message || err);
+            throw err;
+          }
+        },
+        verify: async () => true
+      };
     }
   }
 
