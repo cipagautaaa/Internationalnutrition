@@ -6,6 +6,16 @@ export const R2_ASSETS = {
     foto2: `${R2_BASE}/imagenes/foto2.jpg`,
     fotoLocal: `${R2_BASE}/imagenes/fotolocal.jpg`,
   },
+  videos: {
+    hero: `${R2_BASE}/suplementos/videos/video_portada_r2.mp4`,
+    tunja: `${R2_BASE}/suplementos/videos/videotunja_r2.mp4`,
+    duitama: `${R2_BASE}/suplementos/videos/videoduitama_r2.mp4`,
+    posters: {
+      hero: null,
+      tunja: null,
+      duitama: null,
+    },
+  },
   categoryHeroes: {
     proteinas: `${R2_BASE}/categorias/proteinas.png`,
     creatina: `${R2_BASE}/categorias/creatinas.png`,

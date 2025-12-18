@@ -10,10 +10,7 @@ import HomeComboSection from '../components/HomeComboSection';
 import LazyVideo from '../components/LazyVideo';
 import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
-// Videos locales (servidos por Vercel CDN - sin límite de ancho de banda)
-import heroVideoLocal from '../assets/images/video portada.mp4';
-import videoTunjaLocal from '../assets/images/videotunja.mp4';
-import videoDuitamaLocal from '../assets/images/videoduitama.mp4';
+import { R2_ASSETS } from '../config/r2Assets';
 import bannerPromoFallback from '../assets/images/foto2.jpg';
 import { getWhatsappUrl } from '../utils/whatsapp';
 import PromoWelcomeModal from '../components/PromoWelcomeModal';
@@ -36,14 +33,14 @@ const Home = () => {
   const stores = [
     { 
       name: 'Sede Tunja', 
-      video: videoTunjaLocal, 
-      poster: null,
+      video: R2_ASSETS.videos.tunja,
+      poster: R2_ASSETS.videos.posters?.tunja || null,
       type: 'video' 
     },
     { 
       name: 'Sede Duitama', 
-      video: videoDuitamaLocal, 
-      poster: null,
+      video: R2_ASSETS.videos.duitama,
+      poster: R2_ASSETS.videos.posters?.duitama || null,
       type: 'video' 
     }
   ];
@@ -310,13 +307,14 @@ const Home = () => {
           muted
           defaultMuted
           playsInline
-          preload="metadata"
+          preload="none"
           onLoadedData={ensureHeroVideoPlays}
           playsinline="true"
           webkit-playsinline="true"
           aria-hidden="true"
+          poster={R2_ASSETS.videos.posters?.hero || undefined}
         >
-          <source src={heroVideoLocal} type="video/mp4" />
+          <source src={R2_ASSETS.videos.hero} type="video/mp4" />
         </video>
 
         {/* Overlay para mejorar contraste y empujar el foco visual */}
