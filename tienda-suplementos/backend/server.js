@@ -1,5 +1,10 @@
 const mongoose = require('mongoose');
-require('dotenv').config({ override: true });
+
+// En producción (Railway), las variables vienen del dashboard.
+// Cargar .env solo en desarrollo para no pisar process.env.
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ override: true });
+}
 
 const app = require('./app');
 

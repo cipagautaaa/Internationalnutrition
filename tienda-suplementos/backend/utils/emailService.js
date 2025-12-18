@@ -113,14 +113,37 @@ const createTransporterAsync = async () => {
 
           const raw = encodeGmailMessage(message);
 
-          try {
-            const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
-            const res = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } });
-            return { messageId: res.data?.id || 'gmail-api', accepted: [to], rejected: [] };
-          } catch (err) {
-            console.error('❌ [Gmail API] Error enviando:', err.response?.data || err.message || err);
-            throw err;
+          // Intentar enviar con reintentos (max 2)
+          const maxRetries = 2;
+          let lastError = null;
+          
+          for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+              const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
+              const res = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } });
+              console.log(`✅ [Gmail OAuth] Email enviado a ${to} (intento ${attempt})`);
+              return { messageId: res.data?.id || 'gmail-api', accepted: [to], rejected: [] };
+            } catch (err) {
+              lastError = err;
+              const errCode = err.response?.data?.error?.code || err.code;
+              const errMsg = err.response?.data?.error?.message || err.message || String(err);
+              
+              console.error(`❌ [Gmail OAuth] Error intento ${attempt}/${maxRetries}:`, errCode, errMsg);
+              
+              // Si es error de token expirado/revocado, no reintentar
+              if (errCode === 401 || errCode === 403 || errMsg.includes('invalid_grant') || errMsg.includes('Token has been expired or revoked')) {
+                console.error('🔴 [Gmail OAuth] Token expirado o revocado. Necesitas regenerar GMAIL_REFRESH_TOKEN.');
+                break;
+              }
+              
+              // Esperar antes de reintentar (backoff)
+              if (attempt < maxRetries) {
+                await new Promise(r => setTimeout(r, 1000 * attempt));
+              }
+            }
           }
+          
+          throw lastError;
         },
         verify: async () => true
       };

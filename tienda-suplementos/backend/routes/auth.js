@@ -665,9 +665,23 @@ router.post('/test-email', async (req, res) => {
     console.log(`🧪 [test-email] Resultado:`, JSON.stringify(result, null, 2));
     
     if (result?.skipped) {
+      const rawError = String(result?.error || '').toLowerCase();
+      const looksLikeTimeout = rawError.includes('timeout') || rawError.includes('etimedout');
+      const looksLikeConnRefused = rawError.includes('econnrefused') || rawError.includes('connection refused');
+
+      let message = 'Email saltado (configuración faltante)';
+      if (result?.error) {
+        message = 'Email no enviado (error del proveedor)';
+      }
+      if (looksLikeTimeout) {
+        message = 'Email no enviado (connection timeout). En Railway suele indicar SMTP bloqueado; usa Resend/SendGrid o Gmail OAuth.';
+      } else if (looksLikeConnRefused) {
+        message = 'Email no enviado (connection refused). Revisa provider/puertos o usa Resend/SendGrid.';
+      }
+
       return res.json({
         success: false,
-        message: 'Email saltado (configuración faltante)',
+        message,
         details: result
       });
     }

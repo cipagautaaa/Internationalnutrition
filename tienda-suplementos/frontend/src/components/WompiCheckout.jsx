@@ -54,12 +54,18 @@ const WompiCheckout = () => {
   // const [loadingProfile, setLoadingProfile] = useState(true); // eliminado por no usarse en UI
   const [errors, setErrors] = useState({});
 
-  // Cargar datos del perfil al montar el componente
+  // Cargar datos del perfil al montar el componente (solo si hay usuario autenticado)
   useEffect(() => {
-    loadUserProfile();
-  }, []);
+    // Solo intentar cargar perfil si hay un usuario autenticado
+    if (user) {
+      loadUserProfile();
+    }
+  }, [user]);
 
   const loadUserProfile = async () => {
+    // No intentar cargar si no hay usuario
+    if (!user) return;
+    
     try {
       const response = await api.get('/users/profile');
       

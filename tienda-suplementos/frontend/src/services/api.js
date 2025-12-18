@@ -32,10 +32,14 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     // Solo redirigir a login si realmente es un error de autenticación
-    // y no estamos en una ruta de login/registro
+    // y no estamos en una ruta de login/registro/checkout
     if (error.response?.status === 401) {
       const currentPath = window.location.pathname;
-      if (!currentPath.includes('/login') && !currentPath.includes('/verify-email')) {
+      // No redirigir si estamos en login, verificación de email, o checkout (invitados permitidos)
+      const noRedirectPaths = ['/login', '/verify-email', '/wompi-checkout', '/checkout'];
+      const shouldSkipRedirect = noRedirectPaths.some(path => currentPath.includes(path));
+      
+      if (!shouldSkipRedirect) {
         // Dar tiempo para que se muestre el mensaje de error antes de redirigir
         setTimeout(() => {
           localStorage.removeItem('token');

@@ -1,5 +1,5 @@
 ﻿const express = require('express');
-const { protect } = require('../middleware/auth');
+const { protect, optionalAuth } = require('../middleware/auth');
 const {
   createWompiTransactionHandler,
   verifyWompiHandler,
@@ -11,11 +11,11 @@ const { createGatewayTransaction } = require('../utils/wompiGateway');
 
 const router = express.Router();
 
-// Delegar a los handlers centralizados
-router.post('/create-wompi-transaction', protect, createWompiTransactionHandler);
+// Rutas de checkout - permiten usuarios autenticados o invitados
+router.post('/create-wompi-transaction', optionalAuth, createWompiTransactionHandler);
 router.post('/wompi-webhook', wompiWebhookHandler);
 router.get('/payment-methods', getPaymentMethodsHandler);
-router.get('/verify-transaction/:transactionId', protect, verifyWompiHandler);
+router.get('/verify-transaction/:transactionId', optionalAuth, verifyWompiHandler);
 
 // Nueva ruta para transacciones con modelo Gateway
 router.post('/wompi-gateway-transaction', protect, async (req, res) => {

@@ -11,7 +11,9 @@
  * 7. El script te dará el GMAIL_REFRESH_TOKEN
  */
 
-require('dotenv').config();
+// Usar override para evitar que variables persistentes del terminal (PowerShell)
+// de ejecuciones anteriores rompan el flujo con invalid_client.
+require('dotenv').config({ override: true });
 const { google } = require('googleapis');
 const readline = require('readline');
 
@@ -32,7 +34,8 @@ const oauth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_U
 // Generar URL de autorización
 const authUrl = oauth2Client.generateAuthUrl({
   access_type: 'offline',
-  scope: ['https://mail.google.com/'],
+  // Scope mínimo requerido para enviar emails
+  scope: ['https://www.googleapis.com/auth/gmail.send'],
   prompt: 'consent'
 });
 
