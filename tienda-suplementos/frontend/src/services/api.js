@@ -82,10 +82,9 @@ export const uploadImage = async (file) => {
     if (error.response?.status === 401) {
       throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
     }
-    // Detectar error de Cloudinary deshabilitado
     const errorMsg = error.response?.data?.message || error.message || '';
-    if (errorMsg.includes('cloud_name') || errorMsg.includes('disabled') || errorMsg.includes('Cloudinary')) {
-      throw new Error('El servicio de imágenes no está disponible. Usa una URL externa (ej: imgbb.com, imgur.com) y pégala en el campo de URL.');
+    if (errorMsg.toLowerCase().includes('r2') || errorMsg.toLowerCase().includes('cloudflare')) {
+      throw new Error('El servicio de imágenes no está disponible. Intenta de nuevo en unos minutos o usa una URL externa (ej: imgbb.com, imgur.com).');
     }
     throw error;
   }
@@ -125,10 +124,9 @@ export const uploadImplementImage = async (file) => {
     if (error.response?.status === 401) {
       throw new Error('Sesión expirada. Por favor, inicia sesión nuevamente.');
     }
-    // Detectar error de Cloudinary deshabilitado
     const errorMsg = error.response?.data?.message || error.message || '';
-    if (errorMsg.includes('cloud_name') || errorMsg.includes('disabled') || errorMsg.includes('Cloudinary')) {
-      throw new Error('El servicio de imágenes no está disponible. Usa una URL externa (ej: imgbb.com, imgur.com) y pégala en el campo de URL.');
+    if (errorMsg.toLowerCase().includes('r2') || errorMsg.toLowerCase().includes('cloudflare')) {
+      throw new Error('El servicio de imágenes no está disponible. Intenta de nuevo en unos minutos o usa una URL externa (ej: imgbb.com, imgur.com).');
     }
     throw error;
   }

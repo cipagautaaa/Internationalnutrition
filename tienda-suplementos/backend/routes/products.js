@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Product = require('../models/Product');
 const { protect } = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
-const upload = require('../middleware/uploadImageKit');
+const upload = require('../middleware/uploadR2');
 
 const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
 
@@ -186,19 +186,19 @@ const normalizeCategory = (c) => {
 };
 
 // POST /api/products/upload-image (subir imagen) - admin
-router.post('/upload-image', protect, isAdmin, upload.single('image'), async (req, res) => {
+router.post('/upload-image', protect, isAdmin, upload.single('image', { folder: 'suplementos/productos' }), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ success: false, message: 'No se recibió ningún archivo' });
     }
 
-    // Retornar la URL de ImageKit
+    // Retornar la URL pública en Cloudflare R2
     const imageUrl = req.file.path || req.file.url;
     
     res.json({
       success: true,
       imageUrl: imageUrl,
-      message: 'Imagen subida exitosamente a ImageKit'
+      message: 'Imagen subida exitosamente a Cloudflare R2'
     });
   } catch (error) {
     console.error('Error al subir imagen:', error);

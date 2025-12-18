@@ -3,46 +3,7 @@ const router = express.Router();
 const Combo = require('../models/Combo');
 const auth = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
-const multer = require('multer');
-const imagekit = require('../config/imagekit');
-
-// Configuración de Multer para memoria (ImageKit)
-const storage = multer.memoryStorage();
-
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
-  fileFilter: (req, file, cb) => {
-    const filetypes = /jpeg|jpg|png|webp/;
-    const mimetype = filetypes.test(file.mimetype);
-    
-    if (mimetype) {
-      return cb(null, true);
-    }
-    cb(new Error('Solo se permiten imágenes (jpeg, jpg, png, webp)'));
-  }
-});
-
-// Función helper para subir a ImageKit
-const uploadToImageKit = async (buffer, fileName) => {
-  // Verificar que ImageKit esté configurado
-  if (!imagekit) {
-    throw new Error('ImageKit no está configurado. Configura las variables IMAGEKIT_PUBLIC_KEY, IMAGEKIT_PRIVATE_KEY y IMAGEKIT_URL_ENDPOINT.');
-  }
-  
-  try {
-    const result = await imagekit.upload({
-      file: buffer.toString('base64'),
-      fileName: fileName || `combo_${Date.now()}`,
-      folder: 'combos',
-      useUniqueFileName: true,
-    });
-    return result.url;
-  } catch (error) {
-    console.error('❌ Error subiendo a ImageKit:', error);
-    throw error;
-  }
-};
+const upload = require('../middleware/uploadR2');
 
 // GET todos los combos o filtrar por categoría
 router.get('/', async (req, res) => {
@@ -77,7 +38,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST crear nuevo combo (solo admin)
-router.post('/', auth.protect, isAdmin, upload.single('image'), async (req, res) => {
+router.post('/', auth.protect, isAdmin, upload.single('image', { folder: 'suplementos/combos' }), async (req, res) => {
   try {
     const { name, description, price, originalPrice, discount, category, products, inStock, featured, rating } = req.body;
     
@@ -89,12 +50,9 @@ router.post('/', auth.protect, isAdmin, upload.single('image'), async (req, res)
       inStock: inStock === 'true' || inStock === true,
     };
     
-    // Si hay imagen, subirla a ImageKit
-    if (req.file) {
-      console.log('📸 Subiendo imagen a ImageKit...');
-      const imageUrl = await uploadToImageKit(req.file.buffer, req.file.originalname);
-      comboData.image = imageUrl;
-      console.log('✅ Imagen subida:', imageUrl);
+    // Si hay imagen, la URL ya viene desde Cloudflare R2 vía middleware
+    if (req.file?.path) {
+      comboData.image = req.file.path;
     }
     
     // Campos opcionales
@@ -117,7 +75,7 @@ router.post('/', auth.protect, isAdmin, upload.single('image'), async (req, res)
 });
 
 // PUT actualizar combo (solo admin)
-router.put('/:id', auth.protect, isAdmin, upload.single('image'), async (req, res) => {
+router.put('/:id', auth.protect, isAdmin, upload.single('image', { folder: 'suplementos/combos' }), async (req, res) => {
   try {
     console.log('📝 PUT /combos/:id recibido');
     console.log('📦 Body:', req.body);
@@ -154,12 +112,9 @@ router.put('/:id', auth.protect, isAdmin, upload.single('image'), async (req, re
       combo.products = typeof products === 'string' ? JSON.parse(products) : products;
     }
     
-    // Si hay archivo nuevo, subir a ImageKit
-    if (req.file) {
-      console.log('📸 Subiendo nueva imagen a ImageKit...');
-      const imageUrl = await uploadToImageKit(req.file.buffer, req.file.originalname);
-      combo.image = imageUrl;
-      console.log('✅ Nueva imagen subida:', imageUrl);
+    // Si hay archivo nuevo, la URL ya viene desde Cloudflare R2 vía middleware
+    if (req.file?.path) {
+      combo.image = req.file.path;
     }
     
     const updatedCombo = await combo.save();

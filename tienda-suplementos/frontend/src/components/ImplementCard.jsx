@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import QuickAddModal from './QuickAddModal';
-import { optimizeCloudinaryUrl } from '../utils/cloudinary';
 import { PRODUCT_IMAGE_ASPECT, PRODUCT_IMAGE_BASE, PRODUCT_IMAGE_HEIGHT } from '../styles/imageClasses';
 
 const ImplementCard = ({ implement }) => {
@@ -22,14 +21,7 @@ const ImplementCard = ({ implement }) => {
     }).format(price);
   };
 
-  // Optimizar URL de imagen para Cloudinary
-  const optimizedImage = implement.image ? optimizeCloudinaryUrl(implement.image, {
-    width: 500,
-    height: 500,
-    crop: 'fill',
-    gravity: 'auto',
-    quality: 'auto'
-  }) : null;
+  const imageSrc = implement.image || null;
 
   const handleAddToCart = () => {
     addToCart({
@@ -70,9 +62,9 @@ const ImplementCard = ({ implement }) => {
       {/* Imagen del implemento */}
       <div className={`relative bg-gradient-to-br from-gray-50 via-white to-gray-100/50 ${PRODUCT_IMAGE_HEIGHT} ${PRODUCT_IMAGE_ASPECT} flex items-center justify-center overflow-hidden`}>
         <Link to={`/implementos/${implement._id || implement.id}`} className="absolute inset-0 z-10" aria-label={`Ver ${implement.name}`}></Link>
-        {optimizedImage && !imageError ? (
+        {imageSrc && !imageError ? (
           <img 
-            src={optimizedImage} 
+            src={imageSrc} 
             alt={implement.name}
             className={`${PRODUCT_IMAGE_BASE} p-2 sm:p-4 transition-all duration-300 ${imageLoaded ? 'group-hover:scale-105' : ''}`}
             onLoad={() => setImageLoaded(true)}
@@ -84,7 +76,7 @@ const ImplementCard = ({ implement }) => {
         ) : null}
         
         {/* Fallback icon - solo mostrar si no hay imagen o falló */}
-        {!optimizedImage || imageError || !imageLoaded ? (
+        {!imageSrc || imageError || !imageLoaded ? (
           <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100/50">
             <div className="text-gray-300">
               <svg
