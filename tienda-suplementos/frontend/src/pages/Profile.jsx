@@ -43,6 +43,7 @@ export default function Profile() {
     firstName: '',
     lastName: '',
     phone: '',
+    legalId: '',
   });
 
   const [passwordForm, setPasswordForm] = useState({
@@ -71,7 +72,7 @@ export default function Profile() {
     }
 
     fetchProfile();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
 
   const fetchProfile = async () => {
     try {
@@ -85,6 +86,7 @@ export default function Profile() {
           firstName: userData.firstName || '',
           lastName: userData.lastName || '',
           phone: userData.phone || '',
+          legalId: userData.legalId || '',
         });
 
         const shipping = userData.shippingInfo || {};
@@ -345,6 +347,17 @@ export default function Profile() {
                       required
                     />
                   </div>
+                  <div>
+                    <label className={labelBase}>Número de documento</label>
+                    <input
+                      type="text"
+                      value={profileForm.legalId}
+                      onChange={(e) => setProfileForm((prev) => ({ ...prev, legalId: e.target.value }))}
+                      className={inputBase}
+                      placeholder="Cédula / NIT"
+                      inputMode="numeric"
+                    />
+                  </div>
                   <div className="flex flex-wrap gap-3 pt-2">
                     <button
                       type="submit"
@@ -383,6 +396,10 @@ export default function Profile() {
                   <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
                     <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Teléfono</p>
                     <p className="text-lg font-semibold text-gray-900">{profile?.phone || 'No especificado'}</p>
+                  </div>
+                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+                    <p className="text-xs uppercase tracking-[0.3em] text-gray-500">Número de documento</p>
+                    <p className="text-lg font-semibold text-gray-900">{profile?.legalId || 'No especificado'}</p>
                   </div>
                 </div>
               )}
@@ -587,26 +604,29 @@ export default function Profile() {
             <section className={cardBase}>
               <p className="text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-gray-400">Accesos</p>
               <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
-                {quickActions.map(({ label, hint, icon: Icon, action }) => (
-                  <button
-                    key={label}
-                    onClick={action}
-                    className="flex w-full items-center justify-between rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-left transition hover:bg-gray-50"
-                  >
-                    <div className="flex items-center gap-2.5 sm:gap-3">
-                      <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-100">
-                        <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-800" />
-                      </span>
-                      <div>
-                        <p className="text-sm sm:text-base font-semibold text-gray-900">{label}</p>
-                        <p className="text-[10px] sm:text-xs text-gray-500">{hint}</p>
+                {quickActions.map(({ label, hint, icon, action }) => {
+                  const Icon = icon;
+                  return (
+                    <button
+                      key={label}
+                      onClick={action}
+                      className="flex w-full items-center justify-between rounded-xl sm:rounded-2xl border border-gray-200 bg-white px-3 sm:px-4 py-2.5 sm:py-3 text-left transition hover:bg-gray-50"
+                    >
+                      <div className="flex items-center gap-2.5 sm:gap-3">
+                        <span className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl sm:rounded-2xl border border-gray-200 bg-gray-100">
+                          {Icon ? <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-gray-800" /> : null}
+                        </span>
+                        <div>
+                          <p className="text-sm sm:text-base font-semibold text-gray-900">{label}</p>
+                          <p className="text-[10px] sm:text-xs text-gray-500">{hint}</p>
+                        </div>
                       </div>
-                    </div>
-                    <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                ))}
+                      <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  );
+                })}
               </div>
             </section>
 

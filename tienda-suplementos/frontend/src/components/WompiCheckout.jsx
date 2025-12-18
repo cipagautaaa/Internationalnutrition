@@ -79,7 +79,9 @@ const WompiCheckout = () => {
             ? `${profile.firstName} ${profile.lastName}` 
             : prev.fullName,
           email: profile.email || prev.email,
-          phoneNumber: profile.phone || prev.phoneNumber
+          phoneNumber: profile.phone || prev.phoneNumber,
+          legalId: profile.legalId || prev.legalId,
+          legalIdType: profile.legalIdType || prev.legalIdType
         }));
 
         // Actualizar dirección de envío desde shippingInfo si existe

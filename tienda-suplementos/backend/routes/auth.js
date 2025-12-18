@@ -420,9 +420,9 @@ router.get('/profile', protect, async (req, res) => {
 // Actualizar perfil del usuario (ruta protegida)
 router.put('/profile', protect, async (req, res) => {
   try {
-    const { firstName, lastName, fullName, phone, birthDate, addresses } = req.body;
+    const { firstName, lastName, fullName, phone, birthDate, addresses, legalId, legalIdType } = req.body;
 
-    const updates = { firstName, lastName, fullName, phone, addresses };
+    const updates = { firstName, lastName, fullName, phone, addresses, legalId, legalIdType };
     if (birthDate) updates.birthDate = new Date(birthDate);
 
     const user = await User.findByIdAndUpdate(

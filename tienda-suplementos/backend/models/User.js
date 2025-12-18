@@ -28,6 +28,18 @@ const userSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  // Identificación (para pasarela de pagos y facturación)
+  legalId: {
+    type: String,
+    trim: true,
+    default: ''
+  },
+  legalIdType: {
+    type: String,
+    trim: true,
+    enum: ['CC', 'CE', 'NIT', 'TI', 'PP', 'DNI', 'OTRO'],
+    default: 'CC'
+  },
   birthDate: {
     type: Date,
     default: null

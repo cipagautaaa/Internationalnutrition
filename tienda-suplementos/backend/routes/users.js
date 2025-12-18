@@ -58,6 +58,8 @@ router.get('/profile', protect, async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        legalId: user.legalId,
+        legalIdType: user.legalIdType,
         shippingInfo: user.shippingInfo || {},
         addresses: user.addresses || [],
         isEmailVerified: user.isEmailVerified,
@@ -78,12 +80,14 @@ router.get('/profile', protect, async (req, res) => {
 // PUT /api/users/profile - actualizar perfil del usuario
 router.put('/profile', protect, async (req, res) => {
   try {
-    const { firstName, lastName, phone } = req.body;
+    const { firstName, lastName, phone, legalId, legalIdType } = req.body;
     
     const updateData = {};
     if (firstName !== undefined) updateData.firstName = firstName.trim();
     if (lastName !== undefined) updateData.lastName = lastName.trim();
     if (phone !== undefined) updateData.phone = phone.trim();
+    if (legalId !== undefined) updateData.legalId = String(legalId).trim();
+    if (legalIdType !== undefined) updateData.legalIdType = String(legalIdType).trim();
 
     const user = await User.findByIdAndUpdate(
       req.user.id,
@@ -107,6 +111,8 @@ router.put('/profile', protect, async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         phone: user.phone,
+        legalId: user.legalId,
+        legalIdType: user.legalIdType,
         shippingInfo: user.shippingInfo || {},
         addresses: user.addresses || []
       }
