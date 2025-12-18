@@ -4,7 +4,15 @@ const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
-    required: true
+    required: false
+  },
+  // Datos del cliente (para soportar checkout como invitado y para emails)
+  customerData: {
+    email: { type: String, trim: true, default: '' },
+    fullName: { type: String, trim: true, default: '' },
+    phoneNumber: { type: String, trim: true, default: '' },
+    legalId: { type: String, trim: true, default: '' },
+    legalIdType: { type: String, trim: true, default: 'CC' }
   },
   items: [{
     product: {

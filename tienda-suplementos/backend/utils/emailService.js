@@ -413,6 +413,16 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
   });
   
   const transporter = await createTransporterAsync();
+
+  const customerEmail = userInfo?.email || order?.customerData?.email || '';
+  const customerFullName =
+    userInfo?.fullName ||
+    [userInfo?.firstName, userInfo?.lastName].filter(Boolean).join(' ') ||
+    order?.customerData?.fullName ||
+    '';
+  const customerPhone = userInfo?.phone || userInfo?.phoneNumber || order?.customerData?.phoneNumber || '';
+  const customerLegalIdType = userInfo?.legalIdType || order?.customerData?.legalIdType || '';
+  const customerLegalId = userInfo?.legalId || order?.customerData?.legalId || '';
   
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
   console.log('📧 [sendNewOrderNotificationToAdmin] Admin Email:', adminEmail);
@@ -463,9 +473,10 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
 
           <div style="margin-bottom: 20px;">
             <h2 style="color: #333;">Información del Cliente</h2>
-            <p><strong>Email:</strong> ${userInfo.email}</p>
-            <p><strong>Nombre:</strong> ${userInfo.firstName} ${userInfo.lastName}</p>
-            ${userInfo.phone ? `<p><strong>Teléfono:</strong> ${userInfo.phone}</p>` : ''}
+            ${customerEmail ? `<p><strong>Email:</strong> ${customerEmail}</p>` : ''}
+            ${customerFullName ? `<p><strong>Nombre:</strong> ${customerFullName}</p>` : ''}
+            ${customerPhone ? `<p><strong>Teléfono:</strong> ${customerPhone}</p>` : ''}
+            ${customerLegalId ? `<p><strong>Documento:</strong> ${customerLegalIdType ? `${customerLegalIdType} ` : ''}${customerLegalId}</p>` : ''}
           </div>
 
           ${order.shippingAddress ? `
@@ -530,9 +541,19 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
 const sendOrderConfirmationToCustomer = async (order, userInfo) => {
   console.log('📧 [sendOrderConfirmationToCustomer] INICIANDO...');
   console.log('📧 [sendOrderConfirmationToCustomer] Order ID:', order._id);
-  console.log('📧 [sendOrderConfirmationToCustomer] Sending to:', userInfo?.email);
+  console.log('📧 [sendOrderConfirmationToCustomer] Sending to:', userInfo?.email || order?.customerData?.email);
   
   const transporter = await createTransporterAsync();
+
+  const customerEmail = userInfo?.email || order?.customerData?.email || '';
+  const customerFullName =
+    userInfo?.fullName ||
+    [userInfo?.firstName, userInfo?.lastName].filter(Boolean).join(' ') ||
+    order?.customerData?.fullName ||
+    '';
+  const customerPhone = userInfo?.phone || userInfo?.phoneNumber || order?.customerData?.phoneNumber || '';
+  const customerLegalIdType = userInfo?.legalIdType || order?.customerData?.legalIdType || '';
+  const customerLegalId = userInfo?.legalId || order?.customerData?.legalId || '';
   
   const orderItemsHtml = order.items.map(item => `
     <tr>
@@ -553,7 +574,7 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
 
   const mailOptions = {
     from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
-    to: userInfo.email,
+    to: customerEmail,
     subject: `✅ Confirmación de Orden - SportSupps #${order.orderNumber || order._id.toString().slice(-8).toUpperCase()}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px;">
@@ -618,7 +639,7 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log('✅ Confirmación de orden enviada al cliente:', userInfo.email, {
+    console.log('✅ Confirmación de orden enviada al cliente:', mailOptions.to, {
       orderId: order._id,
       messageId: info?.messageId
     });

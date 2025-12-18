@@ -139,8 +139,17 @@ const createWompiTransactionHandler = async (req, res) => {
       country: shippingAddress.country || 'Colombia'
     };
 
+    const normalizedCustomerData = {
+      email: (customerData?.email || req.user?.email || '').toString().trim(),
+      fullName: (customerData?.fullName || (req.user ? `${req.user.firstName || ''} ${req.user.lastName || ''}`.trim() : '') || '').toString().trim(),
+      phoneNumber: (customerData?.phoneNumber || req.user?.phone || req.user?.phoneNumber || '').toString().trim(),
+      legalId: (customerData?.legalId || req.user?.legalId || '').toString().trim(),
+      legalIdType: (customerData?.legalIdType || req.user?.legalIdType || 'CC').toString().trim()
+    };
+
     const order = await Order.create({
       user: req.user?.id,
+      customerData: normalizedCustomerData,
       items: orderItems,
       totalAmount: netTotal,
       shippingAddress: mappedShippingAddress,
@@ -152,13 +161,7 @@ const createWompiTransactionHandler = async (req, res) => {
 
     const wompiResponse = await createWompiTransaction({
       items: orderItems,
-      customerData: customerData || {
-        email: req.user?.email,
-        fullName: req.user ? `${req.user.firstName} ${req.user.lastName}` : '',
-        phoneNumber: req.user?.phoneNumber || '',
-        legalId: req.user?.legalId || '',
-        legalIdType: req.user?.legalIdType || 'CC'
-      },
+      customerData: normalizedCustomerData,
       shippingAddress,
       total: netTotal,
       reference,
@@ -264,18 +267,14 @@ const wompiWebhookHandler = async (req, res) => {
           await order.populate('user');
           await order.populate('items.product');
           
-          // Obtener información del usuario
-          const userInfo = order.user;
-          
-          if (!userInfo) {
-            console.error('❌ [WEBHOOK] Error: No se pudo obtener info del usuario para orden:', order._id);
-            throw new Error('Usuario no encontrado para la orden');
-          }
+          // Obtener información del usuario (si existe) o fallback a customerData (invitado)
+          const userInfo = order.user || order.customerData || {};
           
           console.log('📧 [WEBHOOK] Info del usuario obtenida:', {
             email: userInfo.email,
             firstName: userInfo.firstName,
-            lastName: userInfo.lastName
+            lastName: userInfo.lastName,
+            fullName: userInfo.fullName
           });
           
           console.log('📧 [WEBHOOK] Enviando notificación al admin...');
