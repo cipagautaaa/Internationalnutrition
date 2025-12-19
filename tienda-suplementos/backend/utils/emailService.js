@@ -1,6 +1,8 @@
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 const { google } = require('googleapis');
+const EmailOutbox = require('../models/EmailOutbox');
+const Order = require('../models/Order');
 
 console.log('📧 EmailService v2 con SendGrid cargado');
 console.log(`📧 EMAIL_PROVIDER=${process.env.EMAIL_PROVIDER || 'NO_CONFIGURADO'}`);
@@ -47,6 +49,152 @@ const canSendEmails = () => {
     return Boolean(process.env.EMAIL_HOST && process.env.EMAIL_USER && process.env.EMAIL_PASS);
   }
   return false;
+};
+
+const OUTBOX_INSTANCE_ID = process.env.EMAIL_OUTBOX_INSTANCE_ID || process.env.RAILWAY_SERVICE_ID || String(process.pid);
+
+const computeBackoffMs = (attempts) => {
+  // Backoff progresivo con tope. attempts empieza en 1.
+  const schedule = [60_000, 5 * 60_000, 15 * 60_000, 60 * 60_000, 6 * 60 * 60_000, 24 * 60 * 60_000];
+  const idx = Math.min(Math.max(attempts - 1, 0), schedule.length - 1);
+  return schedule[idx];
+};
+
+const enqueueEmailOutboxJob = async ({ kind, orderId, mailOptions, lastError }) => {
+  if (!kind || !orderId || !mailOptions) return null;
+
+  try {
+    const now = new Date();
+    const job = await EmailOutbox.findOneAndUpdate(
+      { kind, orderId },
+      {
+        $set: {
+          payload: {
+            from: mailOptions.from,
+            to: mailOptions.to,
+            subject: mailOptions.subject,
+            html: mailOptions.html,
+            replyTo: mailOptions.replyTo
+          },
+          status: 'pending',
+          nextAttemptAt: now,
+          lastError: lastError ? String(lastError).slice(0, 4000) : null,
+          lockedAt: null,
+          lockedBy: null
+        },
+        $setOnInsert: {
+          attempts: 0
+        }
+      },
+      { upsert: true, new: true }
+    );
+
+    console.log('📮 [EmailOutbox] Encolado/actualizado', {
+      kind,
+      orderId: String(orderId),
+      jobId: String(job._id)
+    });
+    return job;
+  } catch (err) {
+    console.error('❌ [EmailOutbox] Error encolando job:', err?.message || err);
+    return null;
+  }
+};
+
+const processEmailOutboxOnce = async () => {
+  const enabled = String(process.env.EMAIL_OUTBOX_WORKER || (process.env.NODE_ENV === 'production' ? 'true' : 'false')) === 'true';
+  if (!enabled) return { skipped: true, reason: 'worker_disabled' };
+
+  const now = new Date();
+  const staleMs = Number(process.env.EMAIL_OUTBOX_LOCK_STALE_MS || 10 * 60_000);
+  const staleBefore = new Date(Date.now() - staleMs);
+  const maxAttempts = Number(process.env.EMAIL_OUTBOX_MAX_ATTEMPTS || 10);
+
+  const job = await EmailOutbox.findOneAndUpdate(
+    {
+      $or: [
+        { status: { $in: ['pending', 'failed'] }, nextAttemptAt: { $lte: now } },
+        { status: 'processing', lockedAt: { $lte: staleBefore } }
+      ]
+    },
+    {
+      $set: { status: 'processing', lockedAt: now, lockedBy: OUTBOX_INSTANCE_ID },
+      $inc: { attempts: 1 }
+    },
+    { new: true, sort: { nextAttemptAt: 1, updatedAt: 1 } }
+  );
+
+  if (!job) return { skipped: true, reason: 'no_jobs' };
+  if (job.attempts > maxAttempts) {
+    await EmailOutbox.updateOne(
+      { _id: job._id },
+      { $set: { status: 'dead', lastError: `Max attempts exceeded (${maxAttempts})`, lockedAt: null, lockedBy: null } }
+    );
+    return { dead: true, jobId: String(job._id) };
+  }
+
+  try {
+    const transporter = await createTransporterAsync();
+    const info = await transporter.sendMail(job.payload);
+    if (info?.skipped) throw new Error('Email skipped by transporter (no provider configured)');
+
+    await EmailOutbox.updateOne(
+      { _id: job._id },
+      {
+        $set: {
+          status: 'sent',
+          sentAt: new Date(),
+          messageId: info?.messageId || null,
+          lastError: null,
+          lockedAt: null,
+          lockedBy: null
+        }
+      }
+    );
+
+    const orderUpdate = { 'emailNotifications.lastEmailError': null };
+    if (job.kind === 'admin_new_order') orderUpdate['emailNotifications.adminNewOrderSentAt'] = new Date();
+    if (job.kind === 'customer_order_confirmation') orderUpdate['emailNotifications.customerConfirmationSentAt'] = new Date();
+    await Order.updateOne({ _id: job.orderId }, { $set: orderUpdate }).catch(() => {});
+
+    console.log('✅ [EmailOutbox] Job enviado', { jobId: String(job._id), kind: job.kind, orderId: String(job.orderId) });
+    return { sent: true, jobId: String(job._id) };
+  } catch (err) {
+    const msg = err?.message || String(err);
+    const nextAttemptAt = new Date(Date.now() + computeBackoffMs(job.attempts));
+
+    await EmailOutbox.updateOne(
+      { _id: job._id },
+      { $set: { status: 'failed', lastError: msg.slice(0, 4000), nextAttemptAt, lockedAt: null, lockedBy: null } }
+    );
+    await Order.updateOne(
+      { _id: job.orderId },
+      { $set: { 'emailNotifications.lastEmailError': msg.slice(0, 4000) } }
+    ).catch(() => {});
+
+    console.warn('⚠️ [EmailOutbox] Job falló, reintento programado', {
+      jobId: String(job._id),
+      kind: job.kind,
+      attempts: job.attempts,
+      nextAttemptAt: nextAttemptAt.toISOString(),
+      error: msg
+    });
+    return { failed: true, jobId: String(job._id) };
+  }
+};
+
+let outboxIntervalHandle = null;
+const startEmailOutboxWorker = () => {
+  const enabled = String(process.env.EMAIL_OUTBOX_WORKER || (process.env.NODE_ENV === 'production' ? 'true' : 'false')) === 'true';
+  if (!enabled) return;
+  if (outboxIntervalHandle) return;
+
+  const intervalMs = Number(process.env.EMAIL_OUTBOX_INTERVAL_MS || 30_000);
+  console.log('📮 [EmailOutbox] Worker iniciado', { intervalMs, instance: OUTBOX_INSTANCE_ID });
+  processEmailOutboxOnce().catch((e) => console.warn('⚠️ [EmailOutbox] Kick error:', e?.message || e));
+  outboxIntervalHandle = setInterval(() => {
+    processEmailOutboxOnce().catch((e) => console.warn('⚠️ [EmailOutbox] Tick error:', e?.message || e));
+  }, intervalMs);
 };
 
 // EMAIL_PROVIDER options:
@@ -195,13 +343,19 @@ const createTransporterAsync = async () => {
   if (provider === 'sendgrid') {
     const apiKey = process.env.SENDGRID_API_KEY;
     console.log(`📧 [createTransporter] SendGrid provider. API Key: ${apiKey ? '✅ PRESENTE' : '❌ FALTANTE'}`);
-    
-    return {
-      sendMail: async (opts) => {
-        if (!apiKey) {
-          console.warn('⚠️ [SendGrid] SENDGRID_API_KEY faltante, devolviendo skip');
-          return { skipped: true, messageId: 'skipped' };
-        }
+
+    // En desarrollo, si alguien fuerza EMAIL_PROVIDER=sendgrid pero no configuró API key,
+    // es mejor caer a Ethereal automáticamente para que las pruebas no “parezcan” funcionar.
+    if (!apiKey && process.env.NODE_ENV !== 'production') {
+      console.warn('⚠️ [SendGrid] SENDGRID_API_KEY faltante en desarrollo. Fallback a Ethereal para pruebas.');
+      provider = 'ethereal';
+    } else {
+      return {
+        sendMail: async (opts) => {
+          if (!apiKey) {
+            // En producción esto debe verse como error (pero no necesariamente romper el flujo)
+            throw new Error('SENDGRID_API_KEY faltante');
+          }
         
         const fromEmail = opts.from || process.env.EMAIL_FROM || 'noreply@example.com';
         const fromName = process.env.EMAIL_FROM_NAME || 'International Nutrition';
@@ -232,9 +386,10 @@ const createTransporterAsync = async () => {
           timeout: 15000
         });
         return { messageId: res.headers['x-message-id'] || 'ok', accepted: [opts.to], rejected: [] };
-      },
-      verify: async () => true
-    };
+        },
+        verify: async () => true
+      };
+    }
   }
 
   // Ethereal o desarrollo sin provider: crear cuenta automática si no hay credenciales
@@ -427,6 +582,11 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
   const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
   console.log('📧 [sendNewOrderNotificationToAdmin] Admin Email:', adminEmail);
   console.log('📧 [sendNewOrderNotificationToAdmin] Email From:', process.env.EMAIL_FROM || process.env.EMAIL_USER);
+
+  if (!adminEmail) {
+    console.error('❌ [sendNewOrderNotificationToAdmin] ADMIN_EMAIL/EMAIL_USER no configurado. No se puede enviar notificación.');
+    return { skipped: true, reason: 'missing_admin_email' };
+  }
   
   const orderItemsHtml = order.items.map(item => `
     <tr>
@@ -522,6 +682,19 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
+    if (info?.skipped) {
+      console.warn('⚠️ Notificación de orden SKIPPED al admin. Encolando para reintento...', adminEmail, {
+        orderId: order._id
+      });
+      const job = await enqueueEmailOutboxJob({
+        kind: 'admin_new_order',
+        orderId: order._id,
+        mailOptions,
+        lastError: 'skipped'
+      });
+      return { queued: true, jobId: job?._id, skipped: true };
+    }
+
     console.log('✅ Notificación de orden enviada al admin:', adminEmail, {
       orderId: order._id,
       messageId: info?.messageId
@@ -533,6 +706,15 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
     return info;
   } catch (error) {
     console.error('❌ Error enviando notificación al admin:', error);
+    if (process.env.NODE_ENV === 'production') {
+      const job = await enqueueEmailOutboxJob({
+        kind: 'admin_new_order',
+        orderId: order._id,
+        mailOptions,
+        lastError: error?.message || error
+      });
+      return { queued: true, jobId: job?._id, error: error?.message || String(error) };
+    }
     throw new Error(`Error enviando notificación de orden: ${error.message || error}`);
   }
 };
@@ -551,6 +733,15 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
     [userInfo?.firstName, userInfo?.lastName].filter(Boolean).join(' ') ||
     order?.customerData?.fullName ||
     '';
+    if (!customerEmail) {
+      console.error('❌ [sendOrderConfirmationToCustomer] Email de cliente vacío. No se puede enviar confirmación.', {
+        orderId: order?._id,
+        userEmail: userInfo?.email,
+        customerDataEmail: order?.customerData?.email
+      });
+      return { skipped: true, reason: 'missing_customer_email' };
+    }
+
   const customerPhone = userInfo?.phone || userInfo?.phoneNumber || order?.customerData?.phoneNumber || '';
   const customerLegalIdType = userInfo?.legalIdType || order?.customerData?.legalIdType || '';
   const customerLegalId = userInfo?.legalId || order?.customerData?.legalId || '';
@@ -584,7 +775,7 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
         </div>
         
         <div style="padding: 20px;">
-          <p>Hola <strong>${userInfo.firstName}</strong>,</p>
+          <p>Hola <strong>${customerFullName || userInfo?.firstName || 'cliente'}</strong>,</p>
           <p>Hemos recibido tu orden y la estamos procesando. Te notificaremos cuando sea enviada.</p>
           
           <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
@@ -639,6 +830,19 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
 
   try {
     const info = await transporter.sendMail(mailOptions);
+    if (info?.skipped) {
+      console.warn('⚠️ Confirmación SKIPPED al cliente. Encolando para reintento...', mailOptions.to, {
+        orderId: order._id
+      });
+      const job = await enqueueEmailOutboxJob({
+        kind: 'customer_order_confirmation',
+        orderId: order._id,
+        mailOptions,
+        lastError: 'skipped'
+      });
+      return { queued: true, jobId: job?._id, skipped: true };
+    }
+
     console.log('✅ Confirmación de orden enviada al cliente:', mailOptions.to, {
       orderId: order._id,
       messageId: info?.messageId
@@ -650,6 +854,15 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
     return info;
   } catch (error) {
     console.error('❌ Error enviando confirmación al cliente:', error);
+    if (process.env.NODE_ENV === 'production') {
+      const job = await enqueueEmailOutboxJob({
+        kind: 'customer_order_confirmation',
+        orderId: order._id,
+        mailOptions,
+        lastError: error?.message || error
+      });
+      return { queued: true, jobId: job?._id, error: error?.message || String(error) };
+    }
     throw new Error(`Error enviando confirmación de orden: ${error.message || error}`);
   }
 };
@@ -659,6 +872,8 @@ module.exports = {
   sendPasswordResetEmail,
   sendNewOrderNotificationToAdmin,
   sendOrderConfirmationToCustomer,
+  processEmailOutboxOnce,
+  startEmailOutboxWorker,
   sendContactMessage: async (payload) => {
     const { nombre, apellido, email, mensaje } = payload || {};
     if (!nombre || !apellido || !email || !mensaje) {

@@ -123,13 +123,30 @@ router.post('/create', protect, async (req, res) => {
 
     // Enviar notificaciones por correo
     try {
-      // Notificar al administrador
-      await sendNewOrderNotificationToAdmin(order, req.user);
-      
-      // Confirmar al cliente
-      await sendOrderConfirmationToCustomer(order, req.user);
-      
-      console.log('✅ Correos de notificación enviados para orden:', order._id);
+      const emailUpdates = {};
+
+      // Notificar al administrador (idempotente)
+      if (!order.emailNotifications?.adminNewOrderSentAt) {
+        const resAdmin = await sendNewOrderNotificationToAdmin(order, req.user);
+        if (!resAdmin?.queued && !resAdmin?.skipped) {
+          emailUpdates['emailNotifications.adminNewOrderSentAt'] = new Date();
+        }
+      }
+
+      // Confirmar al cliente (idempotente)
+      if (!order.emailNotifications?.customerConfirmationSentAt) {
+        const resCustomer = await sendOrderConfirmationToCustomer(order, req.user);
+        if (!resCustomer?.queued && !resCustomer?.skipped) {
+          emailUpdates['emailNotifications.customerConfirmationSentAt'] = new Date();
+        }
+      }
+
+      if (Object.keys(emailUpdates).length > 0) {
+        emailUpdates['emailNotifications.lastEmailError'] = null;
+        await Order.updateOne({ _id: order._id }, { $set: emailUpdates });
+      }
+
+      console.log('✅ Proceso de notificación por email ejecutado para orden:', order._id);
     } catch (emailError) {
       console.error('❌ Error enviando correos de notificación:', emailError);
       // No fallar la orden por problemas de correo

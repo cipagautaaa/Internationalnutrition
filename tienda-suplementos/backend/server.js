@@ -18,6 +18,15 @@ if (process.env.MONGODB_DB_NAME) {
 mongoose.connect(mongoUri, mongoOptions)
   .then(() => {
     console.log('Conectado a MongoDB');
+
+    // Worker de reintentos de emails (outbox)
+    try {
+      const { startEmailOutboxWorker } = require('./utils/emailService');
+      startEmailOutboxWorker();
+    } catch (e) {
+      console.warn('⚠️ No se pudo iniciar EmailOutbox worker:', e?.message || e);
+    }
+
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
   })

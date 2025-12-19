@@ -277,15 +277,46 @@ const wompiWebhookHandler = async (req, res) => {
             fullName: userInfo.fullName
           });
           
-          console.log('📧 [WEBHOOK] Enviando notificación al admin...');
-          await sendNewOrderNotificationToAdmin(order, userInfo);
-          console.log('✅ [WEBHOOK] Notificación al admin enviada correctamente');
-          
-          console.log('📧 [WEBHOOK] Enviando confirmación al cliente...');
-          await sendOrderConfirmationToCustomer(order, userInfo);
-          console.log('✅ [WEBHOOK] Confirmación al cliente enviada correctamente');
-          
-          console.log('✅ [WEBHOOK] Todos los emails enviados exitosamente para orden:', order._id);
+          const emailUpdates = {};
+
+          if (!order.emailNotifications?.adminNewOrderSentAt) {
+            console.log('📧 [WEBHOOK] Enviando notificación al admin...');
+            const resAdmin = await sendNewOrderNotificationToAdmin(order, userInfo);
+            if (!resAdmin?.queued && !resAdmin?.skipped) {
+              emailUpdates['emailNotifications.adminNewOrderSentAt'] = new Date();
+              console.log('✅ [WEBHOOK] Notificación al admin enviada correctamente');
+            } else {
+              console.log('📮 [WEBHOOK] Notificación al admin encolada/skipped:', resAdmin);
+            }
+          } else {
+            console.log('↩️ [WEBHOOK] Admin ya notificado. Saltando envío.');
+          }
+
+          if (!order.emailNotifications?.customerConfirmationSentAt) {
+            console.log('📧 [WEBHOOK] Enviando confirmación al cliente...');
+            const resCustomer = await sendOrderConfirmationToCustomer(order, userInfo);
+            if (!resCustomer?.queued && !resCustomer?.skipped) {
+              emailUpdates['emailNotifications.customerConfirmationSentAt'] = new Date();
+              console.log('✅ [WEBHOOK] Confirmación al cliente enviada correctamente');
+            } else {
+              console.log('📮 [WEBHOOK] Confirmación al cliente encolada/skipped:', resCustomer);
+            }
+          } else {
+            console.log('↩️ [WEBHOOK] Cliente ya confirmado. Saltando envío.');
+          }
+
+          if (Object.keys(emailUpdates).length > 0) {
+            order.emailNotifications = order.emailNotifications || {};
+            if (emailUpdates['emailNotifications.adminNewOrderSentAt']) {
+              order.emailNotifications.adminNewOrderSentAt = emailUpdates['emailNotifications.adminNewOrderSentAt'];
+            }
+            if (emailUpdates['emailNotifications.customerConfirmationSentAt']) {
+              order.emailNotifications.customerConfirmationSentAt = emailUpdates['emailNotifications.customerConfirmationSentAt'];
+            }
+            order.emailNotifications.lastEmailError = null;
+          }
+
+          console.log('✅ [WEBHOOK] Flujo de emails ejecutado para orden:', order._id);
         } catch (emailError) {
           console.error('❌ [WEBHOOK] Error enviando correos:', {
             orderId: order._id,

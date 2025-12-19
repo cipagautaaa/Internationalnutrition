@@ -72,6 +72,12 @@ const orderSchema = new mongoose.Schema({
   trackingNumber: {
     type: String,
     default: null
+  },
+  // Tracking de notificaciones por email (idempotencia y observabilidad)
+  emailNotifications: {
+    adminNewOrderSentAt: { type: Date, default: null },
+    customerConfirmationSentAt: { type: Date, default: null },
+    lastEmailError: { type: String, default: null }
   }
 }, {
   timestamps: true
