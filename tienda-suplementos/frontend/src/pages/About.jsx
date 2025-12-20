@@ -88,9 +88,13 @@ export default function About() {
                 key={loc.city}
                 to={`/ubicaciones?sede=${encodeURIComponent(loc.slug)}`}
                 aria-label={`Ver sede ${loc.city}`}
-                className="rounded-3xl overflow-hidden bg-neutral-900 border border-white/5 shadow-lg block"
+                className="rounded-3xl overflow-hidden bg-neutral-900 border border-white/5 shadow-lg block group active:scale-[0.99]"
               >
-                <img src={loc.image} alt={`Tienda de ${loc.city}`} className="w-full h-52 object-cover" />
+                <img
+                  src={loc.image}
+                  alt={`Tienda de ${loc.city}`}
+                  className="w-full h-52 object-cover transition-transform duration-300 ease-out group-hover:scale-105 group-active:scale-105"
+                />
                 <div className="p-4 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-red-400" />
                   <p className="font-semibold">{loc.city}</p>
