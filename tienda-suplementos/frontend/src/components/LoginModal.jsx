@@ -42,16 +42,16 @@ export default function LoginModal() {
   if (!isLoginOpen || (location.pathname !== '/login' && location.pathname !== '/sign-in')) return null;
 
   return (
-  <div className="fixed inset-0 z-[100] overflow-y-auto" role="dialog" aria-modal="true">
+    <div className="fixed inset-0 z-[100] overflow-y-auto overscroll-contain" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm"
         onClick={() => { closeLogin(); navigate('/'); }}
       />
 
       {/* Contenedor centrado */}
       <div
-        className="absolute inset-0 flex items-start justify-center p-4 sm:items-center"
+        className="relative min-h-full flex items-start justify-center p-4 sm:items-center"
         onMouseDown={(e) => {
           // Si el click comienza exactamente en este contenedor (no en el panel interno) cerramos
           if (e.target === e.currentTarget) {

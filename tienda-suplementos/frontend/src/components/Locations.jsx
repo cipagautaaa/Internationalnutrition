@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MapPin, Clock, Phone, MessageCircle, Navigation, Star, Store, Mail } from 'lucide-react';
 import Footer from './fotterPrueba';
 import tiendaTunja from '../assets/images/tiendatunja.jpg';
@@ -9,6 +10,7 @@ import { getWhatsappUrl } from '../utils/whatsapp';
 
 const Locations = () => {
   const [selectedLocation, setSelectedLocation] = useState(0);
+  const routerLocation = useLocation();
   
   const locations = [
     {
@@ -65,6 +67,26 @@ const Locations = () => {
   };
 
   const currentLocation = locations[selectedLocation] || locations[0];
+
+  useEffect(() => {
+    const params = new URLSearchParams(routerLocation.search);
+    const sedeRaw = (params.get('sede') || '').trim().toLowerCase();
+    if (!sedeRaw) return;
+
+    const normalized = sedeRaw
+      .normalize('NFD')
+      .replace(/\p{Diacritic}/gu, '');
+
+    const indexBySede = {
+      tunja: 0,
+      duitama: 1,
+    };
+
+    const nextIndex = indexBySede[normalized];
+    if (typeof nextIndex === 'number' && nextIndex !== selectedLocation) {
+      setSelectedLocation(nextIndex);
+    }
+  }, [routerLocation.search, selectedLocation]);
 
   // Verificar que tengamos una ubicación válida
   if (!currentLocation) {

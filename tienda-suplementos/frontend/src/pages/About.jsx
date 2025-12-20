@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import tiendaTunjaImg from '../assets/images/tiendatunja.jpg';
 import tiendaDuitamaImg from '../assets/images/tiendaduitama.jpg';
@@ -10,8 +11,8 @@ const images = {
 };
 
 const locations = [
-  { city: 'Tunja', image: tiendaTunjaImg },
-  { city: 'Duitama', image: tiendaDuitamaImg },
+  { city: 'Tunja', image: tiendaTunjaImg, slug: 'tunja' },
+  { city: 'Duitama', image: tiendaDuitamaImg, slug: 'duitama' },
 ];
 
 export default function About() {
@@ -83,13 +84,18 @@ export default function About() {
           </p>
           <div className="grid sm:grid-cols-2 gap-6">
             {locations.map((loc) => (
-              <div key={loc.city} className="rounded-3xl overflow-hidden bg-neutral-900 border border-white/5 shadow-lg">
+              <Link
+                key={loc.city}
+                to={`/ubicaciones?sede=${encodeURIComponent(loc.slug)}`}
+                aria-label={`Ver sede ${loc.city}`}
+                className="rounded-3xl overflow-hidden bg-neutral-900 border border-white/5 shadow-lg block"
+              >
                 <img src={loc.image} alt={`Tienda de ${loc.city}`} className="w-full h-52 object-cover" />
                 <div className="p-4 flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-red-400" />
                   <p className="font-semibold">{loc.city}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -116,7 +122,7 @@ export default function About() {
               <Mail className="w-5 h-5 text-red-400 mt-0.5" />
               <div>
                 <p className="font-semibold">Correo</p>
-                <p className="text-sm text-white/70">internationalnutritioncol@gmail.com</p>
+                <p className="text-sm text-white/70 break-all">internationalnutritioncol@gmail.com</p>
                 <p className="text-xs text-white/60 mt-1">Respondemos rápido para compras y soporte.</p>
               </div>
             </div>
