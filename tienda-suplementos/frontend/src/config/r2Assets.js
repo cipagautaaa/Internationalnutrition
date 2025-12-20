@@ -9,7 +9,7 @@ export const R2_ASSETS = {
   videos: {
     hero: `${R2_BASE}/suplementos/videos/video_portada_r2.mp4`,
     tunja: `${R2_BASE}/suplementos/videos/videotunja_r2.mp4`,
-    duitama: `${R2_BASE}/suplementos/videos/videoduitama_r2.mp4`,
+    duitama: `${R2_BASE}/suplementos/videos/videoduitama_reencode.mp4`,
     posters: {
       hero: null,
       tunja: null,
