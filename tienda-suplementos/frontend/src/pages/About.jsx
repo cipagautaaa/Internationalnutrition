@@ -24,7 +24,11 @@ export default function About() {
           <p className="text-xs tracking-[0.35em] uppercase text-white/70">International Nutrition COL</p>
           <h1 className="text-4xl sm:text-5xl font-bold mt-3">Sobre Nosotros</h1>
           <p className="max-w-2xl text-white/80 mt-4 text-base">
-            Nacimos en San Gil en 2020. Somos una empresa creada por dos amigos y enfocada en el asesoramiento y la venta de suplementación e implementación deportiva.
+            Nacimos en San Gil en 2020. Somos una empresa creada por dos amigos, con una idea simple: que nadie se sienta perdido cuando decide empezar a cuidarse y entrenar.
+            <br />
+            <br />
+            Con el tiempo, esa idea se volvió comunidad: gente que madruga a entrenar, que vuelve después de una lesión, que se reta por primera vez, que celebra avances pequeños.
+            Queremos estar ahí, acompañando tu proceso con asesoría honesta y cercana.
           </p>
         </div>
       </section>
@@ -34,12 +38,28 @@ export default function About() {
           <div className="space-y-6">
             <p className="text-xs tracking-[0.3em] uppercase text-red-300">Propósito</p>
             <h2 className="text-3xl font-semibold">Impulsamos rendimiento y servicio digital</h2>
-            <p className="text-white/80 leading-relaxed">
-              International Nutrition COL se ha logrado posicionar como empresa líder en Boyacá en la venta de suplementos al por mayor y al detal, además de expandirse a todo el país gracias al trabajo de marketing y publicidad invertido.
-              <br />
-              <br />
-              Nuestra ética de trabajo destaca la importancia del factor humano: asesoría real, enfoque deportivo y acompañamiento en cada compra. También organizamos eventos con la participación de centenas de personas, incluyendo invitados especiales como Farid Nafah.
-            </p>
+            <div className="text-white/80 leading-relaxed space-y-4">
+              <p>
+                International Nutrition COL se ha logrado posicionar como empresa líder en Boyacá en la venta de suplementos al por mayor y al detal.
+                Pero más allá de números, lo que nos mueve es ver cómo una buena guía cambia un proceso: más energía, más constancia y mejores hábitos.
+              </p>
+              <p>
+                Nuestra ética de trabajo destaca la importancia del factor humano: escuchar, preguntar y recomendar con intención.
+                También organizamos eventos con la participación de centenas de personas, porque creemos que el deporte se vive mejor cuando se comparte.
+              </p>
+              <p>
+                Creemos en lo simple: constancia, entrenamiento inteligente, buena alimentación y suplementación bien elegida.
+                Por eso no vendemos “lo que esté de moda”, sino lo que de verdad encaja contigo y te ayuda a avanzar sin complicarte.
+              </p>
+              <div>
+                <p className="font-semibold text-white">¿Qué puedes esperar de nosotros?</p>
+                <ul className="mt-3 space-y-2 list-disc pl-5 text-white/80">
+                  <li>Asesoría con calma: te explicamos el “por qué” de cada opción.</li>
+                  <li>Recomendaciones reales según tu meta, experiencia y rutina.</li>
+                  <li>Soporte antes y después de la compra, con envíos a todo el país.</li>
+                </ul>
+              </div>
+            </div>
           </div>
           <div className="relative">
             <div className="absolute -inset-4 bg-red-600/20 blur-3xl" aria-hidden="true" />
@@ -57,6 +77,10 @@ export default function About() {
         <div className="space-y-6">
           <p className="text-xs tracking-[0.3em] uppercase text-red-300">Sedes</p>
           <h3 className="text-2xl font-semibold">Te esperamos en tienda</h3>
+          <p className="text-sm text-white/70 max-w-3xl">
+            Si prefieres ver opciones en persona, comparar sabores y resolver dudas cara a cara, te atendemos en nuestras sedes.
+            Y si estás lejos, igual estás cerca: te guiamos por WhatsApp con la misma dedicación y coordinamos tu envío.
+          </p>
           <div className="grid sm:grid-cols-2 gap-6">
             {locations.map((loc) => (
               <div key={loc.city} className="rounded-3xl overflow-hidden bg-neutral-900 border border-white/5 shadow-lg">
@@ -74,7 +98,10 @@ export default function About() {
           <div className="space-y-3">
             <p className="text-xs tracking-[0.3em] uppercase text-red-300">Contacto</p>
             <h3 className="text-2xl font-semibold">Asesoría personalizada</h3>
-            <p className="text-sm text-white/70">Atendemos por los canales que prefieras. Escríbenos para recomendaciones, envíos y cualquier duda.</p>
+            <p className="text-sm text-white/70">
+              Atendemos por los canales que prefieras. Escríbenos para recomendaciones, envíos y cualquier duda.
+              Si nos cuentas tu meta (volumen, definición, rendimiento), tu rutina y tu presupuesto, te proponemos una ruta clara, sin enredos y sin presión.
+            </p>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="p-4 rounded-2xl bg-neutral-900 border border-white/5 flex items-start gap-3">
