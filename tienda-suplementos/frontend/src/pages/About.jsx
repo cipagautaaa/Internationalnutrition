@@ -1,17 +1,17 @@
 import React from 'react';
 import { Phone, Mail, MapPin } from 'lucide-react';
+import tiendaTunjaImg from '../assets/images/tiendatunja.jpg';
+import tiendaDuitamaImg from '../assets/images/tiendaduitama.jpg';
 
 const images = {
   hero: 'https://pub-6737b83783eb40a5b8ef162f94b4e30c.r2.dev/suplementos/videos/_MG_9355-Enhanced-NR.jpg',
   purposeTop: 'https://pub-6737b83783eb40a5b8ef162f94b4e30c.r2.dev/suplementos/videos/_MG_0437-Mejorado-NR-2.jpg',
   purposeBottom: 'https://pub-6737b83783eb40a5b8ef162f94b4e30c.r2.dev/suplementos/videos/_MG_9918-Mejorado-RD-NR.jpg',
-  tunja: 'https://pub-6737b83783eb40a5b8ef162f94b4e30c.r2.dev/suplementos/videos/_MG_9894-Mejorado-RD-NR.jpg',
-  duitama: 'https://pub-6737b83783eb40a5b8ef162f94b4e30c.r2.dev/suplementos/videos/_MG_9900-Mejorado-RD-NR.jpg'
 };
 
 const locations = [
-  { city: 'Tunja', image: images.tunja },
-  { city: 'Duitama', image: images.duitama },
+  { city: 'Tunja', image: tiendaTunjaImg },
+  { city: 'Duitama', image: tiendaDuitamaImg },
 ];
 
 export default function About() {
@@ -44,8 +44,8 @@ export default function About() {
           <div className="relative">
             <div className="absolute -inset-4 bg-red-600/20 blur-3xl" aria-hidden="true" />
             <div className="relative grid gap-4">
-              <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
-                <img src={images.purposeTop} alt="Comunidad y eventos" className="w-full h-56 object-cover" />
+              <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-neutral-900 aspect-[3/4]">
+                <img src={images.purposeTop} alt="Comunidad y eventos" className="w-full h-full object-contain" />
               </div>
               <div className="rounded-3xl overflow-hidden border border-white/10 shadow-2xl">
                 <img src={images.purposeBottom} alt="Invitado especial en evento" className="w-full h-56 object-cover" />
