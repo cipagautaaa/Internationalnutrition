@@ -52,6 +52,15 @@ const SimpleCheckout = () => {
       const message = `¡Hola! Quiero realizar una compra por transferencia bancaria 💰\n\n` +
         `👤 Cliente: ${user.firstName} ${user.lastName}\n` +
         `📧 Email: ${user.email}\n\n` +
+        `🪪 ${({
+          CC: 'Cédula',
+          CE: 'Cédula de extranjería',
+          NIT: 'NIT',
+          TI: 'Tarjeta de identidad',
+          PP: 'Pasaporte',
+          DNI: 'DNI',
+          OTRO: 'Documento'
+        }[(user.legalIdType || '').toUpperCase()] || 'Documento'}: ${(user.legalId || '').trim() || 'No proporcionado'}\n\n` +
         `🛒 PRODUCTOS:\n${orderDetails}\n\n` +
         `💵 TOTAL: $${getTotalPrice().toLocaleString()}\n\n` +
         `Por favor, envíame los datos bancarios para realizar la transferencia. ¡Gracias!`;

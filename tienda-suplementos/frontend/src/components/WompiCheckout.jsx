@@ -18,6 +18,19 @@ const WompiCheckout = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const getDocumentLabel = (type) => {
+    const labels = {
+      CC: 'Cédula',
+      CE: 'Cédula de extranjería',
+      NIT: 'NIT',
+      TI: 'Tarjeta de identidad',
+      PP: 'Pasaporte',
+      DNI: 'DNI',
+      OTRO: 'Documento'
+    };
+    return labels[(type || '').toUpperCase()] || 'Documento';
+  };
+
   // Estados para el formulario
   const [customerData, setCustomerData] = useState({
     fullName: user?.firstName && user?.lastName ? `${user.firstName} ${user.lastName}` : '',
@@ -112,7 +125,7 @@ const WompiCheckout = () => {
     if (!customerData.fullName) newErrors.fullName = 'Nombre completo es requerido';
     if (!customerData.email) newErrors.email = 'Email es requerido';
     if (!customerData.phoneNumber) newErrors.phoneNumber = 'Teléfono es requerido';
-    if (!customerData.legalId) newErrors.legalId = 'Cédula es requerida';
+    if (!customerData.legalId) newErrors.legalId = 'Documento es requerido';
     
     if (!shippingAddress.addressLine1) newErrors.addressLine1 = 'Dirección es requerida';
     if (!shippingAddress.city) newErrors.city = 'Ciudad es requerida';
@@ -152,6 +165,7 @@ ${envioTexto}
 • Nombre: ${customerData.fullName}
 • Teléfono: ${customerData.phoneNumber}
 • Email: ${customerData.email}
+• ${getDocumentLabel(customerData.legalIdType)}: ${customerData.legalId}
 • Dirección: ${shippingAddress.addressLine1}${shippingAddress.addressLine2 ? ', ' + shippingAddress.addressLine2 : ''}
 • Ciudad: ${shippingAddress.city}, ${shippingAddress.region}
 
