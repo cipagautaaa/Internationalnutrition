@@ -172,7 +172,7 @@ const CartDrawer = () => {
             <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
               <div 
                 className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
-                  isFreeShipping ? 'bg-green-500' : 'bg-gradient-to-r from-green-400 to-green-500'
+                  isFreeShipping ? 'bg-red-500' : 'bg-gradient-to-r from-red-400 to-red-500'
                 }`}
                 style={{ width: `${progressPercent}%` }}
               />
@@ -180,14 +180,14 @@ const CartDrawer = () => {
             
             {/* Mensaje */}
             {isFreeShipping ? (
-              <div className="flex items-center justify-center gap-2 text-green-600 font-medium text-sm">
+              <div className="flex items-center justify-center gap-2 text-red-600 font-medium text-sm">
                 <Gift size={16} />
                 <span>¡Has desbloqueado el <strong>envío gratuito</strong>!</span>
               </div>
             ) : (
               <div className="text-center">
                 <p className="text-sm text-gray-700">
-                  ¡Estás a <span className="font-bold text-green-600">${formatPrice(amountNeeded)}</span> de adquirir envío gratuito!
+                  ¡Estás a <span className="font-bold text-red-600">${formatPrice(amountNeeded)}</span> de adquirir envío gratuito!
                 </p>
               </div>
             )}

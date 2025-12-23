@@ -293,14 +293,20 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   const hasProductItems = productSubtotal > 0;
   const hasComboItems = comboSubtotal > 0;
 
-  // Cálculo de envío
-  const isFreeShipping = hasFreeShipping(subtotal);
-  const shippingCost = isFreeShipping ? 0 : getShippingCost(shippingAddress.region);
-
+  // Cálculo de descuentos
   const productDiscount = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
   const comboDiscount = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
   const discountAmount = productDiscount + comboDiscount;
-  const totalConDescuento = Math.max(0, subtotal - discountAmount) + shippingCost;
+  const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
+
+  // Cálculo de envío basado en subtotal CON descuento aplicado
+  const wouldHaveFreeShippingWithoutDiscount = hasFreeShipping(subtotal);
+  const isFreeShipping = hasFreeShipping(subtotalAfterDiscount);
+  const lostFreeShippingDueToDiscount = discount.applied && wouldHaveFreeShippingWithoutDiscount && !isFreeShipping;
+  const shippingCost = isFreeShipping ? 0 : getShippingCost(shippingAddress.region);
+  const amountNeededForFreeShipping = FREE_SHIPPING_THRESHOLD - subtotalAfterDiscount;
+
+  const totalConDescuento = subtotalAfterDiscount + shippingCost;
 
   // Helper para renderizar el bloque de código de descuento sin remounts que quiten el foco
   const renderDiscountCodeSection = () => {
@@ -404,9 +410,21 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
           <span>${shippingCost.toLocaleString('es-CO')}</span>
         )}
       </div>
-      {!isFreeShipping && (
+      {/* Alerta cuando el descuento hizo perder el envío gratis */}
+      {lostFreeShippingDueToDiscount && (
+        <div className="text-xs text-red-700 bg-red-50 border border-red-200 p-3 rounded-lg space-y-2">
+          <p className="font-semibold">⚠️ El descuento redujo tu pedido por debajo de ${FREE_SHIPPING_THRESHOLD.toLocaleString('es-CO')}</p>
+          <p>El mínimo para envío gratis es de <strong>${FREE_SHIPPING_THRESHOLD.toLocaleString('es-CO')}</strong>. Al aplicar el descuento, tu subtotal bajó a <strong>${subtotalAfterDiscount.toLocaleString('es-CO')}</strong>.</p>
+          <p>Tienes dos opciones:</p>
+          <ul className="list-disc list-inside ml-2">
+            <li>Agregar <strong>${amountNeededForFreeShipping.toLocaleString('es-CO')}</strong> más en productos para mantener el envío gratis + el descuento.</li>
+            <li>Quitar el descuento y conservar el envío gratis.</li>
+          </ul>
+        </div>
+      )}
+      {!isFreeShipping && !lostFreeShippingDueToDiscount && (
         <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
-          💡 Agrega ${(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString('es-CO')} más para obtener envío gratis
+          💡 Agrega ${amountNeededForFreeShipping.toLocaleString('es-CO')} más para obtener envío gratis
         </div>
       )}
       <div className="flex justify-between text-base font-semibold text-gray-900 pt-2 border-t border-gray-200">
