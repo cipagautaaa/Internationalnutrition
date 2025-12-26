@@ -16,8 +16,28 @@ if (process.env.MONGODB_DB_NAME) {
 }
 
 mongoose.connect(mongoUri, mongoOptions)
-  .then(() => {
+  .then(async () => {
     console.log('Conectado a MongoDB');
+
+    // Inicializar código de descuento INTSUPPS20 si no existe
+    try {
+      const DiscountCode = require('./models/DiscountCode');
+      const existingCode = await DiscountCode.findOne({ code: 'INTSUPPS20' });
+      if (!existingCode) {
+        await DiscountCode.create({
+          code: 'INTSUPPS20',
+          productDiscount: 20,
+          comboDiscount: 5,
+          isActive: true,
+          description: 'Código de descuento principal - 20% productos, 5% combos'
+        });
+        console.log('✅ Código INTSUPPS20 creado automáticamente');
+      } else {
+        console.log('ℹ️ Código INTSUPPS20 ya existe en la base de datos');
+      }
+    } catch (e) {
+      console.warn('⚠️ No se pudo inicializar código INTSUPPS20:', e?.message || e);
+    }
 
     // Worker de reintentos de emails (outbox)
     try {
