@@ -3,6 +3,7 @@ const Order = require('../models/Order');
 const Product = require('../models/Product');
 const Combo = require('../models/Combo');
 const Implement = require('../models/Implement');
+const DiscountCode = require('../models/DiscountCode');
 const { sendNewOrderNotificationToAdmin, sendOrderConfirmationToCustomer } = require('../utils/emailService');
 const {
   createWompiTransaction,
@@ -115,18 +116,32 @@ const createWompiTransactionHandler = async (req, res) => {
       orderItems.push({ product: product ? product._id : combo ? combo._id : implement._id, kind, quantity: item.quantity, price: unitPrice });
     }
 
-    // Aplicar descuentos simples (ejemplo)
+    // Aplicar descuentos desde la base de datos
     let discountAmount = 0;
     let productDiscount = 0;
     let comboDiscount = 0;
 
-    if (discountCode === 'INTSUPPS20') {
-      productDiscount = Math.round(productSubtotal * 0.20);
-      comboDiscount = Math.round(comboSubtotal * 0.05);
-      discountAmount = productDiscount + comboDiscount;
-    } else if (discountCode === 'CUIDADOCONLOSJOJOS') {
-      discountAmount = Math.round(totalAmount * 0.15);
-      productDiscount = discountAmount;
+    if (discountCode) {
+      try {
+        const discountCodeDoc = await DiscountCode.findOne({ code: discountCode });
+        
+        if (discountCodeDoc && discountCodeDoc.isValid()) {
+          // Aplicar descuentos según los porcentajes del código
+          productDiscount = Math.round(productSubtotal * (discountCodeDoc.productDiscount / 100));
+          comboDiscount = Math.round(comboSubtotal * (discountCodeDoc.comboDiscount / 100));
+          discountAmount = productDiscount + comboDiscount;
+
+          // Incrementar contador de uso del código
+          await discountCodeDoc.incrementUsage();
+          
+          console.log(`✅ Código de descuento ${discountCode} aplicado: Productos -${discountCodeDoc.productDiscount}%, Combos -${discountCodeDoc.comboDiscount}%`);
+        } else {
+          console.log(`⚠️ Código de descuento ${discountCode} no válido o expirado`);
+        }
+      } catch (discountError) {
+        console.error('❌ Error aplicando código de descuento:', discountError);
+        // Continuar sin descuento si hay error
+      }
     }
 
     const netTotal = Math.max(0, totalAmount - discountAmount);

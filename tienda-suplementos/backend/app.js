@@ -64,6 +64,7 @@ const usersRoutes = require('./routes/users');
 const combosRoutes = require('./routes/combos');
 const implementsRoutes = require('./routes/implements');
 const contactRoutes = require('./routes/contact');
+const discountCodesRoutes = require('./routes/discountCodes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productsRoutes);
@@ -74,6 +75,7 @@ app.use('/api/users', usersRoutes);
 app.use('/api/combos', combosRoutes);
 app.use('/api/implements', implementsRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/discount-codes', discountCodesRoutes);
 
 // Health
 app.get('/api/health', (req, res) => res.json({ message: 'Servidor funcionando correctamente' }));

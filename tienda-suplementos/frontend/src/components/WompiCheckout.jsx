@@ -62,7 +62,10 @@ const WompiCheckout = () => {
     totalDiscount: 0,
     productSubtotal: 0,
     comboSubtotal: 0,
+    productPercent: 0,
+    comboPercent: 0,
   });
+  const [discountLoading, setDiscountLoading] = useState(false);
   const [message, setMessage] = useState('');
   // const [loadingProfile, setLoadingProfile] = useState(true); // eliminado por no usarse en UI
   const [errors, setErrors] = useState({});
@@ -141,8 +144,9 @@ const WompiCheckout = () => {
       `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toLocaleString('es-CO')}${item.isCombo ? ' [Combo]' : ''}`
     ).join('\n');
     
-    const prodDisc = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
-    const combDisc = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
+    // Usar porcentajes dinámicos del código de descuento aplicado
+    const prodDisc = discount.applied ? Math.round(productSubtotal * (discount.productPercent / 100)) : 0;
+    const combDisc = discount.applied ? Math.round(comboSubtotal * (discount.comboPercent / 100)) : 0;
     const discountAmountTransf = prodDisc + combDisc;
     const shippingForTransf = isFreeShipping ? 0 : shippingCost;
     const totalFinalTransf = Math.max(0, subtotal - discountAmountTransf) + shippingForTransf;
@@ -150,6 +154,17 @@ const WompiCheckout = () => {
     const envioTexto = isFreeShipping 
       ? '🎁 Envío: GRATIS' 
       : `🚚 Envío (${shippingAddress.region || 'Colombia'}): $${shippingForTransf.toLocaleString('es-CO')}`;
+
+    // Construir texto de descuento con porcentajes dinámicos
+    let descuentoTexto = '';
+    if (discount.applied) {
+      const partes = [];
+      if (discount.productPercent > 0 && prodDisc > 0) partes.push(`Productos -${discount.productPercent}%: -$${prodDisc.toLocaleString('es-CO')}`);
+      if (discount.comboPercent > 0 && combDisc > 0) partes.push(`Combos -${discount.comboPercent}%: -$${combDisc.toLocaleString('es-CO')}`);
+      if (partes.length > 0) {
+        descuentoTexto = `\n(Código ${discount.code}: ${partes.join(' / ')})`;
+      }
+    }
     
     const mensaje = `¡Hola! 👋
 
@@ -159,7 +174,7 @@ Quiero realizar una compra por transferencia bancaria:
 ${productosTexto}
 ${envioTexto}
 
-*💰 Total: $${totalFinalTransf.toLocaleString('es-CO')} COP*${discount.applied ? `\n(Descuento ${discount.code}: Productos -$${prodDisc.toLocaleString('es-CO')} / Combos -$${combDisc.toLocaleString('es-CO')})` : ''}
+*💰 Total: $${totalFinalTransf.toLocaleString('es-CO')} COP*${descuentoTexto}
 
 *📦 DATOS DE ENVÍO:*
 • Nombre: ${customerData.fullName}
@@ -293,9 +308,9 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   const hasProductItems = productSubtotal > 0;
   const hasComboItems = comboSubtotal > 0;
 
-  // Cálculo de descuentos
-  const productDiscount = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
-  const comboDiscount = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
+  // Cálculo de descuentos - usando porcentajes dinámicos del código aplicado
+  const productDiscount = discount.applied ? Math.round(productSubtotal * (discount.productPercent / 100)) : 0;
+  const comboDiscount = discount.applied ? Math.round(comboSubtotal * (discount.comboPercent / 100)) : 0;
   const discountAmount = productDiscount + comboDiscount;
   const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
 
@@ -310,30 +325,45 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
 
   // Helper para renderizar el bloque de código de descuento sin remounts que quiten el foco
   const renderDiscountCodeSection = () => {
-    const applyDiscount = () => {
+    const applyDiscount = async () => {
       const code = discountCode.trim().toUpperCase();
       if (!code) {
         setMessage('Ingresa un código.');
         return;
       }
-      if (code !== 'INTSUPPS20') {
-        setMessage('Código inválido o expirado.');
-        return;
+
+      setDiscountLoading(true);
+      setMessage('');
+
+      try {
+        // Validar código contra la API
+        const response = await api.post('/discount-codes/validate', { code });
+        
+        if (response.data.success) {
+          const { productDiscount: prodPercent, comboDiscount: combPercent } = response.data.discountCode;
+          
+          const prodDisc = Math.round(productSubtotal * (prodPercent / 100));
+          const combDisc = Math.round(comboSubtotal * (combPercent / 100));
+
+          setDiscount({
+            applied: true,
+            code: response.data.discountCode.code,
+            productDiscount: prodDisc,
+            comboDiscount: combDisc,
+            totalDiscount: prodDisc + combDisc,
+            productSubtotal,
+            comboSubtotal,
+            productPercent: prodPercent,
+            comboPercent: combPercent,
+          });
+          setMessage('¡Descuento aplicado exitosamente!');
+        }
+      } catch (err) {
+        console.error('Error validando código:', err);
+        setMessage(err.response?.data?.message || 'Código inválido o expirado.');
+      } finally {
+        setDiscountLoading(false);
       }
-
-      const prodDisc = Math.round(productSubtotal * 0.20);
-      const combDisc = Math.round(comboSubtotal * 0.05);
-
-      setDiscount({
-        applied: true,
-        code,
-        productDiscount: prodDisc,
-        comboDiscount: combDisc,
-        totalDiscount: prodDisc + combDisc,
-        productSubtotal,
-        comboSubtotal,
-      });
-      setMessage('Descuento aplicado.');
     };
 
     const removeDiscount = () => {
@@ -345,6 +375,8 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         totalDiscount: 0,
         productSubtotal: 0,
         comboSubtotal: 0,
+        productPercent: 0,
+        comboPercent: 0,
       });
       setDiscountCode('');
       setMessage('');
@@ -359,21 +391,32 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
             onChange={(e) => setDiscountCode(e.target.value)}
             placeholder="Código de descuento"
             className="flex-1 px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            disabled={discount.applied}
+            disabled={discount.applied || discountLoading}
           />
           {discount.applied ? (
             <button type="button" onClick={removeDiscount} className="px-4 py-3 border rounded-md text-gray-700 hover:bg-gray-50">
               Quitar
             </button>
           ) : (
-            <button type="button" onClick={applyDiscount} className="px-4 py-3 bg-gray-900 text-white rounded-md hover:bg-black">
-              Aplicar
+            <button 
+              type="button" 
+              onClick={applyDiscount} 
+              disabled={discountLoading}
+              className="px-4 py-3 bg-gray-900 text-white rounded-md hover:bg-black disabled:opacity-60"
+            >
+              {discountLoading ? 'Validando...' : 'Aplicar'}
             </button>
           )}
         </div>
-        {message && <p className="text-sm mt-2 text-gray-600">{message}</p>}
+        {message && <p className={`text-sm mt-2 ${discount.applied ? 'text-green-600' : 'text-gray-600'}`}>{message}</p>}
         {discount.applied && (
-          <p className="text-sm mt-2 text-green-700">Código "{discount.code}" aplicado. Productos -20%, Combos -5%.</p>
+          <p className="text-sm mt-2 text-green-700">
+            Código "{discount.code}" aplicado. 
+            {discount.productPercent > 0 && ` Productos -${discount.productPercent}%`}
+            {discount.productPercent > 0 && discount.comboPercent > 0 && ','}
+            {discount.comboPercent > 0 && ` Combos -${discount.comboPercent}%`}
+            .
+          </p>
         )}
       </div>
     );
@@ -389,15 +432,15 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         <span>Subtotal combos</span>
         <span>${comboSubtotal.toLocaleString('es-CO')}</span>
       </div>
-      {discount.applied && hasProductItems && (
+      {discount.applied && hasProductItems && discount.productPercent > 0 && (
         <div className="flex justify-between text-sm text-green-700">
-          <span>Descuento productos (20%)</span>
+          <span>Descuento productos ({discount.productPercent}%)</span>
           <span>- ${productDiscount.toLocaleString('es-CO')}</span>
         </div>
       )}
-      {discount.applied && hasComboItems && (
+      {discount.applied && hasComboItems && discount.comboPercent > 0 && (
         <div className="flex justify-between text-sm text-green-700">
-          <span>Descuento combos (5%)</span>
+          <span>Descuento combos ({discount.comboPercent}%)</span>
           <span>- ${comboDiscount.toLocaleString('es-CO')}</span>
         </div>
       )}

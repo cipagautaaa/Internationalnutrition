@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import ProductForm from '../components/admin/ProductForm';
 import AdminPageManagement from '../components/AdminPageManagement';
 import ImplementsPanel from '../components/admin/ImplementsPanel';
+import DiscountCodesPanel from '../components/admin/DiscountCodesPanel';
 import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
 const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
@@ -737,6 +738,11 @@ export default function AdminProducts() {
                 </div>
               )}
             </section>
+
+            {/* Panel de Códigos de Descuento */}
+            <div className="rounded-2xl border border-[#eadfcd] bg-white/95 p-5 shadow-sm">
+              <DiscountCodesPanel />
+            </div>
 
             <div className="rounded-2xl border border-[#eadfcd] bg-white/95 p-5 shadow-sm">
               <AdminPageManagement />
