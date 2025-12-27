@@ -1,6 +1,6 @@
 /**
- * Script para migrar el código de descuento INTSUPPS20 a la base de datos.
- * Este script debe ejecutarse una vez para crear el código existente en la nueva tabla.
+ * Script para migrar códigos de descuento a la base de datos.
+ * Este script crea códigos si no existen.
  * 
  * Ejecutar con: node seed-discount-codes.js
  */
@@ -11,37 +11,82 @@ const DiscountCode = require('./models/DiscountCode');
 
 const MONGO_URI = process.env.MONGODB_URI || process.env.MONGO_URI;
 
+// Lista de códigos de descuento a crear
+const discountCodes = [
+  {
+    code: 'INTSUPPS20',
+    productDiscount: 20,
+    comboDiscount: 5,
+    isActive: true,
+    description: 'Código de descuento principal - 20% productos, 5% combos'
+  },
+  {
+    code: 'EYALEJO',
+    productDiscount: 10,
+    comboDiscount: 10,
+    isActive: true,
+    description: 'Código influencer Eyalejo - 10% productos y combos'
+  },
+  {
+    code: 'ALEJAS',
+    productDiscount: 10,
+    comboDiscount: 10,
+    isActive: true,
+    description: 'Código influencer Alejas - 10% productos y combos'
+  },
+  {
+    code: 'LUFIT',
+    productDiscount: 10,
+    comboDiscount: 10,
+    isActive: true,
+    description: 'Código influencer Luisa Patiño - 10% productos y combos'
+  },
+  {
+    code: 'ANTIPOWERLIFT',
+    productDiscount: 10,
+    comboDiscount: 10,
+    isActive: true,
+    description: 'Código influencer Camilo - 10% productos y combos'
+  },
+  {
+    code: 'CONTRERAS',
+    productDiscount: 10,
+    comboDiscount: 10,
+    isActive: true,
+    description: 'Código influencer Alexis Contreras - 10% productos y combos'
+  },
+  {
+    code: 'OXROCHA',
+    productDiscount: 10,
+    comboDiscount: 10,
+    isActive: true,
+    description: 'Código influencer Oxrocha - 10% productos y combos'
+  }
+];
+
 const seedDiscountCodes = async () => {
   try {
     console.log('🔌 Conectando a MongoDB...');
     await mongoose.connect(MONGO_URI);
     console.log('✅ Conectado a MongoDB');
 
-    // Verificar si ya existe el código
-    const existing = await DiscountCode.findOne({ code: 'INTSUPPS20' });
-    
-    if (existing) {
-      console.log('ℹ️ El código INTSUPPS20 ya existe en la base de datos:');
-      console.log(`   - Descuento productos: ${existing.productDiscount}%`);
-      console.log(`   - Descuento combos: ${existing.comboDiscount}%`);
-      console.log(`   - Estado: ${existing.isActive ? 'Activo' : 'Inactivo'}`);
-      console.log(`   - Usos: ${existing.usageCount}`);
-    } else {
-      // Crear el código INTSUPPS20 con los valores originales
-      const newCode = await DiscountCode.create({
-        code: 'INTSUPPS20',
-        productDiscount: 20,
-        comboDiscount: 5,
-        isActive: true,
-        description: 'Código de descuento principal - 20% productos, 5% combos'
-      });
+    let created = 0;
+    let existing = 0;
 
-      console.log('✅ Código INTSUPPS20 creado exitosamente:');
-      console.log(`   - ID: ${newCode._id}`);
-      console.log(`   - Descuento productos: ${newCode.productDiscount}%`);
-      console.log(`   - Descuento combos: ${newCode.comboDiscount}%`);
-      console.log(`   - Estado: Activo`);
+    for (const codeData of discountCodes) {
+      const existingCode = await DiscountCode.findOne({ code: codeData.code });
+      
+      if (existingCode) {
+        console.log(`ℹ️ El código ${codeData.code} ya existe`);
+        existing++;
+      } else {
+        await DiscountCode.create(codeData);
+        console.log(`✅ Código ${codeData.code} creado exitosamente`);
+        created++;
+      }
     }
+
+    console.log(`\n📊 Resumen: ${created} códigos creados, ${existing} ya existían`);
 
     // Mostrar todos los códigos existentes
     const allCodes = await DiscountCode.find();
