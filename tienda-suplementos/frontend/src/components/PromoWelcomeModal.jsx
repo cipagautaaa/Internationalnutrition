@@ -49,7 +49,7 @@ const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
         </div>
 
         {/* Columna derecha - Información con tema navideño */}
-        <div className="bg-gradient-to-br from-red-800 via-red-900 to-green-900 text-white p-6 sm:p-10 flex flex-col justify-between gap-6 relative overflow-hidden min-h-[400px] md:min-h-[520px]">
+        <div className="bg-gradient-to-br from-red-800 via-red-900 to-green-900 text-white p-6 sm:p-8 flex flex-col justify-center gap-5 relative overflow-hidden">
           {/* Decoración navideña sutil */}
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400"></div>
           <div className="absolute top-4 right-12 text-white/10 text-4xl">❄</div>
