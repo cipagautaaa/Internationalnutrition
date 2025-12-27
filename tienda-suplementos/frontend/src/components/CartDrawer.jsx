@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect, useCallback } from 'react';
-import { X, ChevronLeft, ChevronRight, AlertTriangle, Truck, Gift } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, AlertTriangle, Truck, Gift, HelpCircle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import CartItem from './CartItem';
@@ -12,6 +12,9 @@ import {
   amountForFreeShipping, 
   freeShippingProgress 
 } from '../utils/shippingCalculator';
+
+// Constante para el umbral de regalo
+const GIFT_THRESHOLD = 70000;
 
 const CartDrawer = () => {
   const { isCartOpen, closeCart, items, getTotalPrice, addToCart } = useCart();
@@ -26,6 +29,11 @@ const CartDrawer = () => {
   const amountNeeded = amountForFreeShipping(totalPrice);
   const progressPercent = freeShippingProgress(totalPrice);
   const meetsMinimum = totalPrice >= MINIMUM_ORDER_AMOUNT;
+
+  // Lógica de regalo
+  const hasGift = totalPrice >= GIFT_THRESHOLD;
+  const amountNeededForGift = Math.max(0, GIFT_THRESHOLD - totalPrice);
+  const giftProgressPercent = Math.min(100, (totalPrice / GIFT_THRESHOLD) * 100);
 
   // Obtener productos relacionados reales de la base de datos
   const fetchRelatedProducts = useCallback(async () => {
@@ -181,13 +189,43 @@ const CartDrawer = () => {
             {/* Mensaje */}
             {isFreeShipping ? (
               <div className="flex items-center justify-center gap-2 text-red-600 font-medium text-sm">
-                <Gift size={16} />
+                <Truck size={16} />
                 <span>¡Has desbloqueado el <strong>envío gratuito</strong>!</span>
               </div>
             ) : (
               <div className="text-center">
                 <p className="text-sm text-gray-700">
                   ¡Estás a <span className="font-bold text-red-600">${formatPrice(amountNeeded)}</span> de adquirir envío gratuito!
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Barra de progreso de regalo - REGALATÓN */}
+        {items.length > 0 && (
+          <div className="flex-shrink-0 px-4 py-3 bg-gradient-to-r from-red-50 via-green-50 to-red-50 border-b">
+            {/* Barra de progreso regalo */}
+            <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
+              <div 
+                className={`absolute left-0 top-0 h-full rounded-full transition-all duration-500 ${
+                  hasGift ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-green-300 to-green-400'
+                }`}
+                style={{ width: `${giftProgressPercent}%` }}
+              />
+            </div>
+            
+            {/* Mensaje regalo */}
+            {hasGift ? (
+              <div className="flex items-center justify-center gap-2 text-green-600 font-medium text-sm">
+                <Gift size={16} className="animate-bounce" />
+                <span>🎁 <strong>¡Obtuviste un regalo sorpresa!</strong> 🎁</span>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-gray-700">
+                  <Gift size={14} className="inline mr-1 text-green-600" />
+                  ¡Estás a <span className="font-bold text-green-600">${formatPrice(amountNeededForGift)}</span> de recibir un regalo!
                 </p>
               </div>
             )}
@@ -215,6 +253,31 @@ const CartDrawer = () => {
                   {items.map((item) => (
                     <CartItem key={item._key} item={item} />
                   ))}
+                  
+                  {/* Regalo sorpresa - se muestra cuando el total >= 70.000 */}
+                  {hasGift && (
+                    <div className="p-4 bg-gradient-to-r from-green-50 via-yellow-50 to-green-50 border-2 border-dashed border-green-300">
+                      <div className="flex items-center gap-4">
+                        {/* Ícono de interrogación como imagen */}
+                        <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center flex-shrink-0 shadow-lg">
+                          <HelpCircle size={32} className="text-white animate-pulse" />
+                        </div>
+                        
+                        <div className="flex-1">
+                          <p className="font-bold text-green-800 text-sm uppercase tracking-wide">
+                            🎁 Regalo Sorpresa
+                          </p>
+                          <p className="text-xs text-green-600 mt-1">
+                            ¡Gracias por tu compra! Tu regalo será una sorpresa.
+                          </p>
+                        </div>
+                        
+                        <div className="text-right">
+                          <span className="text-lg font-bold text-green-600">GRATIS</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* También te puede gustar - SIEMPRE SE MUESTRA */}

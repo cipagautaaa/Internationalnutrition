@@ -281,13 +281,13 @@ const Home = () => {
   return (
   <div className="min-h-screen text-gray-900 bg-black">
       <PromoWelcomeModal
-        open={!isAuthenticated && showPromo}
+        open={showPromo}
         onClose={handleClosePromo}
         onClaim={handleClaimPromo}
       />
-      {/* Botón flotante "Ahorra 20%" - solo si no autenticado y modal cerrado */}
+      {/* Botón flotante "Recibe un regalo" - siempre visible cuando modal está cerrado */}
       <PromoFloatButton 
-        show={!isAuthenticated && !showPromo} 
+        show={!showPromo} 
         onClick={handleOpenPromo} 
       />
       {/* Hero Section Limpio */}

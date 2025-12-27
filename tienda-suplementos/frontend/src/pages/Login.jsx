@@ -99,7 +99,7 @@ export default function Login() {
             <p className="text-gray-300 text-lg">
               {step === 'form' ? 'Crea tu cuenta y accede a productos premium' : 
                step === 'code' ? 'Verifica tu identidad para continuar' : 
-               '¡Activa tu 20% OFF con el código INTSUPPS20!'}
+               '¡Tu cuenta ha sido creada exitosamente!'}
             </p>
           </div>
           
@@ -150,12 +150,12 @@ export default function Login() {
           
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              {step === 'form' ? 'Crear cuenta' : step === 'code' ? 'Verifica tu correo' : '¡Descuento listo!'}
+              {step === 'form' ? 'Crear cuenta' : step === 'code' ? 'Verifica tu correo' : '¡Registro exitoso!'}
             </h1>
             <p className="text-gray-600">
               {step === 'form' ? 'Completa tus datos para crear tu cuenta' : 
                step === 'code' ? 'Revisa tu bandeja de entrada (incluye spam/promociones)' : 
-               'Usa tu código exclusivo en tu próxima compra'}
+               'Ya puedes disfrutar de todos los beneficios'}
             </p>
           </div>
           {message && (
@@ -260,7 +260,7 @@ export default function Login() {
                   loading ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]'
                 }`}
               >
-                {loading ? 'Enviando código...' : 'Crear cuenta y recibir código →'}
+                {loading ? 'Enviando código...' : 'Crear cuenta →'}
               </button>
 
               <p className="text-sm text-gray-500 text-center">
@@ -313,16 +313,15 @@ export default function Login() {
           {step === 'success' && (
             <div className="space-y-6 text-center">
               <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-5">
-                <p className="text-sm font-semibold text-emerald-700">¡Registro completado!</p>
-                <p className="text-lg font-bold text-emerald-900 mt-2">Tu código: INTSUPPS20</p>
-                <p className="text-sm text-emerald-800">Cópialo y pégalo al finalizar tu compra.</p>
-                <button
-                  type="button"
-                  className="mt-3 inline-flex items-center gap-2 rounded-full border border-emerald-200 px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-100"
-                  onClick={() => navigator.clipboard?.writeText('INTSUPPS20')}
-                >
-                  Copiar código
-                </button>
+                <div className="flex justify-center mb-3">
+                  <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center">
+                    <svg className="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                  </div>
+                </div>
+                <p className="text-lg font-bold text-emerald-900">¡Registrado exitosamente!</p>
+                <p className="text-sm text-emerald-700 mt-2">Tu cuenta ha sido creada y verificada correctamente.</p>
               </div>
               <button
                 type="button"
