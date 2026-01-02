@@ -213,12 +213,12 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
     setLoading(true);
     
     try {
-      const productDiscountCalc = discount.applied ? Math.round(productSubtotal * 0.20) : 0;
-      const comboDiscountCalc = discount.applied ? Math.round(comboSubtotal * 0.05) : 0;
+      const productDiscountCalc = discount.applied ? productDiscount : 0;
+      const comboDiscountCalc = discount.applied ? comboDiscount : 0;
       const discountAmountCalc = productDiscountCalc + comboDiscountCalc;
       // Calcular envío para este envío
       const shippingForOrder = isFreeShipping ? 0 : shippingCost;
-      const totalFinal = Math.max(0, subtotal - discountAmountCalc) + shippingForOrder;
+      const totalFinal = subtotalAfterDiscount + shippingForOrder;
       
       // Preparar datos para la transacción Wompi
       const transactionData = {
@@ -326,6 +326,11 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   // Helper para renderizar el bloque de código de descuento sin remounts que quiten el foco
   const renderDiscountCodeSection = () => {
     const applyDiscount = async () => {
+      if (discount.applied) {
+        setMessage('Ya tienes un código aplicado. Quita el actual para usar otro.');
+        return;
+      }
+
       const code = discountCode.trim().toUpperCase();
       if (!code) {
         setMessage('Ingresa un código.');
@@ -401,7 +406,7 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
             <button 
               type="button" 
               onClick={applyDiscount} 
-              disabled={discountLoading}
+              disabled={discountLoading || discount.applied}
               className="px-4 py-3 bg-gray-900 text-white rounded-md hover:bg-black disabled:opacity-60"
             >
               {discountLoading ? 'Validando...' : 'Aplicar'}

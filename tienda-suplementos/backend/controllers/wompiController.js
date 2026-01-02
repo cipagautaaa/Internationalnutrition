@@ -12,6 +12,79 @@ const {
   getAvailablePaymentMethods
 } = require('../utils/wompi');
 
+// Envío: misma lógica que frontend (free shipping y costo por región)
+const FREE_SHIPPING_THRESHOLD = 80000;
+const SHIPPING_COSTS_BY_DEPARTMENT = {
+  boyaca: 10000,
+  'boyacá': 10000,
+  cundinamarca: 10000,
+  bogota: 10000,
+  'bogotá': 10000,
+  santander: 12000,
+  meta: 12000,
+  casanare: 12000,
+  arauca: 13000,
+  tolima: 14000,
+  huila: 14000,
+  caldas: 14000,
+  risaralda: 14000,
+  quindio: 14000,
+  'quindío': 14000,
+  antioquia: 14000,
+  'norte de santander': 14000,
+  'valle del cauca': 16000,
+  valle: 16000,
+  cauca: 16000,
+  cesar: 16000,
+  magdalena: 16000,
+  bolivar: 16000,
+  'bolívar': 16000,
+  atlantico: 16000,
+  'atlántico': 16000,
+  sucre: 16000,
+  cordoba: 16000,
+  'córdoba': 16000,
+  'nariño': 18000,
+  narino: 18000,
+  putumayo: 18000,
+  caqueta: 18000,
+  'caquetá': 18000,
+  'la guajira': 18000,
+  guajira: 18000,
+  choco: 20000,
+  'chocó': 20000,
+  amazonas: 20000,
+  vaupes: 20000,
+  'vaupés': 20000,
+  guainia: 20000,
+  'guainía': 20000,
+  vichada: 20000,
+  guaviare: 20000,
+  'san andres': 20000,
+  'san andrés': 20000,
+  'san andres y providencia': 20000,
+};
+const DEFAULT_SHIPPING_COST = 15000;
+const normalizeDepartment = (department) => {
+  if (!department) return '';
+  return department
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+};
+const getShippingCost = (department) => {
+  const normalized = normalizeDepartment(department);
+  if (!normalized) return DEFAULT_SHIPPING_COST;
+  for (const [key, cost] of Object.entries(SHIPPING_COSTS_BY_DEPARTMENT)) {
+    if (normalized === normalizeDepartment(key) || normalized.includes(normalizeDepartment(key))) {
+      return cost;
+    }
+  }
+  return DEFAULT_SHIPPING_COST;
+};
+const hasFreeShipping = (subtotal) => subtotal >= FREE_SHIPPING_THRESHOLD;
+
 // Handler para crear transacción (compatible con llamadas desde /api/payments o /api/wompi)
 const createWompiTransactionHandler = async (req, res) => {
   try {
@@ -144,7 +217,11 @@ const createWompiTransactionHandler = async (req, res) => {
       }
     }
 
-    const netTotal = Math.max(0, totalAmount - discountAmount);
+    const subtotalAfterDiscount = Math.max(0, totalAmount - discountAmount);
+    const shippingCost = hasFreeShipping(subtotalAfterDiscount)
+      ? 0
+      : getShippingCost(shippingAddress?.region || shippingAddress?.state);
+    const netTotal = subtotalAfterDiscount + shippingCost;
 
     const mappedShippingAddress = {
       street: shippingAddress.addressLine1 || '',
@@ -167,6 +244,9 @@ const createWompiTransactionHandler = async (req, res) => {
       customerData: normalizedCustomerData,
       items: orderItems,
       totalAmount: netTotal,
+      subtotal: totalAmount,
+      discountAmount,
+      shippingCost,
       shippingAddress: mappedShippingAddress,
       paymentMethod: 'wompi',
       paymentStatus: 'pending'
