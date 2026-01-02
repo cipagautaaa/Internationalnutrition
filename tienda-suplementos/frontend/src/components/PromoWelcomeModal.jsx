@@ -57,11 +57,11 @@ const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
           <div className="absolute bottom-4 left-4 text-white/10 text-3xl">✦</div>
 
           {/* Imagen solo en móvil (va arriba de la información) */}
-          <div className="md:hidden relative z-10">
+          <div className="md:hidden relative z-10 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8">
             <img
               src={historiaRegalatonCelular}
               alt="Historia Regalatón - International Nutrition"
-              className="w-full h-44 sm:h-52 object-cover object-top rounded-2xl"
+              className="w-full h-auto object-cover object-top"
             />
           </div>
           
