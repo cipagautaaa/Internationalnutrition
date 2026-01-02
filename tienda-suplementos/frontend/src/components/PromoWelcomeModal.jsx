@@ -1,5 +1,6 @@
 import { X, ArrowRight, Gift } from 'lucide-react';
 import historiaRegalaton from '../assets/images/HISTORIA REGALATON.png';
+import historiaRegalatonCelular from '../assets/images/HISTORIA REGALATON CELULAR.jpeg';
 
 const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
   if (!open) return null;
@@ -54,6 +55,15 @@ const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400"></div>
           <div className="absolute top-4 right-12 text-white/10 text-4xl">❄</div>
           <div className="absolute bottom-4 left-4 text-white/10 text-3xl">✦</div>
+
+          {/* Imagen solo en móvil (va arriba de la información) */}
+          <div className="md:hidden relative z-10">
+            <img
+              src={historiaRegalatonCelular}
+              alt="Historia Regalatón - International Nutrition"
+              className="w-full h-44 sm:h-52 object-cover object-top rounded-2xl"
+            />
+          </div>
           
           <div className="space-y-3 relative z-10">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/20 border border-yellow-400/30 rounded-full text-sm font-semibold">
