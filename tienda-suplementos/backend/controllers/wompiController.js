@@ -4,6 +4,7 @@ const Product = require('../models/Product');
 const Combo = require('../models/Combo');
 const Implement = require('../models/Implement');
 const DiscountCode = require('../models/DiscountCode');
+const User = require('../models/User');
 const { sendNewOrderNotificationToAdmin, sendOrderConfirmationToCustomer } = require('../utils/emailService');
 const {
   createWompiTransaction,
@@ -350,6 +351,21 @@ const wompiWebhookHandler = async (req, res) => {
           for (const item of order.items) {
             if (item.kind === 'Product') {
               await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
+            }
+          }
+          
+          // Resetear la ruleta del usuario para que pueda jugar de nuevo
+          if (order.user) {
+            try {
+              await User.findByIdAndUpdate(order.user, {
+                wheelPrizePending: null,
+                wheelLockedUntilPurchase: false,
+                wheelSpinAttempts: 0
+              });
+              console.log(`🎡 [WEBHOOK] Ruleta reseteada para usuario ${order.user} tras pago APPROVED`);
+            } catch (wheelError) {
+              console.error('🎡 [WEBHOOK] Error reseteando ruleta:', wheelError);
+              // No fallar la orden por esto
             }
           }
         }

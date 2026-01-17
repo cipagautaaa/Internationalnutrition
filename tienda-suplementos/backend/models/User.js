@@ -146,6 +146,23 @@ const userSchema = new mongoose.Schema({
       trim: true,
       default: 'Colombia'
     }
+  },
+  // Ruleta Anabólica - Gamificación
+  wheelPrizePending: {
+    type: String,
+    default: null // Código del premio ganado pendiente de redimir (ej: "INTSUPPS10", "REGALO", null)
+  },
+  wheelLockedUntilPurchase: {
+    type: Boolean,
+    default: false // Si true, no puede girar hasta completar una compra
+  },
+  wheelSpinAttempts: {
+    type: Number,
+    default: 0 // Contador de intentos en la sesión actual (0, 1 o 2)
+  },
+  wheelLastSpinDate: {
+    type: Date,
+    default: null // Fecha del último giro
   }
 }, {
   timestamps: true

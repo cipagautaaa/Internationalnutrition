@@ -202,9 +202,9 @@ const CartDrawer = () => {
           </div>
         )}
 
-        {/* Barra de progreso de regalo - REGALATÓN */}
+        {/* Barra de progreso de regalo */}
         {items.length > 0 && (
-          <div className="flex-shrink-0 px-4 py-3 bg-gradient-to-r from-red-50 via-green-50 to-red-50 border-b">
+          <div className="flex-shrink-0 px-4 py-3 bg-gradient-to-r from-gray-50 via-green-50 to-gray-50 border-b">
             {/* Barra de progreso regalo */}
             <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden mb-2">
               <div 

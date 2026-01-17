@@ -15,6 +15,7 @@ import bannerPromoFallback from '../assets/images/foto2.jpg';
 import { getWhatsappUrl } from '../utils/whatsapp';
 import PromoWelcomeModal from '../components/PromoWelcomeModal';
 import PromoFloatButton from '../components/PromoFloatButton';
+import SpinWheel from '../components/SpinWheel';
 
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
@@ -29,6 +30,7 @@ const Home = () => {
   const [slotToReplace, setSlotToReplace] = useState(null);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [showPromo, setShowPromo] = useState(false);
+  const [showWheel, setShowWheel] = useState(false);
 
   const stores = [
     { 
@@ -270,12 +272,20 @@ const Home = () => {
   };
 
   const handleOpenPromo = () => {
-    setShowPromo(true);
+    // Si el usuario está logueado, abrir directamente la ruleta
+    if (isAuthenticated) {
+      setShowWheel(true);
+    } else {
+      setShowPromo(true);
+    }
   };
 
-  const handleClaimPromo = () => {
-    handleClosePromo();
-    navigate('/sign-in', { state: { from: location.pathname } });
+  const handleOpenWheel = () => {
+    setShowWheel(true);
+  };
+
+  const handleCloseWheel = () => {
+    setShowWheel(false);
   };
 
   return (
@@ -283,11 +293,16 @@ const Home = () => {
       <PromoWelcomeModal
         open={showPromo}
         onClose={handleClosePromo}
-        onClaim={handleClaimPromo}
+        onOpenWheel={handleOpenWheel}
       />
-      {/* Botón flotante "Recibe un regalo" - siempre visible cuando modal está cerrado */}
+      {/* Ruleta Anabólica */}
+      <SpinWheel
+        open={showWheel}
+        onClose={handleCloseWheel}
+      />
+      {/* Botón flotante "Ruleta Anabólica" - siempre visible cuando modales están cerrados */}
       <PromoFloatButton 
-        show={!showPromo} 
+        show={!showPromo && !showWheel} 
         onClick={handleOpenPromo} 
       />
       {/* Hero Section Limpio */}

@@ -1,113 +1,145 @@
-import { X, ArrowRight, Gift } from 'lucide-react';
-import historiaRegalaton from '../assets/images/HISTORIA REGALATON.png';
-import historiaRegalatonCelular from '../assets/images/HISTORIA REGALATON CELULAR.jpeg';
+import { X, ArrowRight, Zap, Trophy, Target } from 'lucide-react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
-const PromoWelcomeModal = ({ open, onClose, onClaim }) => {
+/**
+ * PromoWelcomeModal - Modal de bienvenida para la Ruleta Anabólica
+ * 
+ * Aparece a los 5 segundos de entrar al sitio.
+ * - Si el usuario NO está logueado: redirige a registro/login
+ * - Si el usuario está logueado: abre la ruleta directamente
+ */
+const PromoWelcomeModal = ({ open, onClose, onOpenWheel }) => {
+  const { isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
   if (!open) return null;
 
-  const handleClaimClick = () => {
+  const handlePlayClick = () => {
     onClose();
-    // Scroll a la sección de categorías
-    const section = document.getElementById('categories');
-    const title = document.getElementById('categories-title');
-    const target = title || section;
-    if (target) {
-      const navbar = document.getElementById('main-navbar');
-      let headerOffset = 0;
-      if (navbar) {
-        const rect = navbar.getBoundingClientRect();
-        const styles = getComputedStyle(navbar);
-        const topPx = parseFloat(styles.top) || 0;
-        headerOffset = rect.height + topPx;
+    
+    if (isAuthenticated) {
+      // Usuario logueado: abrir la ruleta
+      if (onOpenWheel) {
+        onOpenWheel();
       }
-      const desiredGap = 32;
-      const y = target.getBoundingClientRect().top + window.scrollY - headerOffset - desiredGap;
-      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else {
+      // Usuario no logueado: redirigir a registro
+      navigate('/sign-in', { 
+        state: { 
+          from: location.pathname,
+          openWheel: true // Flag para abrir ruleta después de login
+        } 
+      });
     }
   };
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-start justify-center px-3 sm:px-6 py-6 overflow-y-auto pointer-events-auto">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-[150] flex items-center justify-center px-3 sm:px-6 py-6 overflow-y-auto pointer-events-auto">
+      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Contenedor principal - Dos columnas en desktop, una en móvil */}
-      <div className="relative max-w-3xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden grid md:grid-cols-2 max-h-[calc(100vh-2rem)]">
+      {/* Contenedor principal */}
+      <div className="relative max-w-lg w-full bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-3xl shadow-2xl overflow-hidden border border-red-600/20">
+        {/* Botón cerrar */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 text-white md:text-gray-400 hover:text-gray-600 hover:bg-white/20 md:hover:bg-gray-100 rounded-full transition"
+          className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition"
           aria-label="Cerrar"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Columna izquierda - Imagen (oculta en móvil) */}
-        <div className="hidden md:block relative h-full min-h-[520px]">
-          <img
-            src={historiaRegalaton}
-            alt="Gran Regalatón de Fin de Año - International Nutrition"
-            className="h-full w-full object-cover object-top"
-          />
-        </div>
+        {/* Decoración superior */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-red-600 via-orange-500 to-red-600"></div>
+        
+        {/* Efectos de fondo */}
+        <div className="absolute top-10 right-10 w-32 h-32 bg-red-600/10 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-10 left-10 w-24 h-24 bg-orange-500/10 rounded-full blur-2xl"></div>
 
-        {/* Columna derecha - Información con tema navideño */}
-        <div className="bg-gradient-to-br from-red-800 via-red-900 to-green-900 text-white p-6 sm:p-8 flex flex-col justify-center gap-5 relative overflow-hidden">
-          {/* Decoración navideña sutil */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 via-yellow-200 to-yellow-400"></div>
-          <div className="absolute top-4 right-12 text-white/10 text-4xl">❄</div>
-          <div className="absolute bottom-4 left-4 text-white/10 text-3xl">✦</div>
-
-          {/* Imagen solo en móvil (va arriba de la información) */}
-          <div className="md:hidden relative z-10 -mx-6 sm:-mx-8 -mt-6 sm:-mt-8">
-            <img
-              src={historiaRegalatonCelular}
-              alt="Historia Regalatón - International Nutrition"
-              className="w-full h-auto object-cover object-top"
-            />
+        {/* Contenido */}
+        <div className="relative p-6 sm:p-8 text-center">
+          {/* Ícono principal */}
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-gradient-to-br from-red-600 to-orange-600 rounded-full shadow-lg shadow-red-600/30">
+            <Target className="w-10 h-10 text-white" />
           </div>
-          
-          <div className="space-y-3 relative z-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-yellow-500/20 border border-yellow-400/30 rounded-full text-sm font-semibold">
-              ¡REGALATÓN!
+
+          {/* Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-600/20 border border-red-500/30 rounded-full text-sm font-bold text-red-400 mb-4">
+            <Zap className="w-4 h-4" />
+            ¡NUEVA PROMOCIÓN!
+          </div>
+
+          {/* Título */}
+          <h2 className="text-3xl sm:text-4xl font-black text-white mb-3 leading-tight">
+            ¡LLEGÓ LA<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
+              RULETA ANABÓLICA!
+            </span>
+          </h2>
+
+          {/* Descripción */}
+          <p className="text-gray-300 text-base sm:text-lg mb-6 max-w-md mx-auto">
+            ¡Participa por la oportunidad de ganar{' '}
+            <span className="text-red-400 font-semibold">impresionantes descuentos</span>,{' '}
+            <span className="text-orange-400 font-semibold">regalos sorpresa</span> y{' '}
+            <span className="text-yellow-400 font-semibold">suplementos gratis</span>!
+          </p>
+
+          {/* Premios disponibles */}
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            <span className="px-3 py-1 bg-green-600/20 text-green-400 text-xs font-semibold rounded-full border border-green-500/30">
+              5% - 20% OFF
+            </span>
+            <span className="px-3 py-1 bg-purple-600/20 text-purple-400 text-xs font-semibold rounded-full border border-purple-500/30">
+              Regalos Sorpresa
+            </span>
+            <span className="px-3 py-1 bg-yellow-600/20 text-yellow-400 text-xs font-semibold rounded-full border border-yellow-500/30">
+              Suplementos Gratis
+            </span>
+          </div>
+
+          {/* Beneficios */}
+          <div className="space-y-2 mb-6">
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
+              <Trophy className="w-4 h-4 text-yellow-500" />
+              <span>2 oportunidades para ganar</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-black leading-tight">
-              ¡Estamos locos de remate!
-            </h2>
-            <p className="text-white/90 text-sm sm:text-base max-w-md">
-              Desde hoy y hasta fin de año, recibe <strong className="text-yellow-300">REGALOS SORPRESA</strong> por todas tus compras.
+            <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
+              <Zap className="w-4 h-4 text-red-500" />
+              <span>Premios reales en cada giro</span>
+            </div>
+          </div>
+
+          {/* CTA Principal */}
+          <button
+            onClick={handlePlayClick}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-orange-600 text-white font-black text-lg px-6 py-4 shadow-lg shadow-red-600/30 hover:from-red-700 hover:to-orange-700 hover:scale-[1.02] hover:-translate-y-0.5 transition-all uppercase tracking-wide"
+          >
+            <Target className="w-5 h-5" />
+            Quiero probar suerte
+            <ArrowRight className="w-5 h-5" />
+          </button>
+
+          {/* Nota de autenticación */}
+          {!isAuthenticated && (
+            <p className="text-xs text-gray-500 mt-3">
+              * Necesitas una cuenta para participar y guardar tu premio
             </p>
-          </div>
+          )}
 
-          <div className="space-y-4 relative z-10">
-            <div className="flex items-center gap-3 text-sm text-white/90">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-yellow-400 to-yellow-600 flex items-center justify-center font-bold text-black text-lg">
-                +
-              </div>
-              <div>
-                <p className="font-semibold text-yellow-300">¡Entre más compres, más grande tu regalo!</p>
-                <p className="text-white/70 text-xs">Mínimo de compra: $70.000</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <button
-                onClick={handleClaimClick}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-yellow-400 to-yellow-500 text-black font-bold px-5 py-3 shadow-lg shadow-yellow-500/30 hover:scale-[1.01] hover:-translate-y-0.5 transition"
-              >
-                <Gift className="w-5 h-5 flex-shrink-0" />
-                <span className="whitespace-nowrap">¡Quiero mi regalo, a comprar!</span>
-                <ArrowRight className="w-4 h-4 flex-shrink-0" />
-              </button>
-              <button
-                onClick={onClose}
-                className="w-full text-sm font-semibold text-white/70 hover:text-white transition"
-              >
-                Ahora no
-              </button>
-            </div>
-            {/* Letra pequeña */}
-            <p className="text-[10px] text-white/40 text-center">
-              *Promoción disponible hasta fecha pactada o hasta agotar existencias
-            </p>
-          </div>
+          {/* Botón secundario */}
+          <button
+            onClick={onClose}
+            className="w-full mt-3 text-sm font-semibold text-gray-500 hover:text-gray-300 transition py-2"
+          >
+            Ahora no
+          </button>
+
+          {/* Términos */}
+          <p className="text-[10px] text-gray-600 mt-4">
+            *Promoción válida hasta agotar existencias. Un premio por compra realizada.
+          </p>
         </div>
       </div>
     </div>

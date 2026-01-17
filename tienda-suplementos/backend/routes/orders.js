@@ -5,6 +5,7 @@ const Product = require('../models/Product');
 const Combo = require('../models/Combo');
 const Implement = require('../models/Implement');
 const { sendNewOrderNotificationToAdmin, sendOrderConfirmationToCustomer } = require('../utils/emailService');
+const { resetWheelForUser } = require('./wheel');
 
 const router = express.Router();
 
@@ -337,6 +338,17 @@ router.put('/:orderId/status', protect, async (req, res) => {
           item.product,
           { $inc: { stock: -item.quantity } }
         );
+      }
+      
+      // Resetear la ruleta del usuario para que pueda jugar de nuevo
+      if (order.user) {
+        try {
+          await resetWheelForUser(order.user);
+          console.log(`[Orders] Ruleta reseteada para usuario ${order.user} tras pago aprobado`);
+        } catch (wheelError) {
+          console.error('[Orders] Error reseteando ruleta:', wheelError);
+          // No fallar la orden por esto
+        }
       }
     }
 
