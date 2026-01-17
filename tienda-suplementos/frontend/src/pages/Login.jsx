@@ -84,8 +84,8 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center p-3 sm:p-4 overflow-y-auto">
-      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-0 relative z-10 overflow-hidden rounded-3xl shadow-2xl max-h-[calc(100vh-1.5rem)] md:max-h-none">
+    <div className="min-h-screen min-h-[100svh] min-h-[100dvh] flex items-start justify-center p-3 sm:p-4 overflow-y-auto">
+      <div className="w-full max-w-5xl grid md:grid-cols-2 gap-0 relative z-10 overflow-visible md:overflow-hidden rounded-3xl shadow-2xl">
         {/* Columna izquierda - Información */}
         <div className="hidden md:flex flex-col justify-center text-white bg-gradient-to-br from-gray-900 via-red-900/30 to-gray-900 space-y-6 p-10">
           <div className="space-y-4">
@@ -132,7 +132,7 @@ export default function Login() {
         </div>
 
         {/* Columna derecha - Formulario */}
-        <div className="bg-white rounded-3xl md:rounded-r-3xl shadow-2xl p-6 sm:p-8 space-y-5 relative max-h-full overflow-y-auto">
+        <div className="bg-white rounded-3xl md:rounded-r-3xl shadow-2xl p-6 sm:p-8 space-y-5 relative overflow-visible md:overflow-y-auto md:max-h-full pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           {/* Botón cerrar */}
           <button
             onClick={() => navigate('/')}
