@@ -5,25 +5,25 @@ import axios from '../utils/axios';
 
 /**
  * Configuración de los 15 segmentos de la ruleta
- * Colores serios: rojo, blanco, negro y grises
+ * Colores variados y llamativos para marketing (según imagen de referencia)
  * Orden: empezando desde arriba, en sentido horario
  */
 const WHEEL_SEGMENTS = [
-  { id: 0, label: 'Regalo', color: '#1a1a1a', textColor: '#fff' },
-  { id: 1, label: '10%', color: '#DC2626', textColor: '#fff' },
-  { id: 2, label: '5%', color: '#ffffff', textColor: '#1a1a1a' },
-  { id: 3, label: 'Suplemento Regalo', color: '#7f1d1d', textColor: '#fff' },
-  { id: 4, label: '10%', color: '#ffffff', textColor: '#1a1a1a' },
-  { id: 5, label: '5%', color: '#DC2626', textColor: '#fff' },
-  { id: 6, label: 'Regalo', color: '#1a1a1a', textColor: '#fff' },
-  { id: 7, label: '15%', color: '#ffffff', textColor: '#1a1a1a' },
-  { id: 8, label: '20%', color: '#DC2626', textColor: '#fff' },
-  { id: 9, label: 'Perdiste', color: '#374151', textColor: '#fff' },
-  { id: 10, label: '10%', color: '#ffffff', textColor: '#1a1a1a' },
-  { id: 11, label: '5%', color: '#1a1a1a', textColor: '#fff' },
-  { id: 12, label: 'Regalo', color: '#DC2626', textColor: '#fff' },
-  { id: 13, label: '15%', color: '#1a1a1a', textColor: '#fff' },
-  { id: 14, label: '5%', color: '#ffffff', textColor: '#1a1a1a' }
+  { id: 0, label: 'Regalo', color: '#22C55E', textColor: '#fff' },
+  { id: 1, label: '10%', color: '#F97316', textColor: '#fff' },
+  { id: 2, label: '5%', color: '#EF4444', textColor: '#fff' },
+  { id: 3, label: 'Suplemento Regalo', color: '#DC2626', textColor: '#fff' },
+  { id: 4, label: '10%', color: '#3B82F6', textColor: '#fff' },
+  { id: 5, label: '5%', color: '#FFFFFF', textColor: '#1a1a1a' },
+  { id: 6, label: 'Regalo', color: '#EF4444', textColor: '#fff' },
+  { id: 7, label: '15%', color: '#EAB308', textColor: '#1a1a1a' },
+  { id: 8, label: '20%', color: '#F97316', textColor: '#fff' },
+  { id: 9, label: 'Perdiste', color: '#8B5CF6', textColor: '#fff' },
+  { id: 10, label: '10%', color: '#EF4444', textColor: '#fff' },
+  { id: 11, label: '5%', color: '#FFFFFF', textColor: '#1a1a1a' },
+  { id: 12, label: 'Regalo', color: '#22C55E', textColor: '#fff' },
+  { id: 13, label: '15%', color: '#EAB308', textColor: '#1a1a1a' },
+  { id: 14, label: '5%', color: '#F97316', textColor: '#fff' }
 ];
 
 const SEGMENT_ANGLE = 360 / WHEEL_SEGMENTS.length;
