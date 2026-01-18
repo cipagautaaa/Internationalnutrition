@@ -1,4 +1,4 @@
-import { X, ArrowRight, Zap, Trophy, Target } from 'lucide-react';
+import { X, ArrowRight, Zap, Target } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -102,10 +102,6 @@ const PromoWelcomeModal = ({ open, onClose, onOpenWheel }) => {
           {/* Beneficios */}
           <div className="space-y-2 mb-6">
             <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
-              <Trophy className="w-4 h-4 text-yellow-500" />
-              <span>2 oportunidades para ganar</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
               <Zap className="w-4 h-4 text-red-500" />
               <span>Premios reales en cada giro</span>
             </div>
@@ -138,7 +134,7 @@ const PromoWelcomeModal = ({ open, onClose, onOpenWheel }) => {
 
           {/* Términos */}
           <p className="text-[10px] text-gray-600 mt-4">
-            *Promoción válida hasta agotar existencias. Un premio por compra realizada.
+            *Aplican términos y condiciones. Promoción válida hasta agotar existencias. Un premio por compra realizada.
           </p>
         </div>
       </div>

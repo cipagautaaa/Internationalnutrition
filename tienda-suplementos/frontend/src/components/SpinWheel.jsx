@@ -4,28 +4,25 @@ import { useAuth } from '../context/AuthContext';
 import axios from '../utils/axios';
 
 /**
- * Configuración de los segmentos de la ruleta
- * Debe coincidir con el backend para mostrar correctamente
+ * Configuración de los 15 segmentos de la ruleta (según imagen de referencia)
+ * Orden: empezando desde arriba, en sentido horario
  */
 const WHEEL_SEGMENTS = [
-  { id: 0, label: '10%', color: '#FF6B00', textColor: '#fff' },
-  { id: 1, label: 'Regalo', color: '#8B5CF6', textColor: '#fff' },
+  { id: 0, label: 'Regalo', color: '#8B5CF6', textColor: '#fff' },
+  { id: 1, label: '10%', color: '#FF6B00', textColor: '#fff' },
   { id: 2, label: '5%', color: '#F97316', textColor: '#fff' },
-  { id: 3, label: '15%', color: '#EAB308', textColor: '#000' },
-  { id: 4, label: 'Perdiste', color: '#FFFFFF', textColor: '#333' },
-  { id: 5, label: '20%', color: '#F97316', textColor: '#fff' },
-  { id: 6, label: '10%', color: '#EF4444', textColor: '#fff' },
+  { id: 3, label: 'Suplemento Regalo', color: '#DC2626', textColor: '#fff' },
+  { id: 4, label: '10%', color: '#3B82F6', textColor: '#fff' },
+  { id: 5, label: '5%', color: '#FFFFFF', textColor: '#333' },
+  { id: 6, label: 'Regalo', color: '#EF4444', textColor: '#fff' },
   { id: 7, label: '15%', color: '#EAB308', textColor: '#000' },
-  { id: 8, label: 'Regalo', color: '#8B5CF6', textColor: '#fff' },
-  { id: 9, label: '5%', color: '#22C55E', textColor: '#fff' },
-  { id: 10, label: 'Suplemento Regalo', color: '#DC2626', textColor: '#fff', isLarge: true },
-  { id: 11, label: '10%', color: '#3B82F6', textColor: '#fff' },
-  { id: 12, label: '5%', color: '#10B981', textColor: '#fff' },
-  { id: 13, label: 'Perdiste', color: '#FFFFFF', textColor: '#333' },
-  { id: 14, label: 'Regalo', color: '#8B5CF6', textColor: '#fff' },
-  { id: 15, label: '5%', color: '#EAB308', textColor: '#000' },
-  { id: 16, label: '15%', color: '#22C55E', textColor: '#fff' },
-  { id: 17, label: '5%', color: '#EF4444', textColor: '#fff' }
+  { id: 8, label: '20%', color: '#F97316', textColor: '#fff' },
+  { id: 9, label: 'Perdiste', color: '#22C55E', textColor: '#fff' },
+  { id: 10, label: '10%', color: '#EF4444', textColor: '#fff' },
+  { id: 11, label: '5%', color: '#FFFFFF', textColor: '#333' },
+  { id: 12, label: 'Regalo', color: '#8B5CF6', textColor: '#fff' },
+  { id: 13, label: '15%', color: '#EAB308', textColor: '#000' },
+  { id: 14, label: '5%', color: '#EAB308', textColor: '#000' }
 ];
 
 const SEGMENT_ANGLE = 360 / WHEEL_SEGMENTS.length;
@@ -180,21 +177,14 @@ const SpinWheel = ({ open, onClose }) => {
         </button>
 
         {/* Título */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-600/20 border border-red-500/30 rounded-full text-sm font-bold text-red-400 mb-3">
+        <div className="text-center mb-4">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-700/30 border border-red-700/50 rounded-full text-sm font-bold text-red-500 mb-3">
             <Zap className="w-4 h-4" />
             RULETA ANABÓLICA
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-white">
             ¡Gira y Gana!
           </h2>
-          <p className="text-gray-400 text-sm mt-2">
-            {wheelStatus?.spinAttempts === 0 
-              ? 'Tienes 2 oportunidades para ganar'
-              : wheelStatus?.spinAttempts === 1 
-                ? '¡Última oportunidad!'
-                : 'Sin intentos disponibles'}
-          </p>
         </div>
 
         {loading ? (
@@ -239,21 +229,21 @@ const SpinWheel = ({ open, onClose }) => {
           </div>
         ) : (
           <>
-            {/* Contenedor de la Ruleta */}
-            <div className="relative flex items-center justify-center mb-6">
+            {/* Contenedor de la Ruleta - más grande y corte en móvil */}
+            <div className="relative flex items-center justify-end mb-6 overflow-hidden -mx-6 sm:-mx-8 md:mx-0 md:justify-center">
               {/* Flecha indicadora */}
-              <div className="absolute right-0 z-20 transform translate-x-2">
-                <div className="w-0 h-0 border-t-[15px] border-t-transparent border-b-[15px] border-b-transparent border-r-[25px] border-r-gray-300"></div>
+              <div className="absolute right-4 md:right-0 z-20 md:transform md:translate-x-2">
+                <div className="w-0 h-0 border-t-[18px] border-t-transparent border-b-[18px] border-b-transparent border-r-[30px] border-r-gray-200 drop-shadow-lg"></div>
               </div>
               
-              {/* Ruleta SVG */}
-              <div className="relative">
+              {/* Ruleta SVG - más grande */}
+              <div className="relative -mr-32 md:mr-0">
                 <svg
                   ref={wheelRef}
-                  width="300"
-                  height="300"
-                  viewBox="0 0 300 300"
-                  className="drop-shadow-2xl"
+                  width="400"
+                  height="400"
+                  viewBox="0 0 400 400"
+                  className="drop-shadow-2xl w-[320px] h-[320px] sm:w-[380px] sm:h-[380px] md:w-[400px] md:h-[400px]"
                   style={{
                     transform: `rotate(${rotation}deg)`,
                     transition: isSpinning ? 'transform 5s cubic-bezier(0.17, 0.67, 0.12, 0.99)' : 'none'
@@ -266,36 +256,36 @@ const SpinWheel = ({ open, onClose }) => {
                     const startRad = (startAngle - 90) * Math.PI / 180;
                     const endRad = (endAngle - 90) * Math.PI / 180;
                     
-                    const x1 = 150 + 140 * Math.cos(startRad);
-                    const y1 = 150 + 140 * Math.sin(startRad);
-                    const x2 = 150 + 140 * Math.cos(endRad);
-                    const y2 = 150 + 140 * Math.sin(endRad);
+                    const outerRadius = 190;
+                    
+                    const x1 = 200 + outerRadius * Math.cos(startRad);
+                    const y1 = 200 + outerRadius * Math.sin(startRad);
+                    const x2 = 200 + outerRadius * Math.cos(endRad);
+                    const y2 = 200 + outerRadius * Math.sin(endRad);
                     
                     const largeArc = SEGMENT_ANGLE > 180 ? 1 : 0;
                     
-                    // Posición del texto
-                    const midAngle = (startAngle + endAngle) / 2 - 90;
-                    const textRad = midAngle * Math.PI / 180;
-                    const textX = 150 + 95 * Math.cos(textRad);
-                    const textY = 150 + 95 * Math.sin(textRad);
+                    // Ángulo medio del segmento para el texto radial
+                    const midAngle = (startAngle + endAngle) / 2;
                     
                     return (
                       <g key={segment.id}>
                         <path
-                          d={`M 150 150 L ${x1} ${y1} A 140 140 0 ${largeArc} 1 ${x2} ${y2} Z`}
+                          d={`M 200 200 L ${x1} ${y1} A ${outerRadius} ${outerRadius} 0 ${largeArc} 1 ${x2} ${y2} Z`}
                           fill={segment.color}
-                          stroke="#1f2937"
+                          stroke="#1a1a1a"
                           strokeWidth="2"
                         />
+                        {/* Texto radial centrado en el segmento */}
                         <text
-                          x={textX}
-                          y={textY}
+                          x="200"
+                          y="200"
                           fill={segment.textColor}
-                          fontSize={segment.isLarge ? "8" : "11"}
+                          fontSize={segment.label.length > 8 ? "10" : "13"}
                           fontWeight="bold"
                           textAnchor="middle"
                           dominantBaseline="middle"
-                          transform={`rotate(${midAngle + 90}, ${textX}, ${textY})`}
+                          transform={`rotate(${midAngle}, 200, 200) translate(120, 0) rotate(90)`}
                         >
                           {segment.label}
                         </text>
@@ -304,8 +294,8 @@ const SpinWheel = ({ open, onClose }) => {
                   })}
                   
                   {/* Centro de la ruleta */}
-                  <circle cx="150" cy="150" r="30" fill="#fff" stroke="#1f2937" strokeWidth="3" />
-                  <circle cx="150" cy="150" r="15" fill="#ef4444" />
+                  <circle cx="200" cy="200" r="40" fill="#fff" stroke="#1a1a1a" strokeWidth="3" />
+                  <circle cx="200" cy="200" r="20" fill="#dc2626" />
                 </svg>
               </div>
             </div>

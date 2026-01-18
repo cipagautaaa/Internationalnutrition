@@ -6,37 +6,33 @@ const User = require('../models/User');
 /**
  * RULETA ANABÓLICA - Sistema de Gamificación
  * 
- * Premios disponibles en la ruleta (18 segmentos):
- * - 5%: 3 segmentos (naranja)
- * - 10%: 3 segmentos (rojo)
- * - 15%: 2 segmentos (amarillo)
- * - 20%: 1 segmento (naranja)
- * - Regalo: 3 segmentos (morado)
- * - Suplemento Regalo: 1 segmento (rojo grande)
- * - Perdiste: 2 segmentos (blanco)
- * - 5% adicional: 3 segmentos (varios colores)
+ * Premios disponibles en la ruleta (15 segmentos):
+ * - 5%: 4 segmentos
+ * - 10%: 3 segmentos
+ * - 15%: 2 segmentos
+ * - 20%: 1 segmento
+ * - Regalo: 3 segmentos
+ * - Suplemento Regalo: 1 segmento
+ * - Perdiste: 1 segmento
  */
 
-// Configuración de premios con probabilidades y ángulos
+// Configuración de premios con probabilidades (15 segmentos = 24° cada uno)
 const WHEEL_SEGMENTS = [
-  { id: 0, label: '10%', code: 'INTSUPPS10', type: 'discount', probability: 6, angle: 0 },
-  { id: 1, label: 'Regalo', code: 'REGALO', type: 'gift', probability: 5, angle: 20 },
-  { id: 2, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 8, angle: 40 },
-  { id: 3, label: '15%', code: 'INTSUPPS15', type: 'discount', probability: 4, angle: 60 },
-  { id: 4, label: 'Perdiste', code: 'NONE', type: 'lose', probability: 12, angle: 80 },
-  { id: 5, label: '20%', code: 'INTSUPPS20', type: 'discount', probability: 2, angle: 100 },
-  { id: 6, label: '10%', code: 'INTSUPPS10', type: 'discount', probability: 6, angle: 120 },
-  { id: 7, label: '15%', code: 'INTSUPPS15', type: 'discount', probability: 4, angle: 140 },
-  { id: 8, label: 'Regalo', code: 'REGALO', type: 'gift', probability: 5, angle: 160 },
-  { id: 9, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 8, angle: 180 },
-  { id: 10, label: 'Suplemento Regalo', code: 'SUPLEMENTO_REGALO', type: 'supplement', probability: 1, angle: 200 },
-  { id: 11, label: '10%', code: 'INTSUPPS10', type: 'discount', probability: 6, angle: 220 },
-  { id: 12, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 8, angle: 240 },
-  { id: 13, label: 'Perdiste', code: 'NONE', type: 'lose', probability: 12, angle: 260 },
-  { id: 14, label: 'Regalo', code: 'REGALO', type: 'gift', probability: 5, angle: 280 },
-  { id: 15, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 8, angle: 300 },
-  { id: 16, label: '15%', code: 'INTSUPPS15', type: 'discount', probability: 4, angle: 320 },
-  { id: 17, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 8, angle: 340 }
+  { id: 0, label: 'Regalo', code: 'REGALO', type: 'gift', probability: 5 },
+  { id: 1, label: '10%', code: 'INTSUPPS10', type: 'discount', probability: 7 },
+  { id: 2, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 10 },
+  { id: 3, label: 'Suplemento Regalo', code: 'SUPLEMENTO_REGALO', type: 'supplement', probability: 1 },
+  { id: 4, label: '10%', code: 'INTSUPPS10', type: 'discount', probability: 7 },
+  { id: 5, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 10 },
+  { id: 6, label: 'Regalo', code: 'REGALO', type: 'gift', probability: 5 },
+  { id: 7, label: '15%', code: 'INTSUPPS15', type: 'discount', probability: 4 },
+  { id: 8, label: '20%', code: 'INTSUPPS20', type: 'discount', probability: 2 },
+  { id: 9, label: 'Perdiste', code: 'NONE', type: 'lose', probability: 15 },
+  { id: 10, label: '10%', code: 'INTSUPPS10', type: 'discount', probability: 7 },
+  { id: 11, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 10 },
+  { id: 12, label: 'Regalo', code: 'REGALO', type: 'gift', probability: 5 },
+  { id: 13, label: '15%', code: 'INTSUPPS15', type: 'discount', probability: 4 },
+  { id: 14, label: '5%', code: 'INTSUPPS5', type: 'discount', probability: 8 }
 ];
 
 // Calcular probabilidad total para selección ponderada
