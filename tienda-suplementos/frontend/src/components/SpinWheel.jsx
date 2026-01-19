@@ -12,7 +12,7 @@ const WHEEL_SEGMENTS = [
   { id: 0, label: 'Regalo', color: '#22C55E', textColor: '#fff' },
   { id: 1, label: '10%', color: '#F97316', textColor: '#fff' },
   { id: 2, label: '5%', color: '#EF4444', textColor: '#fff' },
-  { id: 3, label: 'Suplemento Regalo', color: '#DC2626', textColor: '#fff' },
+  { id: 3, label: 'Suplemento', color: '#DC2626', textColor: '#fff' },
   { id: 4, label: '10%', color: '#3B82F6', textColor: '#fff' },
   { id: 5, label: '5%', color: '#FFFFFF', textColor: '#1a1a1a' },
   { id: 6, label: 'Regalo', color: '#EF4444', textColor: '#fff' },
@@ -289,7 +289,7 @@ const SpinWheel = ({ open, onClose }) => {
                     const midRad = (midAngle - 90) * Math.PI / 180;
                     
                     const outerRadius = 195;
-                    const textRadius = 120;
+                    const textRadius = 155;
                     
                     const x1 = 200 + outerRadius * Math.cos(startRad);
                     const y1 = 200 + outerRadius * Math.sin(startRad);
@@ -300,7 +300,8 @@ const SpinWheel = ({ open, onClose }) => {
                     const textY = 200 + textRadius * Math.sin(midRad);
                     
                     const largeArc = SEGMENT_ANGLE > 180 ? 1 : 0;
-                    const fontSize = segment.label.length > 12 ? "9" : segment.label.length > 8 ? "10" : "12";
+                    const fontSize = segment.label.length > 8 ? "10" : "12";
+                    const textRotation = midAngle;
                     
                     return (
                       <g key={segment.id}>
@@ -310,7 +311,7 @@ const SpinWheel = ({ open, onClose }) => {
                           stroke="#0a0a0a"
                           strokeWidth="1.5"
                         />
-                        {/* Texto rotado 90° para leerse derecho al caer */}
+                        {/* Texto apuntando hacia afuera */}
                         <text
                           x={textX}
                           y={textY}
@@ -320,7 +321,7 @@ const SpinWheel = ({ open, onClose }) => {
                           fontFamily="system-ui, -apple-system, sans-serif"
                           textAnchor="middle"
                           dominantBaseline="middle"
-                          transform={`rotate(${midAngle + 90} 200 200)`}
+                          transform={`rotate(${textRotation} ${textX} ${textY})`}
                         >
                           {segment.label}
                         </text>
