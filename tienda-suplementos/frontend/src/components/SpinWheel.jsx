@@ -78,11 +78,14 @@ const SpinWheel = ({ open, onClose }) => {
       const segment = data.data.segment;
       
       // Calcular rotación para que quede en el segmento correcto
-      // La flecha apunta a la derecha (0°), así que calculamos la rotación
-      const segmentIndex = segment.id;
+      // La flecha apunta a la derecha (0°)
+      const segmentIndex = WHEEL_SEGMENTS.findIndex(s => s.id === segment.id);
+      const safeIndex = segmentIndex === -1 ? 0 : segmentIndex;
       const baseRotation = 360 * 5; // 5 vueltas completas
-      const targetAngle = 360 - (segmentIndex * SEGMENT_ANGLE) - (SEGMENT_ANGLE / 2);
-      const finalRotation = baseRotation + targetAngle + (Math.random() * 10 - 5); // Pequeña variación
+      const targetAngle = 90 - (safeIndex * SEGMENT_ANGLE) - (SEGMENT_ANGLE / 2);
+      const maxJitter = Math.max(0, (SEGMENT_ANGLE / 2) - 2);
+      const jitter = (Math.random() * 2 - 1) * maxJitter;
+      const finalRotation = baseRotation + targetAngle + jitter;
       
       setRotation(prev => prev + finalRotation);
       
@@ -167,11 +170,11 @@ const SpinWheel = ({ open, onClose }) => {
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 overflow-y-auto">
       <div className="absolute inset-0 bg-black/90 backdrop-blur-sm" onClick={onClose} />
       
-      <div className="relative bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-red-600/20">
+      <div className="relative bg-slate-900/95 rounded-2xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-700/60">
         {/* Botón cerrar */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition z-10"
+          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white hover:bg-white/5 rounded-full transition z-10"
           aria-label="Cerrar"
         >
           <X className="w-6 h-6" />
@@ -179,12 +182,12 @@ const SpinWheel = ({ open, onClose }) => {
 
         {/* Título */}
         <div className="text-center mb-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-red-700/30 border border-red-700/50 rounded-full text-sm font-bold text-red-500 mb-3">
-            <Zap className="w-4 h-4" />
-            RULETA ANABÓLICA
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-800/80 border border-slate-700/60 rounded-full text-xs font-semibold text-slate-300 mb-3 uppercase tracking-wide">
+            <Zap className="w-3.5 h-3.5" />
+            Ruleta Anabólica
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-white">
-            ¡Gira y Gana!
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-white">
+            Gira y gana
           </h2>
         </div>
 
@@ -195,21 +198,21 @@ const SpinWheel = ({ open, onClose }) => {
         ) : error && !wheelStatus ? (
           <div className="text-center py-8">
             <p className="text-red-400 mb-4">{error}</p>
-            <button onClick={fetchWheelStatus} className="px-6 py-2 bg-red-600 text-white rounded-xl font-bold">
+            <button onClick={fetchWheelStatus} className="px-6 py-2 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition">
               Reintentar
             </button>
           </div>
         ) : wheelStatus?.isLocked && !wheelStatus?.canSpin ? (
           <div className="text-center py-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-yellow-500/20 rounded-full flex items-center justify-center">
-              <Trophy className="w-8 h-8 text-yellow-400" />
+            <div className="w-14 h-14 mx-auto mb-4 rounded-full border border-slate-700/70 bg-slate-800/60 flex items-center justify-center">
+              <Trophy className="w-7 h-7 text-yellow-400" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">
+            <h3 className="text-xl font-semibold text-white mb-2">
               {wheelStatus.prizePending && wheelStatus.prizePending !== 'NONE' 
                 ? '¡Ya tienes un premio!' 
                 : 'Ruleta bloqueada'}
             </h3>
-            <p className="text-gray-400 mb-4">
+            <p className="text-slate-400 mb-4">
               {wheelStatus.prizePending && wheelStatus.prizePending !== 'NONE'
                 ? `Tu código: ${wheelStatus.prizePending}`
                 : 'Realiza una compra para desbloquear la ruleta.'}
@@ -221,7 +224,7 @@ const SpinWheel = ({ open, onClose }) => {
                   setCopied(true);
                   setTimeout(() => setCopied(false), 2000);
                 }}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition"
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 {copied ? 'Copiado!' : 'Copiar código'}
@@ -280,17 +283,24 @@ const SpinWheel = ({ open, onClose }) => {
                   {WHEEL_SEGMENTS.map((segment, i) => {
                     const startAngle = i * SEGMENT_ANGLE;
                     const endAngle = (i + 1) * SEGMENT_ANGLE;
+                    const midAngle = startAngle + SEGMENT_ANGLE / 2;
                     const startRad = (startAngle - 90) * Math.PI / 180;
                     const endRad = (endAngle - 90) * Math.PI / 180;
+                    const midRad = (midAngle - 90) * Math.PI / 180;
                     
                     const outerRadius = 195;
+                    const textRadius = 120;
                     
                     const x1 = 200 + outerRadius * Math.cos(startRad);
                     const y1 = 200 + outerRadius * Math.sin(startRad);
                     const x2 = 200 + outerRadius * Math.cos(endRad);
                     const y2 = 200 + outerRadius * Math.sin(endRad);
                     
+                    const textX = 200 + textRadius * Math.cos(midRad);
+                    const textY = 200 + textRadius * Math.sin(midRad);
+                    
                     const largeArc = SEGMENT_ANGLE > 180 ? 1 : 0;
+                    const fontSize = segment.label.length > 12 ? "9" : segment.label.length > 8 ? "10" : "12";
                     
                     return (
                       <g key={segment.id}>
@@ -300,20 +310,19 @@ const SpinWheel = ({ open, onClose }) => {
                           stroke="#0a0a0a"
                           strokeWidth="1.5"
                         />
-                        {/* Texto siguiendo el arco del segmento */}
+                        {/* Texto rotado 90° para leerse derecho al caer */}
                         <text
+                          x={textX}
+                          y={textY}
                           fill={segment.textColor}
-                          fontSize={segment.label.length > 10 ? "9" : segment.label.length > 6 ? "11" : "13"}
+                          fontSize={fontSize}
                           fontWeight="bold"
                           fontFamily="system-ui, -apple-system, sans-serif"
+                          textAnchor="middle"
+                          dominantBaseline="middle"
+                          transform={`rotate(${midAngle + 90} 200 200)`}
                         >
-                          <textPath
-                            href={`#textArc-${segment.id}`}
-                            startOffset="50%"
-                            textAnchor="middle"
-                          >
-                            {segment.label}
-                          </textPath>
+                          {segment.label}
                         </text>
                       </g>
                     );
@@ -330,10 +339,10 @@ const SpinWheel = ({ open, onClose }) => {
             <button
               onClick={handleSpin}
               disabled={isSpinning || !wheelStatus?.canSpin}
-              className={`w-full py-4 rounded-2xl font-black text-lg uppercase tracking-wide transition-all transform ${
+              className={`w-full py-3.5 rounded-xl font-semibold text-base sm:text-lg transition ${
                 isSpinning || !wheelStatus?.canSpin
-                  ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 hover:scale-[1.02] shadow-lg shadow-red-600/30'
+                  ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                  : 'bg-red-600 text-white hover:bg-red-700'
               }`}
             >
               {isSpinning ? (
@@ -342,7 +351,7 @@ const SpinWheel = ({ open, onClose }) => {
                   Girando...
                 </span>
               ) : (
-                '¡GIRAR LA RULETA!'
+                'Girar la ruleta'
               )}
             </button>
 
@@ -354,59 +363,59 @@ const SpinWheel = ({ open, onClose }) => {
 
         {/* Modal de resultado */}
         {showResult && result && (
-          <div className="absolute inset-0 bg-black/95 rounded-3xl flex items-center justify-center p-6">
-            <div className="text-center">
+          <div className="absolute inset-0 bg-slate-950/95 rounded-2xl flex items-center justify-center p-6">
+            <div className="text-center w-full">
               {result.result === 'win' ? (
                 <>
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center animate-bounce">
-                    <Trophy className="w-10 h-10 text-white" />
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full border border-slate-700/70 bg-slate-800/60 flex items-center justify-center">
+                    <Trophy className="w-8 h-8 text-yellow-400" />
                   </div>
-                  <h3 className="text-3xl font-black text-white mb-2">¡FELICITACIONES!</h3>
-                  <p className="text-gray-300 mb-4">{result.message}</p>
+                  <h3 className="text-2xl font-semibold text-white mb-2">¡Felicidades!</h3>
+                  <p className="text-slate-300 mb-4">{result.message}</p>
                   
                   {result.prizeType === 'discount' && (
-                    <div className="bg-gray-800 rounded-xl p-4 mb-4">
-                      <p className="text-sm text-gray-400 mb-2">Tu código de descuento:</p>
+                    <div className="bg-slate-900/80 border border-slate-700/60 rounded-xl p-4 mb-4">
+                      <p className="text-sm text-slate-400 mb-2">Tu código de descuento</p>
                       <div className="flex items-center justify-center gap-2">
-                        <span className="text-2xl font-mono font-bold text-green-400">{result.prizeCode}</span>
+                        <span className="text-2xl font-mono font-bold text-green-400 tracking-wider">{result.prizeCode}</span>
                         <button
                           onClick={handleCopyCode}
-                          className="p-2 hover:bg-gray-700 rounded-lg transition"
+                          className="p-2 hover:bg-slate-800 rounded-lg transition"
                         >
-                          {copied ? <Check className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5 text-gray-400" />}
+                          {copied ? <Check className="w-5 h-5 text-green-400" /> : <Copy className="w-5 h-5 text-slate-400" />}
                         </button>
                       </div>
                     </div>
                   )}
                   
                   {(result.prizeType === 'gift' || result.prizeType === 'supplement') && (
-                    <div className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-xl p-4 mb-4">
-                      <div className="flex items-center justify-center gap-2 text-purple-300">
+                    <div className="bg-slate-900/80 border border-slate-700/60 rounded-xl p-4 mb-4">
+                      <div className="flex items-center justify-center gap-2 text-slate-200">
                         <Gift className="w-5 h-5" />
-                        <span className="font-semibold">¡Regalo añadido a tu cuenta!</span>
+                        <span className="font-semibold">Regalo añadido a tu cuenta</span>
                       </div>
-                      <p className="text-sm text-gray-400 mt-2">Se aplicará automáticamente en tu próxima compra.</p>
+                      <p className="text-sm text-slate-400 mt-2">Se aplicará automáticamente en tu próxima compra.</p>
                     </div>
                   )}
                 </>
               ) : (
                 <>
-                  <div className="w-20 h-20 mx-auto mb-4 bg-gray-700 rounded-full flex items-center justify-center">
-                    <span className="text-4xl">😔</span>
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-full border border-slate-700/70 bg-slate-800/60 flex items-center justify-center">
+                    <X className="w-7 h-7 text-slate-400" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-semibold text-white mb-2">
                     {result.canSpinAgain ? '¡No te rindas!' : 'Mejor suerte la próxima'}
                   </h3>
-                  <p className="text-gray-400 mb-4">{result.message}</p>
+                  <p className="text-slate-400 mb-4">{result.message}</p>
                 </>
               )}
               
               <button
                 onClick={handleCloseResult}
-                className={`w-full py-3 rounded-xl font-bold transition ${
+                className={`w-full py-3 rounded-xl font-semibold transition ${
                   result.canSpinAgain 
-                    ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800'
-                    : 'bg-gray-700 text-white hover:bg-gray-600'
+                    ? 'bg-red-600 text-white hover:bg-red-700'
+                    : 'bg-slate-700 text-white hover:bg-slate-600'
                 }`}
               >
                 {result.canSpinAgain ? '¡Girar de nuevo!' : 'Cerrar'}
