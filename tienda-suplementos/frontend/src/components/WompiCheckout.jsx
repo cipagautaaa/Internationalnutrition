@@ -13,6 +13,20 @@ import {
   COLOMBIA_DEPARTMENTS 
 } from '../utils/shippingCalculator';
 
+// Productos excluidos de descuentos adicionales (ya están en súper promoción)
+const DISCOUNT_EXCLUDED_PRODUCTS = [
+  'creatina platinum'
+];
+
+// Helper para verificar si un producto está excluido de descuentos
+const isProductExcludedFromDiscount = (productName) => {
+  if (!productName) return false;
+  const normalizedName = productName.toLowerCase().trim();
+  return DISCOUNT_EXCLUDED_PRODUCTS.some(excluded => 
+    normalizedName.includes(excluded.toLowerCase())
+  );
+};
+
 const WompiCheckout = () => {
   const { items, clearCart } = useCart();
   const { user } = useAuth();
@@ -140,12 +154,14 @@ const WompiCheckout = () => {
 
   const handleTransferencia = () => {
     // Preparar mensaje para WhatsApp
-    const productosTexto = items.map(item => 
-      `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toLocaleString('es-CO')}${item.isCombo ? ' [Combo]' : ''}`
-    ).join('\n');
+    const productosTexto = items.map(item => {
+      const isExcluded = isProductExcludedFromDiscount(item.name);
+      return `• ${item.name} (x${item.quantity}) - $${(item.price * item.quantity).toLocaleString('es-CO')}${item.isCombo ? ' [Combo]' : ''}${isExcluded ? ' [Súper Promo]' : ''}`;
+    }).join('\n');
     
     // Usar porcentajes dinámicos del código de descuento aplicado
-    const prodDisc = discount.applied ? Math.round(productSubtotal * (discount.productPercent / 100)) : 0;
+    // IMPORTANTE: Solo aplicar descuento a productos elegibles (excluyendo productos en súper promoción)
+    const prodDisc = discount.applied ? Math.round(eligibleProductSubtotal * (discount.productPercent / 100)) : 0;
     const combDisc = discount.applied ? Math.round(comboSubtotal * (discount.comboPercent / 100)) : 0;
     const discountAmountTransf = prodDisc + combDisc;
     const shippingForTransf = isFreeShipping ? 0 : shippingCost;
@@ -163,6 +179,10 @@ const WompiCheckout = () => {
       if (discount.comboPercent > 0 && combDisc > 0) partes.push(`Combos -${discount.comboPercent}%: -$${combDisc.toLocaleString('es-CO')}`);
       if (partes.length > 0) {
         descuentoTexto = `\n(Código ${discount.code}: ${partes.join(' / ')})`;
+      }
+      // Agregar nota sobre productos excluidos
+      if (hasExcludedItems) {
+        descuentoTexto += `\n(Nota: La Creatina Platinum ya está en súper promo y no aplica descuento adicional)`;
       }
     }
     
@@ -226,13 +246,16 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
           productId: item._id || item.id,
           quantity: item.quantity,
           price: item.price,
-          name: item.name
+          name: item.name,
+          isExcludedFromDiscount: isProductExcludedFromDiscount(item.name)
         })),
         customerData,
         shippingAddress,
         subtotal,
         productSubtotal,
         comboSubtotal,
+        eligibleProductSubtotal, // Subtotal de productos elegibles para descuento
+        excludedProductSubtotal, // Subtotal de productos excluidos (ya en promoción)
         shippingCost: shippingForOrder,
         isFreeShipping,
         total: totalFinal,
@@ -242,8 +265,9 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
               productDiscount: productDiscountCalc,
               comboDiscount: comboDiscountCalc,
               totalDiscount: discountAmountCalc,
-              productSubtotal,
+              productSubtotal: eligibleProductSubtotal, // Solo el subtotal elegible
               comboSubtotal,
+              hasExcludedProducts: hasExcludedItems,
             }
           : null,
         reference: `ORDER_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -302,14 +326,24 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
   const productItems = itemsWithFlags.filter((item) => !item.isCombo);
   const comboItems = itemsWithFlags.filter((item) => item.isCombo);
 
+  // Separar productos elegibles para descuento y productos excluidos
+  const eligibleProductItems = productItems.filter(item => !isProductExcludedFromDiscount(item.name));
+  const excludedProductItems = productItems.filter(item => isProductExcludedFromDiscount(item.name));
+  
+  // Subtotales: elegibles para descuento vs excluidos
+  const eligibleProductSubtotal = eligibleProductItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const excludedProductSubtotal = excludedProductItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  
+  // Subtotales totales (para mostrar y cálculo general)
   const productSubtotal = productItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const comboSubtotal = comboItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const subtotal = productSubtotal + comboSubtotal;
   const hasProductItems = productSubtotal > 0;
   const hasComboItems = comboSubtotal > 0;
+  const hasExcludedItems = excludedProductItems.length > 0;
 
-  // Cálculo de descuentos - usando porcentajes dinámicos del código aplicado
-  const productDiscount = discount.applied ? Math.round(productSubtotal * (discount.productPercent / 100)) : 0;
+  // Cálculo de descuentos - SOLO aplica a productos elegibles, NO a productos excluidos
+  const productDiscount = discount.applied ? Math.round(eligibleProductSubtotal * (discount.productPercent / 100)) : 0;
   const comboDiscount = discount.applied ? Math.round(comboSubtotal * (discount.comboPercent / 100)) : 0;
   const discountAmount = productDiscount + comboDiscount;
   const subtotalAfterDiscount = Math.max(0, subtotal - discountAmount);
@@ -347,7 +381,8 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         if (response.data.success) {
           const { productDiscount: prodPercent, comboDiscount: combPercent } = response.data.discountCode;
           
-          const prodDisc = Math.round(productSubtotal * (prodPercent / 100));
+          // IMPORTANTE: Solo aplicar descuento a productos elegibles (excluyendo productos en súper promoción)
+          const prodDisc = Math.round(eligibleProductSubtotal * (prodPercent / 100));
           const combDisc = Math.round(comboSubtotal * (combPercent / 100));
 
           setDiscount({
@@ -356,12 +391,18 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
             productDiscount: prodDisc,
             comboDiscount: combDisc,
             totalDiscount: prodDisc + combDisc,
-            productSubtotal,
+            productSubtotal: eligibleProductSubtotal, // Solo subtotal elegible
             comboSubtotal,
             productPercent: prodPercent,
             comboPercent: combPercent,
           });
-          setMessage('¡Descuento aplicado exitosamente!');
+          
+          // Mensaje con nota sobre productos excluidos si aplica
+          if (hasExcludedItems) {
+            setMessage('¡Descuento aplicado! La Creatina Platinum ya está en súper promoción, por eso su precio no baja más. El descuento sí aplica al resto de productos y combos.');
+          } else {
+            setMessage('¡Descuento aplicado exitosamente!');
+          }
         }
       } catch (err) {
         console.error('Error validando código:', err);
@@ -447,6 +488,19 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
         <div className="flex justify-between text-sm text-green-700">
           <span>Descuento combos ({discount.comboPercent}%)</span>
           <span>- ${comboDiscount.toLocaleString('es-CO')}</span>
+        </div>
+      )}
+      {/* Nota sobre productos excluidos del descuento */}
+      {discount.applied && hasExcludedItems && (
+        <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 p-3 rounded-lg">
+          <p className="font-medium">🔥 Productos en súper promoción</p>
+          <p className="mt-1">
+            La Creatina Platinum ya está en súper promoción, así que no podemos bajar más su precio con el código de descuento. 
+            Pero no te preocupes, ¡el descuento sí aplica a todos los demás productos y combos!
+          </p>
+          <p className="mt-1 text-amber-600 font-medium">
+            Subtotal excluido: ${excludedProductSubtotal.toLocaleString('es-CO')} (precio ya rebajado)
+          </p>
         </div>
       )}
       {/* Costo de envío */}
