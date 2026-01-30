@@ -86,6 +86,21 @@ const getShippingCost = (department) => {
 };
 const hasFreeShipping = (subtotal) => subtotal >= FREE_SHIPPING_THRESHOLD;
 
+// Productos excluidos de descuentos adicionales (ya están en súper promoción)
+const DISCOUNT_EXCLUDED_PRODUCTS = [
+  'creatina platinum',
+  'platinum'
+];
+
+// Helper para verificar si un producto está excluido de descuentos
+const isProductExcludedFromDiscount = (productName) => {
+  if (!productName) return false;
+  const normalizedName = productName.toLowerCase().trim();
+  return DISCOUNT_EXCLUDED_PRODUCTS.some(excluded => 
+    normalizedName.includes(excluded.toLowerCase())
+  );
+};
+
 // Handler para crear transacción (compatible con llamadas desde /api/payments o /api/wompi)
 const createWompiTransactionHandler = async (req, res) => {
   try {
@@ -106,6 +121,8 @@ const createWompiTransactionHandler = async (req, res) => {
     let totalAmount = 0;
     let productSubtotal = 0;
     let comboSubtotal = 0;
+    let eligibleProductSubtotal = 0; // Productos que SÍ pueden recibir descuento
+    let excludedProductSubtotal = 0; // Productos excluidos (ya en súper promoción)
     const orderItems = [];
 
     for (const item of items) {
@@ -180,14 +197,25 @@ const createWompiTransactionHandler = async (req, res) => {
       const lineTotal = unitPrice * item.quantity;
       totalAmount += lineTotal;
 
+      // Obtener el nombre del producto para verificar exclusión
+      const productName = product ? product.name : combo ? combo.name : implement ? implement.name : item.name;
+      const isExcluded = isProductExcludedFromDiscount(productName);
+
       // Clasificar subtotales por tipo para descuentos diferenciados
       if (kind === 'Combo' || item.isCombo) {
         comboSubtotal += lineTotal;
       } else {
         productSubtotal += lineTotal;
+        // Separar productos elegibles para descuento vs excluidos (súper promoción)
+        if (isExcluded) {
+          excludedProductSubtotal += lineTotal;
+          console.log(`🔥 Producto "${productName}" excluido de descuentos (súper promoción): $${lineTotal}`);
+        } else {
+          eligibleProductSubtotal += lineTotal;
+        }
       }
 
-      orderItems.push({ product: product ? product._id : combo ? combo._id : implement._id, kind, quantity: item.quantity, price: unitPrice });
+      orderItems.push({ product: product ? product._id : combo ? combo._id : implement._id, kind, quantity: item.quantity, price: unitPrice, isExcludedFromDiscount: isExcluded });
     }
 
     // Aplicar descuentos desde la base de datos
@@ -200,8 +228,8 @@ const createWompiTransactionHandler = async (req, res) => {
         const discountCodeDoc = await DiscountCode.findOne({ code: discountCode });
         
         if (discountCodeDoc && discountCodeDoc.isValid()) {
-          // Aplicar descuentos según los porcentajes del código
-          productDiscount = Math.round(productSubtotal * (discountCodeDoc.productDiscount / 100));
+          // IMPORTANTE: Aplicar descuento SOLO a productos elegibles (excluyendo productos en súper promoción)
+          productDiscount = Math.round(eligibleProductSubtotal * (discountCodeDoc.productDiscount / 100));
           comboDiscount = Math.round(comboSubtotal * (discountCodeDoc.comboDiscount / 100));
           discountAmount = productDiscount + comboDiscount;
 
@@ -209,6 +237,9 @@ const createWompiTransactionHandler = async (req, res) => {
           await discountCodeDoc.incrementUsage();
           
           console.log(`✅ Código de descuento ${discountCode} aplicado: Productos -${discountCodeDoc.productDiscount}%, Combos -${discountCodeDoc.comboDiscount}%`);
+          if (excludedProductSubtotal > 0) {
+            console.log(`🔥 Productos excluidos del descuento (súper promoción): $${excludedProductSubtotal}`);
+          }
         } else {
           console.log(`⚠️ Código de descuento ${discountCode} no válido o expirado`);
         }
