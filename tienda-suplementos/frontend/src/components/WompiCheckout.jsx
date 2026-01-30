@@ -15,7 +15,8 @@ import {
 
 // Productos excluidos de descuentos adicionales (ya están en súper promoción)
 const DISCOUNT_EXCLUDED_PRODUCTS = [
-  'creatina platinum'
+  'creatina platinum',
+  'platinum'  // También detectar por nombre corto
 ];
 
 // Helper para verificar si un producto está excluido de descuentos
