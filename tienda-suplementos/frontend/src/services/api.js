@@ -7,6 +7,7 @@ const API_URL = rawApi.endsWith('/api') ? rawApi : rawApi.replace(/\/$/, '') + '
 
 const api = axios.create({
   baseURL: API_URL,
+  timeout: 30000, // 30 segundos de timeout para evitar cuelgues
   headers: {
     'Content-Type': 'application/json',
   },
@@ -27,10 +28,28 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para manejar respuestas
+// Interceptor para manejar respuestas con reintentos para errores de red
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const config = error.config;
+    
+    // Reintentar automáticamente en errores de red o timeout (máximo 2 reintentos)
+    if (!config._retryCount) {
+      config._retryCount = 0;
+    }
+    
+    const isNetworkError = !error.response && (error.code === 'ECONNABORTED' || error.message?.includes('Network Error') || error.message?.includes('timeout'));
+    const isRetryable = isNetworkError && config._retryCount < 2;
+    
+    if (isRetryable) {
+      config._retryCount += 1;
+      console.log(`🔄 Reintentando petición (${config._retryCount}/2): ${config.url}`);
+      // Esperar un poco antes de reintentar (backoff exponencial)
+      await new Promise(resolve => setTimeout(resolve, 1000 * config._retryCount));
+      return api(config);
+    }
+    
     // Solo redirigir a login si realmente es un error de autenticación
     // y no estamos en una ruta de login/registro/checkout
     if (error.response?.status === 401) {
