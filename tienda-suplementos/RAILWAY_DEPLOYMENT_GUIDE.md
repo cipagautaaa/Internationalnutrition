@@ -72,7 +72,7 @@ En el panel de Railway, ve a la pestaña **"Variables"** y añade:
 ```
 MONGODB_URI=mongodb+srv://tienda_user:1234567890@cluster0.nspy8m9.mongodb.net/tienda_suplementos?appName=Cluster0
 MONGODB_DB_NAME=tienda_suplementos
-JWT_SECRET=jaFahl72ZDkw7VFRM1MI8rD7sJLXRyybc4ZMy/0H2fZ/gw7c6H4mQUgo6QIjSCp3pYA+7BvnCjpjdOKTkxKAUg==
+JWT_SECRET=TU_JWT_SECRET_SEGURO_AQUI
 JWT_EXPIRE=7d
 NODE_ENV=production
 SERVE_FRONTEND=true
@@ -82,19 +82,19 @@ PORT=5000
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_PROVIDER=gmail
-EMAIL_USER=Juanpaba14@gmail.com
-EMAIL_PASS=bzon xlik zznq kqox
-EMAIL_FROM=Juanpaba14@gmail.com
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASS=tu_app_password_aqui
+EMAIL_FROM=tu_email@gmail.com
 
-WOMPI_PUBLIC_KEY=pub_prod_QRg3RwTyJzwyfvZo1WnbEc4WxjZaay4g
-WOMPI_PRIVATE_KEY=prv_prod_Ncxd77mreD8o7VH0SfwqcEOFEHVChPwK
-WOMPI_INTEGRITY_SECRET=prod_events_5TQxSQGBLCWccC5BLwCmHy1v1tiqh9b1
-WOMPI_EVENTS_SECRET=prod_integrity_lkCECjt7kLJvfbtIYuOtxy8WKvgjHQi0
+WOMPI_PUBLIC_KEY=pub_prod_TU_CLAVE_PUBLICA_AQUI
+WOMPI_PRIVATE_KEY=prv_prod_TU_CLAVE_PRIVADA_AQUI
+WOMPI_INTEGRITY_SECRET=prod_integrity_TU_SECRET_INTEGRIDAD_AQUI
+WOMPI_EVENTS_SECRET=prod_events_TU_SECRET_EVENTOS_AQUI
 WOMPI_BASE_URL=https://production.wompi.co/v1
 
-CLOUDINARY_CLOUD_NAME=dlopfk5uj
-CLOUDINARY_API_KEY=196442331228644
-CLOUDINARY_API_SECRET=YLyxD2W52SfsNlv-hXm74Sm9MsM
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
 ```
 
 ---

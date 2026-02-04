@@ -164,21 +164,21 @@ ALLOWED_ORIGINS=https://app.railway.app,https://tudominio.com
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_PROVIDER=gmail
-EMAIL_USER=Juanpaba14@gmail.com
-EMAIL_PASS=bzon xlik zznq kqox
-EMAIL_FROM=Juanpaba14@gmail.com
+EMAIL_USER=tu_email@gmail.com
+EMAIL_PASS=tu_app_password_aqui
+EMAIL_FROM=tu_email@gmail.com
 
 # Wompi (Pagos)
-WOMPI_PUBLIC_KEY=pub_prod_QRg3RwTyJzwyfvZo1WnbEc4WxjZaay4g
-WOMPI_PRIVATE_KEY=prv_prod_Ncxd77mreD8o7VH0SfwqcEOFEHVChPwK
-WOMPI_INTEGRITY_SECRET=prod_events_5TQxSQGBLCWccC5BLwCmHy1v1tiqh9b1
-WOMPI_EVENTS_SECRET=prod_integrity_lkCECjt7kLJvfbtIYuOtxy8WKvgjHQi0
+WOMPI_PUBLIC_KEY=pub_prod_TU_CLAVE_PUBLICA_AQUI
+WOMPI_PRIVATE_KEY=prv_prod_TU_CLAVE_PRIVADA_AQUI
+WOMPI_INTEGRITY_SECRET=prod_integrity_TU_SECRET_INTEGRIDAD_AQUI
+WOMPI_EVENTS_SECRET=prod_events_TU_SECRET_EVENTOS_AQUI
 WOMPI_BASE_URL=https://production.wompi.co/v1
 
 # Cloudinary (Imágenes)
-CLOUDINARY_CLOUD_NAME=dlopfk5uj
-CLOUDINARY_API_KEY=196442331228644
-CLOUDINARY_API_SECRET=YLyxD2W52SfsNlv-hXm74Sm9MsM
+CLOUDINARY_CLOUD_NAME=tu_cloud_name
+CLOUDINARY_API_KEY=tu_api_key
+CLOUDINARY_API_SECRET=tu_api_secret
 ```
 
 ---
