@@ -5,6 +5,7 @@ import axios from '../utils/axios';
 import { useState, useMemo, useEffect } from 'react';
 import { Truck, Clock, ShieldCheck, Sparkles } from 'lucide-react';
 import { formatPrice } from '../utils/formatPrice';
+import { getDeliveryRangeLabel } from '../utils/deliveryDate';
 
 // Nueva página de detalle totalmente integrada con backend
 // Características:
@@ -287,7 +288,7 @@ export default function ProductDetail() {
 			<div className={`${gradientPanel} p-4 flex items-center justify-between`}>
 				<div>
 					<p className="text-xs text-gray-500">Entrega aproximada</p>
-					<p className="text-sm font-semibold text-gray-900">Nov 29 - Dic 02</p>
+					<p className="text-sm font-semibold text-gray-900">{getDeliveryRangeLabel()}</p>
 				</div>
 				<Clock className="w-5 h-5 text-gray-400" />
 			</div>

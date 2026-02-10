@@ -4,6 +4,7 @@ import { Gift, ShieldCheck, Truck, Clock, Check, BadgePercent } from 'lucide-rea
 import axios from '../utils/axios';
 import { useCart } from '../context/CartContext';
 import { formatPrice } from '../utils/formatPrice';
+import { getDeliveryRangeLabel } from '../utils/deliveryDate';
 
 const gradientPanel = 'bg-white border border-gray-200 rounded-3xl shadow-lg';
 
@@ -235,7 +236,7 @@ export default function ComboDetail() {
       <div className={`${gradientPanel} p-4 flex items-center justify-between`}>
         <div>
           <p className="text-xs text-gray-500">Entrega aproximada</p>
-          <p className="text-sm font-semibold text-gray-900">Nov 29 - Dic 02</p>
+          <p className="text-sm font-semibold text-gray-900">{getDeliveryRangeLabel()}</p>
         </div>
         <Truck className="w-5 h-5 text-gray-400" />
       </div>
