@@ -17,6 +17,8 @@ import PromoWelcomeModal from '../components/PromoWelcomeModal';
 import PromoFloatButton from '../components/PromoFloatButton';
 import SpinWheel from '../components/SpinWheel';
 
+const ENABLE_WHEEL = false;
+
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
   const navigate = useNavigate();
@@ -139,6 +141,7 @@ const Home = () => {
   }, [ensureHeroVideoPlays]);
 
   useEffect(() => {
+    if (!ENABLE_WHEEL) return;
     if (isAuthenticated) {
       setShowPromo(false);
       return;
@@ -272,6 +275,7 @@ const Home = () => {
   };
 
   const handleOpenPromo = () => {
+    if (!ENABLE_WHEEL) return;
     // Si el usuario está logueado, abrir directamente la ruleta
     if (isAuthenticated) {
       setShowWheel(true);
@@ -281,6 +285,7 @@ const Home = () => {
   };
 
   const handleOpenWheel = () => {
+    if (!ENABLE_WHEEL) return;
     setShowWheel(true);
   };
 
@@ -290,21 +295,25 @@ const Home = () => {
 
   return (
   <div className="min-h-screen text-gray-900 bg-black">
-      <PromoWelcomeModal
-        open={showPromo}
-        onClose={handleClosePromo}
-        onOpenWheel={handleOpenWheel}
-      />
-      {/* Ruleta Anabólica */}
-      <SpinWheel
-        open={showWheel}
-        onClose={handleCloseWheel}
-      />
-      {/* Botón flotante "Ruleta Anabólica" - siempre visible cuando modales están cerrados */}
-      <PromoFloatButton 
-        show={!showPromo && !showWheel} 
-        onClick={handleOpenPromo} 
-      />
+      {ENABLE_WHEEL && (
+        <>
+          <PromoWelcomeModal
+            open={showPromo}
+            onClose={handleClosePromo}
+            onOpenWheel={handleOpenWheel}
+          />
+          {/* Ruleta Anabolica */}
+          <SpinWheel
+            open={showWheel}
+            onClose={handleCloseWheel}
+          />
+          {/* Boton flotante "Ruleta Anabolica" - siempre visible cuando modales estan cerrados */}
+          <PromoFloatButton 
+            show={!showPromo && !showWheel} 
+            onClick={handleOpenPromo} 
+          />
+        </>
+      )}
       {/* Hero Section Limpio */}
       <section
         className="relative bg-black z-0 h-screen"
