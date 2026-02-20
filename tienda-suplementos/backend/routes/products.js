@@ -142,7 +142,7 @@ const sortAggregatedProducts = (products, sortParam = '-createdAt') => {
 
 const paginateAggregated = (items, page = 1, limit = 20) => {
   const safePage = Math.max(1, Number(page) || 1);
-  const safeLimit = Math.max(1, Math.min(Number(limit) || 20, 100));
+  const safeLimit = Math.max(1, Math.min(Number(limit) || 20, 2000)); // techo 2000 para permitir carga completa en buscador
   const start = (safePage - 1) * safeLimit;
   const end = start + safeLimit;
   const slice = items.slice(start, end);
