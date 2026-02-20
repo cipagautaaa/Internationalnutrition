@@ -9,6 +9,7 @@ import DiscountCodesPanel from '../components/admin/DiscountCodesPanel';
 import { resolveHealthTypeOverride } from '../utils/healthTypeMapping';
 
 const IMPLEMENTS_LABEL = 'Wargo y accesorios para gym';
+const ALL_PRODUCTS_LABEL = 'Todos los productos';
 
 // Taxonomía 2025 (7 categorías, nombres de visualización)
 const ALL_CATEGORIES = [
@@ -344,6 +345,8 @@ export default function AdminProducts() {
     setSearch('');
   };
 
+  const isAllProducts = selectedCategory === ALL_PRODUCTS_LABEL;
+
   const handleTypeSelect = (type) => {
     setSelectedType(type);
   };
@@ -361,9 +364,12 @@ export default function AdminProducts() {
 
   const openCreate = () => {
     setEditing(null);
+    const defaultCategory = (selectedCategory && selectedCategory !== ALL_PRODUCTS_LABEL)
+      ? selectedCategory
+      : emptyProduct.category;
     setForm({
       ...emptyProduct,
-      category: selectedCategory || emptyProduct.category,
+      category: defaultCategory,
       tipo: selectedType || ''
     });
     setModalOpen(true);
@@ -425,7 +431,7 @@ export default function AdminProducts() {
 
   const filteredProducts = useMemo(() => {
     let list = products;
-    if (selectedCategory) {
+    if (selectedCategory && selectedCategory !== ALL_PRODUCTS_LABEL) {
       list = list.filter(p => normalizeText(normalizeCategory(p.category)) === normalizedSelectedCategory);
     }
     if (selectedType) {
@@ -581,6 +587,59 @@ export default function AdminProducts() {
             )}
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {/* Tarjeta especial: Todos los productos */}
+              {(() => {
+                const totalAll = products.length;
+                const activosAll = products.filter(p => p.isActive).length;
+                const inactivosAll = totalAll - activosAll;
+                const sinStockAll = products.filter(p => p.inStock === false).length;
+                return (
+                  <button
+                    key={ALL_PRODUCTS_LABEL}
+                    type="button"
+                    onClick={() => handleCategorySelect(ALL_PRODUCTS_LABEL)}
+                    className="group relative flex flex-col rounded-2xl border-2 border-blue-200 bg-blue-50 p-5 text-left shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-blue-400 hover:shadow-lg"
+                  >
+                    <div className="mb-4 flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-base font-semibold text-gray-900 group-hover:text-blue-700">{ALL_PRODUCTS_LABEL}</h3>
+                        <p className="mt-0.5 text-sm text-gray-500">
+                          {totalAll} producto{totalAll !== 1 ? 's' : ''}
+                          {totalAll > 0 && (
+                            <span>{' · '}{activosAll} activo{activosAll !== 1 ? 's' : ''}{sinStockAll > 0 && ` · ${sinStockAll} sin stock`}</span>
+                          )}
+                        </p>
+                      </div>
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 transition-colors group-hover:bg-blue-600">
+                        <svg className="h-6 w-6 text-blue-600 transition-colors group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                        </svg>
+                      </div>
+                    </div>
+                    <div className="mb-3 flex items-center gap-3 text-xs">
+                      <span className="flex items-center gap-1.5 font-medium text-gray-700">
+                        <span className="h-2 w-2 rounded-full bg-green-500"></span>
+                        {activosAll}
+                      </span>
+                      {inactivosAll > 0 && (
+                        <span className="flex items-center gap-1.5 font-medium text-gray-700">
+                          <span className="h-2 w-2 rounded-full bg-gray-400"></span>
+                          {inactivosAll}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-auto border-t border-blue-100 pt-3">
+                      <span className="flex items-center gap-1 text-sm font-semibold text-blue-600 transition-colors group-hover:text-blue-700">
+                        Ver todos los productos
+                        <svg className="h-4 w-4 transform transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </span>
+                    </div>
+                  </button>
+                );
+              })()}
+
               {categories.map(cat => {
                 // Si hay resumen, sumar filas que mapeen a la misma categoría normalizada
                 let total = 0, activos = 0, inactivos = 0, sinStock = 0;
@@ -853,8 +912,8 @@ export default function AdminProducts() {
     );
   }
 
-  // Vista 2: Selección de tipo/subcategoría (solo para proteínas y Creatina)
-  const categoryHasTypes = getCategoryTypes(selectedCategory);
+  // Vista 2: Selección de tipo/subcategoría (solo para proteínas y Creatina, nunca para "Todos los productos")
+  const categoryHasTypes = isAllProducts ? null : getCategoryTypes(selectedCategory);
   if (categoryHasTypes && !selectedType) {
     const normalizedSelectedCategoryKey = normalizeText(selectedCategory);
     const productsInCategory = products.filter(
@@ -1087,6 +1146,7 @@ export default function AdminProducts() {
                   <thead className="bg-gradient-to-r from-[#fff4ea] to-[#fbe9dd] text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                     <tr>
                       <th className="px-4 py-3">Producto</th>
+                      {isAllProducts && <th className="px-4 py-3">Categoría</th>}
                       <th className="px-4 py-3">Precio</th>
                       <th className="px-4 py-3">Disponibilidad</th>
                       <th className="px-4 py-3">Estado</th>
@@ -1117,6 +1177,13 @@ export default function AdminProducts() {
                             )}
                           </div>
                         </td>
+                        {isAllProducts && (
+                          <td className="px-4 py-4 align-top">
+                            <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+                              {normalizeCategory(product.category)}
+                            </span>
+                          </td>
+                        )}
                         <td className="px-4 py-4 align-top font-semibold text-red-700">
                           ${product.price}
                           {product.originalPrice && product.originalPrice !== product.price && (
