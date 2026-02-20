@@ -609,6 +609,7 @@ export default function AdminProducts() {
                             <span>{' · '}{activosAll} activo{activosAll !== 1 ? 's' : ''}{sinStockAll > 0 && ` · ${sinStockAll} sin stock`}</span>
                           )}
                         </p>
+                        <p className="mt-1 text-xs text-blue-400">Sin implementos ni combos</p>
                       </div>
                       <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 transition-colors group-hover:bg-blue-600">
                         <svg className="h-6 w-6 text-blue-600 transition-colors group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1140,8 +1141,8 @@ export default function AdminProducts() {
               <div className="h-12 w-12 animate-spin rounded-full border-4 border-red-700 border-t-red-600"></div>
             </div>
           ) : (
-            <div className="overflow-hidden rounded-2xl border border-[#eadfcd] bg-white shadow-sm">
-              <div className="overflow-x-auto">
+            <div className="overflow-x-auto rounded-2xl border border-[#eadfcd] bg-white shadow-sm">
+              <div>
                 <table className="min-w-full text-sm">
                   <thead className="bg-gradient-to-r from-[#fff4ea] to-[#fbe9dd] text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                     <tr>
@@ -1271,7 +1272,7 @@ export default function AdminProducts() {
                     ))}
                     {filteredProducts.length === 0 && !loading && (
                       <tr>
-                        <td colSpan="5" className="px-6 py-10 text-center text-sm text-gray-600">
+                        <td colSpan={isAllProducts ? 6 : 5} className="px-6 py-10 text-center text-sm text-gray-600">
                           <div className="flex flex-col items-center gap-3">
                             <svg className="h-16 w-16 text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
