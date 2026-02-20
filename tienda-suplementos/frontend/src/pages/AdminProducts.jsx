@@ -168,6 +168,7 @@ export default function AdminProducts() {
   const [selectedType, setSelectedType] = useState(null); // subcategoría/tipo elegido
   const [search, setSearch] = useState('');
   const [showImplements, setShowImplements] = useState(false);
+  const [implementsList, setImplementsList] = useState([]);
   // Usuarios
   const [users, setUsers] = useState([]);
   const [usersLoading, setUsersLoading] = useState(false);
@@ -283,6 +284,18 @@ export default function AdminProducts() {
   useEffect(() => {
     fetchCombos();
   }, []);
+
+  const fetchImplementsList = async () => {
+    try {
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const { data } = await axios.get('/implements?includeInactive=true', { headers });
+      setImplementsList(Array.isArray(data?.data) ? data.data : []);
+    } catch { /* silencioso */ }
+  };
+
+  useEffect(() => {
+    if (token) fetchImplementsList();
+  }, [token]);
 
   const categories = useMemo(() => {
     const map = new Map();
@@ -430,8 +443,17 @@ export default function AdminProducts() {
   const normalizedSelectedType = useMemo(() => normalizeText(selectedType), [selectedType]);
 
   const filteredProducts = useMemo(() => {
+    if (isAllProducts) {
+      const imps = implementsList.map(imp => ({ ...imp, _isImplement: true, category: IMPLEMENTS_LABEL, inStock: imp.isActive !== false }));
+      let list = [...products, ...imps];
+      if (search.trim()) {
+        const q = search.trim().toLowerCase();
+        list = list.filter(p => p.name?.toLowerCase().includes(q));
+      }
+      return list;
+    }
     let list = products;
-    if (selectedCategory && selectedCategory !== ALL_PRODUCTS_LABEL) {
+    if (selectedCategory) {
       list = list.filter(p => normalizeText(normalizeCategory(p.category)) === normalizedSelectedCategory);
     }
     if (selectedType) {
@@ -442,7 +464,7 @@ export default function AdminProducts() {
       list = list.filter(p => p.name?.toLowerCase().includes(q));
     }
     return list;
-  }, [products, selectedCategory, selectedType, search, normalizedSelectedCategory, normalizedSelectedType]);
+  }, [products, implementsList, selectedCategory, selectedType, search, normalizedSelectedCategory, normalizedSelectedType, isAllProducts]);
 
   const saveProduct = async (payload) => {
     try {
@@ -589,8 +611,8 @@ export default function AdminProducts() {
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {/* Tarjeta especial: Todos los productos */}
               {(() => {
-                const totalAll = products.length;
-                const activosAll = products.filter(p => p.isActive).length;
+                const totalAll = products.length + implementsList.length;
+                const activosAll = products.filter(p => p.isActive).length + implementsList.filter(i => i.isActive !== false).length;
                 const inactivosAll = totalAll - activosAll;
                 const sinStockAll = products.filter(p => p.inStock === false).length;
                 return (
@@ -609,7 +631,7 @@ export default function AdminProducts() {
                             <span>{' · '}{activosAll} activo{activosAll !== 1 ? 's' : ''}{sinStockAll > 0 && ` · ${sinStockAll} sin stock`}</span>
                           )}
                         </p>
-                        <p className="mt-1 text-xs text-blue-400">Sin implementos ni combos</p>
+                        <p className="mt-1 text-xs text-blue-400">Incluye implementos, sin combos</p>
                       </div>
                       <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-100 transition-colors group-hover:bg-blue-600">
                         <svg className="h-6 w-6 text-blue-600 transition-colors group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1230,43 +1252,57 @@ export default function AdminProducts() {
                           </span>
                         </td>
                         <td className="px-4 py-4 align-top">
-                          <div className="flex items-center gap-2">
+                          {product._isImplement ? (
                             <button
                               type="button"
-                              onClick={() => openEdit(product)}
+                              onClick={() => { setSelectedCategory(null); setShowImplements(true); }}
                               className={`${ACTION_BUTTON.edit} justify-center`}
-                              title="Editar producto"
+                              title="Ir al panel de implementos"
                             >
                               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
                               Editar
                             </button>
-                            <button
-                              type="button"
-                              onClick={() => toggleActive(product)}
-                              className={`${product.isActive ? ACTION_BUTTON.toggleOn : ACTION_BUTTON.toggleOff} justify-center`}
-                              title={product.isActive ? 'Desactivar producto' : 'Activar producto'}
-                            >
-                              <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                              </svg>
-                              {product.isActive ? 'Desactivar' : 'Activar'}
-                            </button>
-                            {product.isActive && (
+                          ) : (
+                            <div className="flex items-center gap-2">
                               <button
                                 type="button"
-                                onClick={() => deleteProduct(product)}
-                                className={`${ACTION_BUTTON.delete} justify-center`}
-                                title="Eliminar producto definitivamente"
+                                onClick={() => openEdit(product)}
+                                className={`${ACTION_BUTTON.edit} justify-center`}
+                                title="Editar producto"
                               >
                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
-                                Eliminar
+                                Editar
                               </button>
-                            )}
-                          </div>
+                              <button
+                                type="button"
+                                onClick={() => toggleActive(product)}
+                                className={`${product.isActive ? ACTION_BUTTON.toggleOn : ACTION_BUTTON.toggleOff} justify-center`}
+                                title={product.isActive ? 'Desactivar producto' : 'Activar producto'}
+                              >
+                                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
+                                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                                </svg>
+                                {product.isActive ? 'Desactivar' : 'Activar'}
+                              </button>
+                              {product.isActive && (
+                                <button
+                                  type="button"
+                                  onClick={() => deleteProduct(product)}
+                                  className={`${ACTION_BUTTON.delete} justify-center`}
+                                  title="Eliminar producto definitivamente"
+                                >
+                                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                  </svg>
+                                  Eliminar
+                                </button>
+                              )}
+                            </div>
+                          )}
                         </td>
                       </tr>
                     ))}
