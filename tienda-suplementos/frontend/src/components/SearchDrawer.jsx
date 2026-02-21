@@ -158,7 +158,7 @@ const SearchDrawer = () => {
                 <li key={item._id || item.id} className="p-4 hover:bg-gray-50">
                   <Link
                     to={item._type === 'implement'
-                      ? `/product/${item._id}`
+                      ? `/implementos/${item._id}`
                       : item._type === 'combo'
                         ? `/combo/${item._id || item.id}`
                         : `/product/${item._id || item.id}`}
