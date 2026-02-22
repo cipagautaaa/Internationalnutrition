@@ -29,7 +29,7 @@ router.post('/login', loginLimiter, validateEmail, async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       console.log(`[login:${requestId}] ❌ Usuario no encontrado`);
-      return res.status(401).json({ success: false, message: 'Usuario no encontrado' });
+      return res.status(401).json({ success: false, message: 'Email o contraseña incorrectos' });
     }
 
     // Si es admin y tiene PIN pero no contraseña, sincroniza la contraseña con el PIN
@@ -650,7 +650,11 @@ router.post('/admin/disable-pin', protect, async (req, res) => {
 });
 
 // TEST: Endpoint para probar envío de emails (solo desarrollo/debug)
-router.post('/test-email', async (req, res) => {
+// Protegido: requiere autenticación de admin
+router.post('/test-email', protect, async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ success: false, message: 'Solo administradores' });
+  }
   const { email } = req.body;
   if (!email) {
     return res.status(400).json({ success: false, message: 'Email requerido' });

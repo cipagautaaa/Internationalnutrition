@@ -4,7 +4,7 @@ const crypto = require('crypto');
 // Limitar intentos de login
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 1000, // 5 intentos por ventana
+  max: 5, // 5 intentos por ventana
   message: {
     success: false,
     message: 'Demasiados intentos de login, por favor intenta más tarde'

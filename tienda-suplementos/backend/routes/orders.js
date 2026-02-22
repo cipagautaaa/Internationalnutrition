@@ -84,9 +84,8 @@ router.post('/create', protect, async (req, res) => {
         }
       }
 
-      const unitPrice = typeof item.price === 'number'
-        ? item.price
-        : (product ? product.price : combo ? combo.price : implement.price);
+      // SEGURIDAD: Siempre usar el precio de la base de datos, nunca confiar en el cliente
+      const unitPrice = product ? product.price : combo ? combo.price : implement.price;
       const itemTotal = unitPrice * item.quantity;
       calculatedTotal += itemTotal;
 

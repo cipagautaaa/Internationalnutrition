@@ -190,9 +190,8 @@ const createWompiTransactionHandler = async (req, res) => {
         return res.status(400).json({ success: false, message: `El accesorio ${implement.name} no está disponible` });
       }
 
-      const unitPrice = typeof item.price === 'number'
-        ? item.price
-        : (product ? product.price : combo ? combo.price : implement.price);
+      // SEGURIDAD: Siempre usar el precio de la base de datos, nunca confiar en el cliente
+      const unitPrice = product ? product.price : combo ? combo.price : implement.price;
 
       const lineTotal = unitPrice * item.quantity;
       totalAmount += lineTotal;

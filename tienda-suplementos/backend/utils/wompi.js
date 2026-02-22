@@ -170,24 +170,50 @@ const createDirectPayment = async (paymentData) => {
 // Procesar webhook de Wompi
 const processWompiWebhook = (req) => {
   try {
-    const signature = req.headers['x-signature'];
-    const timestamp = req.headers['x-timestamp'];
-    const body = JSON.stringify(req.body);
-    
-    // Verificar firma del webhook (opcional pero recomendado)
-    if (signature && WOMPI_INTEGRITY_SECRET) {
-      const expectedSignature = crypto
-        .createHmac('sha256', WOMPI_INTEGRITY_SECRET)
-        .update(timestamp + body)
-        .digest('hex');
-        
-      if (signature !== expectedSignature) {
-        console.warn('⚠️ Firma de webhook inválida');
-        return { success: false, error: 'Firma inválida' };
-      }
-    }
-    
     const event = req.body;
+
+    // Validación de firma OBLIGATORIA en producción
+    // Wompi envía un checksum en el header para verificar la autenticidad del evento
+    const receivedChecksum = req.headers['x-event-checksum'];
+    
+    if (process.env.WOMPI_EVENTS_SECRET) {
+      if (!receivedChecksum) {
+        console.warn('⚠️ Webhook sin checksum recibido - rechazado');
+        return { success: false, error: 'Checksum faltante en webhook' };
+      }
+      
+      // Wompi: la firma es SHA-256 de la concatenación de propiedades + secret
+      const transaction = event.data?.transaction || {};
+      const concatenated = `${event.event}${transaction.id}${transaction.status}${transaction.status_message || ''}${transaction.amount_in_cents}${event.sent_at}${WOMPI_INTEGRITY_SECRET}`;
+      
+      const expectedChecksum = crypto
+        .createHash('sha256')
+        .update(concatenated)
+        .digest('hex');
+      
+      if (receivedChecksum !== expectedChecksum) {
+        // Intentar con formato alternativo (timestamp + body HMAC)
+        const signature = req.headers['x-signature'];
+        const timestamp = req.headers['x-timestamp'];
+        if (signature && timestamp && WOMPI_INTEGRITY_SECRET) {
+          const altSignature = crypto
+            .createHmac('sha256', WOMPI_INTEGRITY_SECRET)
+            .update(timestamp + JSON.stringify(req.body))
+            .digest('hex');
+          if (signature !== altSignature) {
+            console.warn('⚠️ Firma de webhook inválida (ambos métodos fallaron)');
+            return { success: false, error: 'Firma inválida' };
+          }
+        } else {
+          console.warn('⚠️ Checksum de webhook inválido');
+          return { success: false, error: 'Checksum inválido' };
+        }
+      }
+      
+      console.log('✅ Webhook firma verificada correctamente');
+    } else {
+      console.warn('⚠️ WOMPI_EVENTS_SECRET no configurado - webhook NO verificado (PELIGROSO en producción)');
+    }
     
     console.log(`📡 Webhook Wompi: ${event.event}`);
     console.log(`🔗 Transaction ID: ${event.data?.transaction?.id}`);

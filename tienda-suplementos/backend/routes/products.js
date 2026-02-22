@@ -1,6 +1,7 @@
 ﻿const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
+const Joi = require('joi');
 const Product = require('../models/Product');
 const { protect } = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
@@ -460,6 +461,42 @@ router.get('/:id', async (req, res) => {
 // POST /api/products (crear) - admin
 router.post('/', protect, isAdmin, async (req, res) => {
   try {
+    // Validación de inputs con Joi
+    const productSchema = Joi.object({
+      name: Joi.string().trim().min(2).max(200).required().messages({
+        'string.min': 'El nombre debe tener al menos 2 caracteres',
+        'string.max': 'El nombre no puede exceder 200 caracteres',
+        'any.required': 'El nombre es requerido'
+      }),
+      description: Joi.string().trim().min(5).max(5000).required().messages({
+        'string.min': 'La descripción debe tener al menos 5 caracteres',
+        'any.required': 'La descripción es requerida'
+      }),
+      price: Joi.number().positive().required().messages({
+        'number.positive': 'El precio debe ser positivo',
+        'any.required': 'El precio es requerido'
+      }),
+      originalPrice: Joi.number().positive().allow(null).optional(),
+      category: Joi.string().required(),
+      tipo: Joi.string().allow('', null).optional(),
+      size: Joi.string().trim().allow('').optional(),
+      baseSize: Joi.string().trim().allow('').optional(),
+      image: Joi.string().uri().required().messages({ 'any.required': 'La imagen es requerida' }),
+      inStock: Joi.any().optional(),
+      isActive: Joi.any().optional(),
+      flavors: Joi.array().items(Joi.string().trim()).optional(),
+      featured: Joi.any().optional(),
+      featuredPosition: Joi.number().min(0).allow(null).optional(),
+      sales: Joi.number().min(0).optional(),
+      variants: Joi.array().optional()
+    }).unknown(true);
+
+    const { error: validationError } = productSchema.validate(req.body, { abortEarly: false });
+    if (validationError) {
+      const messages = validationError.details.map(d => d.message).join('. ');
+      return res.status(400).json({ success: false, message: messages });
+    }
+
     const variantsInput = Array.isArray(req.body.variants) ? req.body.variants : [];
     const sharedFlavors = ensureFlavors(req.body.flavors);
     const resolvedSize = (req.body.size || req.body.baseSize || '').trim();

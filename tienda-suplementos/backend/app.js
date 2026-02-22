@@ -20,8 +20,14 @@ app.use(morgan('combined'));
 // y no lance errores/invalidaciones
 app.set('trust proxy', 1);
 
-// Rate limiting
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 1000, message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.' });
+// Rate limiting global
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  message: { success: false, message: 'Demasiadas solicitudes desde esta IP, intenta de nuevo más tarde.' },
+  standardHeaders: true,
+  legacyHeaders: false
+});
 app.use('/api/', limiter);
 
 // CORS - Configurar orígenes permitidos
@@ -35,8 +41,14 @@ app.use(cors({
     if (!origin) return callback(null, true);
     // Permitir si está en la lista blanca
     if (allowedOrigins.includes(origin)) return callback(null, true);
-    // Si no hay lista configurada, permitir todo (fallback)
-    if (allowedOrigins.length === 0) return callback(null, true);
+    // Si no hay lista configurada: permitir en desarrollo, bloquear en producción
+    if (allowedOrigins.length === 0) {
+      if (process.env.NODE_ENV === 'production') {
+        console.warn('[CORS] Rechazado: ALLOWED_ORIGINS no configurado en producción. Origin:', origin);
+        return callback(new Error('CORS not configured for production'));
+      }
+      return callback(null, true);
+    }
     // Si no está en la lista, rechazar
     return callback(new Error('Not allowed by CORS'));
   },
@@ -82,8 +94,10 @@ app.use('/api/wheel', wheelRoutes);
 // Health
 app.get('/api/health', (req, res) => res.json({ message: 'Servidor funcionando correctamente' }));
 
-// Email Status (para diagnóstico)
-app.get('/api/email-status', (req, res) => {
+// Email Status (para diagnóstico) — protegido, solo admin
+const { protect: protectEmailStatus } = require('./middleware/auth');
+const isAdminEmailStatus = require('./middleware/isAdmin');
+app.get('/api/email-status', protectEmailStatus, isAdminEmailStatus, (req, res) => {
   const provider = process.env.EMAIL_PROVIDER || 'NO_CONFIGURADO';
   const hasSendGrid = Boolean(process.env.SENDGRID_API_KEY);
   const hasGmail = Boolean(process.env.EMAIL_USER && process.env.EMAIL_PASS);
