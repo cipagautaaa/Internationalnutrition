@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Combo = require('../models/Combo');
-const auth = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 const isAdmin = require('../middleware/isAdmin');
 const upload = require('../middleware/uploadR2');
 
@@ -38,7 +38,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST crear nuevo combo (solo admin)
-router.post('/', auth.protect, isAdmin, upload.single('image', { folder: 'suplementos/combos' }), async (req, res) => {
+router.post('/', protect, isAdmin, upload.single('image', { folder: 'suplementos/combos' }), async (req, res) => {
   try {
     const { name, description, price, originalPrice, discount, category, products, inStock, featured, rating } = req.body;
     
@@ -75,7 +75,7 @@ router.post('/', auth.protect, isAdmin, upload.single('image', { folder: 'suplem
 });
 
 // PUT actualizar combo (solo admin)
-router.put('/:id', auth.protect, isAdmin, upload.single('image', { folder: 'suplementos/combos' }), async (req, res) => {
+router.put('/:id', protect, isAdmin, upload.single('image', { folder: 'suplementos/combos' }), async (req, res) => {
   try {
     console.log('📝 PUT /combos/:id recibido');
     console.log('📦 Body:', req.body);
@@ -127,7 +127,7 @@ router.put('/:id', auth.protect, isAdmin, upload.single('image', { folder: 'supl
 });
 
 // DELETE eliminar combo (solo admin)
-router.delete('/:id', auth.protect, isAdmin, async (req, res) => {
+router.delete('/:id', protect, isAdmin, async (req, res) => {
   try {
     const combo = await Combo.findByIdAndDelete(req.params.id);
     

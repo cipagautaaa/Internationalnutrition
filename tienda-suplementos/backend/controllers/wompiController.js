@@ -101,6 +101,115 @@ const isProductExcludedFromDiscount = (productName) => {
   );
 };
 
+/**
+ * Busca un item por ID en Product → Combo → Implement, con fallback por SKU/name.
+ * @returns {{ entity, kind }|null}
+ */
+async function findWompiItemEntity(productId, itemName) {
+  let product = null;
+  let combo = null;
+  let implement = null;
+
+  try {
+    if (mongoose.Types.ObjectId.isValid(productId)) {
+      product = await Product.findById(productId);
+    }
+    if (!product) {
+      product = await Product.findOne({
+        $or: [
+          { sku: productId },
+          { legacy_id: productId },
+          { id: productId }
+        ]
+      });
+    }
+
+    if (!product) {
+      if (mongoose.Types.ObjectId.isValid(productId)) {
+        combo = await Combo.findById(productId);
+      }
+      if (!combo) {
+        combo = await Combo.findOne({ name: itemName });
+      }
+      if (combo) return { entity: combo, kind: 'Combo' };
+    } else {
+      return { entity: product, kind: 'Product' };
+    }
+
+    if (!product && !combo) {
+      if (mongoose.Types.ObjectId.isValid(productId)) {
+        implement = await Implement.findById(productId);
+      }
+      if (!implement) {
+        implement = await Implement.findOne({ name: itemName });
+      }
+      if (implement) return { entity: implement, kind: 'Implement' };
+    }
+  } catch (error) {
+    console.error('❌ Error buscando producto/combo:', error);
+  }
+
+  return null;
+}
+
+/** Envía emails de notificación (admin + cliente) tras pago aprobado vía webhook. */
+async function sendWebhookOrderEmails(order) {
+  console.log('📧 [WEBHOOK] Iniciando envío de emails para orden:', order._id);
+
+  await order.populate('user');
+  await order.populate('items.product');
+
+  const userInfo = order.user || order.customerData || {};
+
+  console.log('📧 [WEBHOOK] Info del usuario obtenida:', {
+    email: userInfo.email,
+    firstName: userInfo.firstName,
+    lastName: userInfo.lastName,
+    fullName: userInfo.fullName
+  });
+
+  const emailUpdates = {};
+
+  if (!order.emailNotifications?.adminNewOrderSentAt) {
+    console.log('📧 [WEBHOOK] Enviando notificación al admin...');
+    const resAdmin = await sendNewOrderNotificationToAdmin(order, userInfo);
+    if (!resAdmin?.queued && !resAdmin?.skipped) {
+      emailUpdates['emailNotifications.adminNewOrderSentAt'] = new Date();
+      console.log('✅ [WEBHOOK] Notificación al admin enviada correctamente');
+    } else {
+      console.log('📮 [WEBHOOK] Notificación al admin encolada/skipped:', resAdmin);
+    }
+  } else {
+    console.log('↩️ [WEBHOOK] Admin ya notificado. Saltando envío.');
+  }
+
+  if (!order.emailNotifications?.customerConfirmationSentAt) {
+    console.log('📧 [WEBHOOK] Enviando confirmación al cliente...');
+    const resCustomer = await sendOrderConfirmationToCustomer(order, userInfo);
+    if (!resCustomer?.queued && !resCustomer?.skipped) {
+      emailUpdates['emailNotifications.customerConfirmationSentAt'] = new Date();
+      console.log('✅ [WEBHOOK] Confirmación al cliente enviada correctamente');
+    } else {
+      console.log('📮 [WEBHOOK] Confirmación al cliente encolada/skipped:', resCustomer);
+    }
+  } else {
+    console.log('↩️ [WEBHOOK] Cliente ya confirmado. Saltando envío.');
+  }
+
+  if (Object.keys(emailUpdates).length > 0) {
+    order.emailNotifications = order.emailNotifications || {};
+    if (emailUpdates['emailNotifications.adminNewOrderSentAt']) {
+      order.emailNotifications.adminNewOrderSentAt = emailUpdates['emailNotifications.adminNewOrderSentAt'];
+    }
+    if (emailUpdates['emailNotifications.customerConfirmationSentAt']) {
+      order.emailNotifications.customerConfirmationSentAt = emailUpdates['emailNotifications.customerConfirmationSentAt'];
+    }
+    order.emailNotifications.lastEmailError = null;
+  }
+
+  console.log('✅ [WEBHOOK] Flujo de emails ejecutado para orden:', order._id);
+}
+
 // Handler para crear transacción (compatible con llamadas desde /api/payments o /api/wompi)
 const createWompiTransactionHandler = async (req, res) => {
   try {
@@ -127,77 +236,34 @@ const createWompiTransactionHandler = async (req, res) => {
 
     for (const item of items) {
       const productId = item.productId || item.id || item._id;
-      let product = null;
-      let combo = null;
-      let implement = null;
-      let kind = 'Product';
+      const found = await findWompiItemEntity(productId, item.name);
 
-      try {
-        if (mongoose.Types.ObjectId.isValid(productId)) {
-          product = await Product.findById(productId);
-        }
-        if (!product) {
-          product = await Product.findOne({
-            $or: [
-              { sku: productId },
-              { legacy_id: productId },
-              { id: productId }
-            ]
-          });
-        }
-        // Si no es producto, intentar como combo
-        if (!product) {
-          if (mongoose.Types.ObjectId.isValid(productId)) {
-            combo = await Combo.findById(productId);
-          }
-          if (!combo) {
-            combo = await Combo.findOne({ name: item.name });
-          }
-          if (combo) {
-            kind = 'Combo';
-          }
-        }
-
-        // Si tampoco es combo, intentar como implemento (Wargo y accesorios)
-        if (!product && !combo) {
-          if (mongoose.Types.ObjectId.isValid(productId)) {
-            implement = await Implement.findById(productId);
-          }
-          if (!implement) {
-            implement = await Implement.findOne({ name: item.name });
-          }
-          if (implement) {
-            kind = 'Implement';
-          }
-        }
-      } catch (error) {
-        console.error('❌ Error buscando producto/combo:', error);
-      }
-
-      if (!product && !combo && !implement) {
+      if (!found) {
         return res.status(400).json({ success: false, message: `Producto ${item.name || productId} no encontrado. Verifica que el producto esté disponible.` });
       }
 
-      if (product && product.stock < item.quantity) {
-        return res.status(400).json({ success: false, message: `Stock insuficiente para ${product.name}` });
+      const { entity, kind } = found;
+
+      if (kind === 'Product' && entity.stock < item.quantity) {
+        return res.status(400).json({ success: false, message: `Stock insuficiente para ${entity.name}` });
       }
 
-      if (combo && combo.inStock === false) {
-        return res.status(400).json({ success: false, message: `El combo ${combo.name} no está disponible` });
+      if (kind === 'Combo' && entity.inStock === false) {
+        return res.status(400).json({ success: false, message: `El combo ${entity.name} no está disponible` });
       }
 
-      if (implement && implement.isActive === false) {
-        return res.status(400).json({ success: false, message: `El accesorio ${implement.name} no está disponible` });
+      if (kind === 'Implement' && entity.isActive === false) {
+        return res.status(400).json({ success: false, message: `El accesorio ${entity.name} no está disponible` });
       }
 
       // SEGURIDAD: Siempre usar el precio de la base de datos, nunca confiar en el cliente
-      const unitPrice = product ? product.price : combo ? combo.price : implement.price;
+      const unitPrice = entity.price;
 
       const lineTotal = unitPrice * item.quantity;
       totalAmount += lineTotal;
 
       // Obtener el nombre del producto para verificar exclusión
-      const productName = product ? product.name : combo ? combo.name : implement ? implement.name : item.name;
+      const productName = entity.name || item.name;
       const isExcluded = isProductExcludedFromDiscount(productName);
 
       // Clasificar subtotales por tipo para descuentos diferenciados
@@ -214,7 +280,7 @@ const createWompiTransactionHandler = async (req, res) => {
         }
       }
 
-      orderItems.push({ product: product ? product._id : combo ? combo._id : implement._id, kind, quantity: item.quantity, price: unitPrice, isExcludedFromDiscount: isExcluded });
+      orderItems.push({ product: entity._id, kind, quantity: item.quantity, price: unitPrice, isExcludedFromDiscount: isExcluded });
     }
 
     // Aplicar descuentos desde la base de datos
@@ -402,62 +468,7 @@ const wompiWebhookHandler = async (req, res) => {
         
         // Enviar emails de confirmación
         try {
-          console.log('📧 [WEBHOOK] Iniciando envío de emails para orden:', order._id);
-          
-          // Poblar user e items.product
-          await order.populate('user');
-          await order.populate('items.product');
-          
-          // Obtener información del usuario (si existe) o fallback a customerData (invitado)
-          const userInfo = order.user || order.customerData || {};
-          
-          console.log('📧 [WEBHOOK] Info del usuario obtenida:', {
-            email: userInfo.email,
-            firstName: userInfo.firstName,
-            lastName: userInfo.lastName,
-            fullName: userInfo.fullName
-          });
-          
-          const emailUpdates = {};
-
-          if (!order.emailNotifications?.adminNewOrderSentAt) {
-            console.log('📧 [WEBHOOK] Enviando notificación al admin...');
-            const resAdmin = await sendNewOrderNotificationToAdmin(order, userInfo);
-            if (!resAdmin?.queued && !resAdmin?.skipped) {
-              emailUpdates['emailNotifications.adminNewOrderSentAt'] = new Date();
-              console.log('✅ [WEBHOOK] Notificación al admin enviada correctamente');
-            } else {
-              console.log('📮 [WEBHOOK] Notificación al admin encolada/skipped:', resAdmin);
-            }
-          } else {
-            console.log('↩️ [WEBHOOK] Admin ya notificado. Saltando envío.');
-          }
-
-          if (!order.emailNotifications?.customerConfirmationSentAt) {
-            console.log('📧 [WEBHOOK] Enviando confirmación al cliente...');
-            const resCustomer = await sendOrderConfirmationToCustomer(order, userInfo);
-            if (!resCustomer?.queued && !resCustomer?.skipped) {
-              emailUpdates['emailNotifications.customerConfirmationSentAt'] = new Date();
-              console.log('✅ [WEBHOOK] Confirmación al cliente enviada correctamente');
-            } else {
-              console.log('📮 [WEBHOOK] Confirmación al cliente encolada/skipped:', resCustomer);
-            }
-          } else {
-            console.log('↩️ [WEBHOOK] Cliente ya confirmado. Saltando envío.');
-          }
-
-          if (Object.keys(emailUpdates).length > 0) {
-            order.emailNotifications = order.emailNotifications || {};
-            if (emailUpdates['emailNotifications.adminNewOrderSentAt']) {
-              order.emailNotifications.adminNewOrderSentAt = emailUpdates['emailNotifications.adminNewOrderSentAt'];
-            }
-            if (emailUpdates['emailNotifications.customerConfirmationSentAt']) {
-              order.emailNotifications.customerConfirmationSentAt = emailUpdates['emailNotifications.customerConfirmationSentAt'];
-            }
-            order.emailNotifications.lastEmailError = null;
-          }
-
-          console.log('✅ [WEBHOOK] Flujo de emails ejecutado para orden:', order._id);
+          await sendWebhookOrderEmails(order);
         } catch (emailError) {
           console.error('❌ [WEBHOOK] Error enviando correos:', {
             orderId: order._id,

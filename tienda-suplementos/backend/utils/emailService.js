@@ -12,7 +12,9 @@ try {
   const envKeys = Object.keys(process.env || {});
   const relevant = envKeys.filter(k => /SENDGRID|EMAIL_PROVIDER|EMAIL_FROM/i.test(k));
   console.log('📧 Env keys presentes (parciales):', relevant);
-} catch {}
+} catch (envLogErr) {
+  console.warn('⚠️ Error leyendo env keys:', envLogErr?.message || envLogErr);
+}
 
 // Helper: base64url encode for Gmail API
 const encodeGmailMessage = (message) => Buffer.from(message)
@@ -496,8 +498,8 @@ const sendVerificationEmail = async (email, verificationCode) => {
     try {
       const preview = nodemailer.getTestMessageUrl(info);
       if (preview) console.log('🔍 Preview URL:', preview);
-    } catch (e) {
-      // no-op
+    } catch (previewErr) {
+      console.debug('[Email] getTestMessageUrl no disponible:', previewErr?.message);
     }
     return info;
   } catch (error) {
@@ -545,7 +547,9 @@ const sendPasswordResetEmail = async (email, verificationCode) => {
     try {
       const preview = nodemailer.getTestMessageUrl(info);
       if (preview) console.log('🔍 Preview URL:', preview);
-    } catch (e) {}
+    } catch (previewErr) {
+      console.debug('[Email] getTestMessageUrl no disponible:', previewErr?.message);
+    }
     return info;
   } catch (error) {
     console.error('❌ Error enviando email de recuperación:', error);
@@ -702,7 +706,9 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
     try {
       const preview = nodemailer.getTestMessageUrl(info);
       if (preview) console.log('🔍 Preview URL (admin):', preview);
-    } catch (e) {}
+    } catch (previewErr) {
+      console.debug('[Email] getTestMessageUrl no disponible:', previewErr?.message);
+    }
     return info;
   } catch (error) {
     console.error('❌ Error enviando notificación al admin:', error);
@@ -850,7 +856,9 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
     try {
       const preview = nodemailer.getTestMessageUrl(info);
       if (preview) console.log('🔍 Preview URL (customer):', preview);
-    } catch (e) {}
+    } catch (previewErr) {
+      console.debug('[Email] getTestMessageUrl no disponible:', previewErr?.message);
+    }
     return info;
   } catch (error) {
     console.error('❌ Error enviando confirmación al cliente:', error);
