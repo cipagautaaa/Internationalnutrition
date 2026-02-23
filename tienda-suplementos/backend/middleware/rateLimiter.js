@@ -1,4 +1,5 @@
 const rateLimit = require('express-rate-limit');
+const crypto = require('crypto');
 
 // Limitar intentos de login
 const loginLimiter = rateLimit({

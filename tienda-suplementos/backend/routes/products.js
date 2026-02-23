@@ -45,24 +45,6 @@ const coerceBoolean = (value, fallback = true) => {
   return Boolean(value);
 };
 
-/** Builds the update payload for a product document. Used by both single and family PUT. */
-const buildProductUpdatePayload = (body, existing, sharedFlavors, resolvedSize, price) => ({
-  name: body.name !== undefined ? body.name : existing.name,
-  description: body.description !== undefined ? body.description : existing.description,
-  price,
-  originalPrice: coerceNumber(body.originalPrice, existing.originalPrice ?? null),
-  category: body.category || existing.category,
-  tipo: body.tipo !== undefined ? body.tipo : existing.tipo,
-  image: body.image !== undefined ? body.image : existing.image,
-  inStock: coerceBoolean(body.inStock, existing.inStock),
-  isActive: coerceBoolean(body.isActive, existing.isActive),
-  size: resolvedSize,
-  flavors: sharedFlavors,
-  featured: coerceBoolean(body.featured, existing.featured),
-  featuredPosition: coerceNumber(body.featuredPosition, existing.featuredPosition),
-  sales: coerceNumber(body.sales, existing.sales) || 0
-});
-
 const toPlainObject = (doc) => (doc && typeof doc.toObject === 'function' ? doc.toObject() : doc);
 
 const buildFamilyResponse = (primaryDoc, variantDocs = []) => {
@@ -617,7 +599,22 @@ router.put('/:id', protect, isAdmin, async (req, res) => {
 
       const sharedFlavors = ensureFlavors(req.body.flavors ?? existingProduct.flavors);
 
-      existingProduct.set(buildProductUpdatePayload(req.body, existingProduct, sharedFlavors, resolvedSize, price));
+      existingProduct.set({
+        name: req.body.name !== undefined ? req.body.name : existingProduct.name,
+        description: req.body.description !== undefined ? req.body.description : existingProduct.description,
+        price,
+        originalPrice: coerceNumber(req.body.originalPrice, existingProduct.originalPrice ?? null),
+        category: req.body.category || existingProduct.category,
+        tipo: req.body.tipo !== undefined ? req.body.tipo : existingProduct.tipo,
+        image: req.body.image !== undefined ? req.body.image : existingProduct.image,
+        inStock: coerceBoolean(req.body.inStock, existingProduct.inStock),
+        isActive: coerceBoolean(req.body.isActive, existingProduct.isActive),
+        size: resolvedSize,
+        flavors: sharedFlavors,
+        featured: coerceBoolean(req.body.featured, existingProduct.featured),
+        featuredPosition: coerceNumber(req.body.featuredPosition, existingProduct.featuredPosition),
+        sales: coerceNumber(req.body.sales, existingProduct.sales) || 0
+      });
 
       await existingProduct.save();
 
@@ -648,7 +645,20 @@ router.put('/:id', protect, isAdmin, async (req, res) => {
     }
 
     baseProduct.set({
-      ...buildProductUpdatePayload(req.body, baseProduct, sharedFlavors, resolvedSize, price),
+      name: req.body.name !== undefined ? req.body.name : baseProduct.name,
+      description: req.body.description !== undefined ? req.body.description : baseProduct.description,
+      price,
+      originalPrice: coerceNumber(req.body.originalPrice, baseProduct.originalPrice ?? null),
+      category: req.body.category || baseProduct.category,
+      tipo: req.body.tipo !== undefined ? req.body.tipo : baseProduct.tipo,
+      image: req.body.image !== undefined ? req.body.image : baseProduct.image,
+      inStock: coerceBoolean(req.body.inStock, baseProduct.inStock),
+      isActive: coerceBoolean(req.body.isActive, baseProduct.isActive),
+      size: resolvedSize,
+      flavors: sharedFlavors,
+      featured: coerceBoolean(req.body.featured, baseProduct.featured),
+      featuredPosition: coerceNumber(req.body.featuredPosition, baseProduct.featuredPosition),
+      sales: coerceNumber(req.body.sales, baseProduct.sales) || 0,
       familyId,
       isPrimary: true,
       variantOf: null

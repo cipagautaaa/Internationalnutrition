@@ -9,22 +9,6 @@ const { resetWheelForUser } = require('./wheel');
 
 const router = express.Router();
 
-/* ── helpers ────────────────────────────────────── */
-
-/** Busca un item en Product → Combo → Implement (en ese orden). */
-async function findItemEntity(productId) {
-  const product = await Product.findById(productId);
-  if (product) return { entity: product, kind: 'Product' };
-
-  const combo = await Combo.findById(productId);
-  if (combo) return { entity: combo, kind: 'Combo' };
-
-  const implement = await Implement.findById(productId);
-  if (implement) return { entity: implement, kind: 'Implement' };
-
-  return null;
-}
-
 // Crear orden (para métodos de pago que no requieren procesamiento inmediato)
 router.post('/create', protect, async (req, res) => {
   try {
@@ -52,45 +36,61 @@ router.post('/create', protect, async (req, res) => {
 
     for (const item of items) {
       const productId = item.productId || item.id || item._id;
-      const found = await findItemEntity(productId);
+      let product = null;
+      let combo = null;
+      let implement = null;
+      let kind = 'Product';
 
-      if (!found) {
+      if (productId) {
+        product = await Product.findById(productId);
+        if (!product) combo = await Combo.findById(productId);
+        if (!product && !combo) implement = await Implement.findById(productId);
+      }
+
+      if (!product && !combo && !implement) {
         return res.status(400).json({
           success: false,
           message: `Producto ${productId} no encontrado`
         });
       }
 
-      const { entity, kind } = found;
-
-      if (kind === 'Product' && entity.stock < item.quantity) {
-        return res.status(400).json({
-          success: false,
-          message: `Stock insuficiente para ${entity.name}`
-        });
+      if (product) {
+        kind = 'Product';
+        if (product.stock < item.quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Stock insuficiente para ${product.name}`
+          });
+        }
       }
 
-      if (kind === 'Combo' && entity.inStock === false) {
-        return res.status(400).json({
-          success: false,
-          message: `El combo ${entity.name} no está disponible`
-        });
+      if (combo) {
+        kind = 'Combo';
+        if (combo.inStock === false) {
+          return res.status(400).json({
+            success: false,
+            message: `El combo ${combo.name} no está disponible`
+          });
+        }
       }
 
-      if (kind === 'Implement' && entity.isActive === false) {
-        return res.status(400).json({
-          success: false,
-          message: `El accesorio ${entity.name} no está disponible`
-        });
+      if (implement) {
+        kind = 'Implement';
+        if (implement.isActive === false) {
+          return res.status(400).json({
+            success: false,
+            message: `El accesorio ${implement.name} no está disponible`
+          });
+        }
       }
 
       // SEGURIDAD: Siempre usar el precio de la base de datos, nunca confiar en el cliente
-      const unitPrice = entity.price;
+      const unitPrice = product ? product.price : combo ? combo.price : implement.price;
       const itemTotal = unitPrice * item.quantity;
       calculatedTotal += itemTotal;
 
       orderItems.push({
-        product: entity._id,
+        product: product ? product._id : combo ? combo._id : implement._id,
         kind,
         quantity: item.quantity,
         price: unitPrice
@@ -403,6 +403,67 @@ router.put('/:orderId/cancel', protect, async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error cancelando la orden'
+    });
+  }
+});
+
+// Obtener detalles de una orden específica
+router.get('/:orderId', protect, async (req, res) => {
+  try {
+    const order = await Order.findOne({
+      _id: req.params.orderId,
+      user: req.user.id
+    }).populate('items.product', 'name price images description');
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: 'Orden no encontrada'
+      });
+    }
+
+    const formattedOrder = {
+      id: order._id,
+      orderNumber: order.orderNumber || `ORDER-${order._id.toString().slice(-8).toUpperCase()}`,
+      status: order.status,
+      paymentStatus: order.paymentStatus,
+      paymentMethod: order.paymentMethod,
+      totalAmount: order.totalAmount,
+      createdAt: order.createdAt,
+      updatedAt: order.updatedAt,
+      shippingAddress: order.shippingAddress,
+      items: order.items.map(item => ({
+        product: item.product ? {
+          id: item.product._id,
+          name: item.product.name,
+          price: item.product.price,
+          description: item.product.description,
+          images: item.product.images
+        } : {
+          id: null,
+          name: 'Producto eliminado',
+          price: item.price,
+          description: 'Este producto ya no está disponible',
+          images: []
+        },
+        quantity: item.quantity,
+        price: item.price,
+        total: item.quantity * item.price
+      })),
+      wompiReference: order.wompiReference,
+      wompiTransactionId: order.wompiTransactionId
+    };
+
+    res.json({
+      success: true,
+      order: formattedOrder
+    });
+
+  } catch (error) {
+    console.error('Error obteniendo orden:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error obteniendo los detalles de la orden'
     });
   }
 });

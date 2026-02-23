@@ -15,51 +15,6 @@ const passwordMeetsPolicy = (password) => {
   return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password || '');
 };
 
-// --- Helpers internos para reducir duplicación (no exportados) ---
-
-/** Genera un JWT con los datos estándar del usuario */
-const signUserToken = (user, opts = {}) => {
-  const payload = { id: user._id, email: user.email, role: user.role, ...opts };
-  return jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: opts.expiresIn || process.env.JWT_EXPIRE
-  });
-};
-
-/** Construye el objeto de usuario estándar para respuestas */
-const buildUserResponse = (user) => ({
-  id: user._id,
-  email: user.email,
-  firstName: user.firstName,
-  lastName: user.lastName,
-  fullName: user.fullName,
-  phone: user.phone,
-  birthDate: user.birthDate,
-  isEmailVerified: user.isEmailVerified,
-  lastLogin: user.lastLogin,
-  role: user.role
-});
-
-/** Envía un email de verificación en background sin bloquear la respuesta */
-const fireAndForgetEmail = (sendFn, email, code, label) => {
-  sendFn(email, code)
-    .then((info) => {
-      if (info?.skipped) {
-        console.log(`[${label}] Email SKIPPED (config faltante)`);
-      } else {
-        console.log(`[${label}] Email ENVIADO OK`);
-      }
-    })
-    .catch((err) => {
-      console.error(`[${label}] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
-    });
-};
-
-/** Hash de contraseña con bcrypt (salt 10) */
-const hashPassword = async (password) => {
-  const salt = await bcrypt.genSalt(10);
-  return bcrypt.hash(password, salt);
-};
-
 // Login con email + contraseña (requiere email verificado)
 router.post('/login', loginLimiter, validateEmail, async (req, res) => {
   const requestId = Math.random().toString(36).slice(2);
@@ -121,7 +76,11 @@ router.post('/login', loginLimiter, validateEmail, async (req, res) => {
 
     if (user.role === 'admin' && user.adminPinEnabled && user.adminPinHash) {
       console.log(`[login:${requestId}] 🔑 Admin requiere PIN`);
-      const tempToken = signUserToken(user, { pendingAdminPin: true, expiresIn: '5m' });
+      const tempToken = jwt.sign(
+        { id: user._id, email: user.email, role: user.role, pendingAdminPin: true },
+        process.env.JWT_SECRET,
+        { expiresIn: '5m' }
+      );
       return res.json({
         success: true,
         message: 'Ingresa tu PIN de administrador',
@@ -129,7 +88,11 @@ router.post('/login', loginLimiter, validateEmail, async (req, res) => {
       });
     }
 
-    const token = signUserToken(user);
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE }
+    );
 
     user.lastLogin = new Date();
     await user.save();
@@ -140,7 +103,18 @@ router.post('/login', loginLimiter, validateEmail, async (req, res) => {
       message: 'Login exitoso',
       data: {
         token,
-        user: buildUserResponse(user)
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: user.fullName,
+          phone: user.phone,
+          birthDate: user.birthDate,
+          isEmailVerified: user.isEmailVerified,
+          lastLogin: user.lastLogin,
+          role: user.role
+        }
       }
     });
   } catch (error) {
@@ -193,7 +167,8 @@ router.post('/send-code', codeLimiter, validateEmail, async (req, res) => {
     if (parsedBirthDate) user.birthDate = parsedBirthDate;
 
     if (password) {
-      user.passwordHash = await hashPassword(password);
+      const salt = await bcrypt.genSalt(10);
+      user.passwordHash = await bcrypt.hash(password, salt);
     }
 
     const verificationCode = generateVerificationCode();
@@ -202,7 +177,17 @@ router.post('/send-code', codeLimiter, validateEmail, async (req, res) => {
     user.isEmailVerified = false;
     await user.save();
 
-    fireAndForgetEmail(sendVerificationEmail, email, verificationCode, 'send-code');
+    sendVerificationEmail(email, verificationCode)
+      .then((info) => {
+        if (info?.skipped) {
+          console.log(`[send-code] Email SKIPPED (config faltante)`);
+        } else {
+          console.log(`[send-code] Email ENVIADO OK`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[send-code] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+      });
 
     const message = isNewUser ? 'Código de verificación enviado. Revisa tu correo.' : 'Reenviamos el código de verificación a tu correo.';
     res.json({
@@ -249,7 +234,11 @@ router.post('/verify-code', loginLimiter, validateVerifyEmail, async (req, res) 
 
     // Si es admin y tiene PIN habilitado, devolver paso intermedio (sin token final todavía)
     if (user.role === 'admin' && user.adminPinEnabled && user.adminPinHash) {
-      const tempToken = signUserToken(user, { pendingAdminPin: true, expiresIn: '5m' });
+      const tempToken = jwt.sign(
+        { id: user._id, email: user.email, role: user.role, pendingAdminPin: true },
+        process.env.JWT_SECRET,
+        { expiresIn: '5m' }
+      );
       return res.json({
         success: true,
         message: 'Código verificado. Falta PIN administrador',
@@ -261,14 +250,29 @@ router.post('/verify-code', loginLimiter, validateVerifyEmail, async (req, res) 
       });
     }
 
-    const token = signUserToken(user);
+    const token = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE }
+    );
 
     res.json({
       success: true,
       message: 'Login exitoso',
       data: {
         token,
-        user: buildUserResponse(user)
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          fullName: user.fullName,
+          phone: user.phone,
+          birthDate: user.birthDate,
+          isEmailVerified: user.isEmailVerified,
+          lastLogin: user.lastLogin,
+          role: user.role
+        }
       }
     });
   } catch (error) {
@@ -302,7 +306,17 @@ router.post('/resend-code', async (req, res) => {
     await user.save();
 
     // Envío de email en background para no bloquear la respuesta
-    fireAndForgetEmail(sendVerificationEmail, email, verificationCode, 'resend-code');
+    sendVerificationEmail(email, verificationCode)
+      .then((info) => {
+        if (info?.skipped) {
+          console.log(`[resend-code] Email SKIPPED (config faltante)`);
+        } else {
+          console.log(`[resend-code] Email ENVIADO OK`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[resend-code] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+      });
 
     res.json({
       success: true,
@@ -332,7 +346,17 @@ router.post('/forgot-password', codeLimiter, validateEmail, async (req, res) => 
     user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000);
     await user.save();
 
-    fireAndForgetEmail(sendPasswordResetEmail, email, resetCode, 'forgot-password');
+    sendPasswordResetEmail(email, resetCode)
+      .then((info) => {
+        if (info?.skipped) {
+          console.log(`[forgot-password] Email SKIPPED (config faltante)`);
+        } else {
+          console.log(`[forgot-password] Email ENVIADO OK`);
+        }
+      })
+      .catch((err) => {
+        console.error(`[forgot-password] ⚠️ Error enviando email (no bloquea):`, err?.message || err);
+      });
 
     res.json({ success: true, message: 'Enviamos un código de recuperación a tu correo.' });
   } catch (error) {
@@ -363,7 +387,8 @@ router.post('/reset-password', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Código inválido o expirado' });
     }
 
-    user.passwordHash = await hashPassword(newPassword);
+    const salt = await bcrypt.genSalt(10);
+    user.passwordHash = await bcrypt.hash(newPassword, salt);
     user.passwordResetCode = null;
     user.passwordResetExpires = null;
     await user.save();
@@ -441,7 +466,8 @@ router.post('/change-password', protect, async (req, res) => {
       return res.status(401).json({ success: false, message: 'La contraseña actual no es correcta' });
     }
 
-    user.passwordHash = await hashPassword(newPassword);
+    const salt = await bcrypt.genSalt(10);
+    user.passwordHash = await bcrypt.hash(newPassword, salt);
     await user.save();
 
     res.json({ success: true, message: 'Contraseña actualizada correctamente.' });
@@ -463,7 +489,8 @@ router.post('/admin/set-pin', protect, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
     if (user.role !== 'admin') return res.status(403).json({ success: false, message: 'Solo admin' });
-    user.adminPinHash = await hashPassword(pin);
+    const salt = await bcrypt.genSalt(10);
+    user.adminPinHash = await bcrypt.hash(pin, salt);
     user.adminPinEnabled = true;
     // reset intentos/lock
     user.adminPinAttempts = 0;
@@ -547,14 +574,26 @@ router.post('/admin/verify-pin', async (req, res) => {
     user.adminPinLockedUntil = null;
     await user.save();
     
-    const finalToken = signUserToken(user);
+    const finalToken = jwt.sign(
+      { id: user._id, email: user.email, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: process.env.JWT_EXPIRE }
+    );
     console.log('   ✅ PIN CORRECTO');
     res.json({
       success: true,
       message: 'Login exitoso',
       data: {
         token: finalToken,
-        user: buildUserResponse(user)
+        user: {
+          id: user._id,
+          email: user.email,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          isEmailVerified: user.isEmailVerified,
+          lastLogin: user.lastLogin,
+          role: user.role
+        }
       }
     });
   } catch (err) {
@@ -575,7 +614,8 @@ router.post('/admin/change-pin', protect, async (req, res) => {
     if (!(user.adminPinEnabled && user.adminPinHash)) return res.status(400).json({ success: false, message: 'PIN no configurado' });
     const ok = await bcrypt.compare(oldPin, user.adminPinHash);
     if (!ok) return res.status(400).json({ success: false, message: 'PIN actual incorrecto' });
-    user.adminPinHash = await hashPassword(newPin);
+    const salt = await bcrypt.genSalt(10);
+    user.adminPinHash = await bcrypt.hash(newPin, salt);
     user.adminPinAttempts = 0;
     user.adminPinLockedUntil = null;
     await user.save();

@@ -68,6 +68,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // Servir uploads
 const path = require('path');
+const fs = require('fs');
 app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // Rutas
