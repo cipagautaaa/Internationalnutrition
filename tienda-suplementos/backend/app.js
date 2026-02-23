@@ -35,21 +35,26 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '').split(',').map(o => o
 console.log('[CORS] Allowed origins:', allowedOrigins);
 console.log('[Server] Starting with CORS configuration...');
 
+// Patrones de dominio propios del proyecto que siempre se permiten
+const TRUSTED_PATTERNS = [
+  /\.vercel\.app$/,                   // Cualquier despliegue Vercel (preview + prod)
+  /\.railway\.app$/,                  // Cualquier despliegue Railway
+  /^https?:\/\/localhost(:\d+)?$/,    // localhost en cualquier puerto
+  /intsupps\.com$/                    // Dominio de producción
+];
+
 app.use(cors({
   origin: (origin, callback) => {
     // Permitir sin origin (requests desde el mismo servidor, Postman, etc.)
     if (!origin) return callback(null, true);
-    // Permitir si está en la lista blanca
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    // Si no hay lista configurada: permitir en desarrollo, bloquear en producción
-    if (allowedOrigins.length === 0) {
-      if (process.env.NODE_ENV === 'production') {
-        console.warn('[CORS] Rechazado: ALLOWED_ORIGINS no configurado en producción. Origin:', origin);
-        return callback(new Error('CORS not configured for production'));
-      }
-      return callback(null, true);
-    }
-    // Si no está en la lista, rechazar
+    // Permitir si está en la lista blanca explícita
+    if (allowedOrigins.length > 0 && allowedOrigins.includes(origin)) return callback(null, true);
+    // Permitir si coincide con patrón de dominio confiable
+    if (TRUSTED_PATTERNS.some(pattern => pattern.test(origin))) return callback(null, true);
+    // En desarrollo, permitir todo
+    if (process.env.NODE_ENV !== 'production') return callback(null, true);
+    // En producción: rechazar orígenes desconocidos
+    console.warn('[CORS] Rechazado origin desconocido:', origin);
     return callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
