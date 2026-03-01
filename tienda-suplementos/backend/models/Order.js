@@ -53,7 +53,7 @@ const orderSchema = new mongoose.Schema({
   },
   paymentStatus: {
     type: String,
-    enum: ['pending', 'approved', 'rejected', 'cancelled', 'APPROVED', 'DECLINED', 'VOIDED'],
+    enum: ['pending', 'approved', 'rejected', 'cancelled', 'failed', 'paid', 'APPROVED', 'DECLINED', 'VOIDED', 'ERROR'],
     default: 'pending'
   },
   wompiTransactionId: {

@@ -18,16 +18,58 @@ const PaymentSuccess = () => {
     const verifyPayment = async () => {
       try {
         const paymentId = searchParams.get('payment_id');
-        const merchantOrderId = searchParams.get('merchant_order_id');
+        const transactionId = searchParams.get('transactionId');
+        const orderId = searchParams.get('orderId');
         const externalReference = searchParams.get('external_reference');
 
-        if (paymentId) {
-          // Verificar el pago con el backend
-          const response = await api.get(`/payments/verify/${paymentId}`);
-          if (response.data.success) {
-            setOrder(response.data.order);
+        // Intentar verificar con transactionId de Wompi (dispara fallback de emails si webhook falló)
+        if (transactionId) {
+          try {
+            const response = await api.get(`/payments/verify-transaction/${transactionId}`);
+            if (response.data.success) {
+              setOrder(response.data.order);
+              return; // Éxito, salir
+            }
+          } catch (verifyErr) {
+            console.warn('Error verificando por transactionId, intentando por orderId:', verifyErr);
           }
-        } else if (externalReference) {
+        }
+        
+        // Fallback: verificar por orderId si está disponible
+        if (orderId) {
+          try {
+            const response = await api.get(`/orders/${orderId}`);
+            if (response.data.success || response.data.order || response.data) {
+              setOrder(response.data.order || response.data);
+              
+              // También intentar finalizar la orden por orderId (endpoint de respaldo)
+              try {
+                await api.post(`/payments/verify-and-finalize`, { orderId });
+              } catch (finalizeErr) {
+                // No es crítico, el webhook debería encargarse
+                console.warn('verify-and-finalize falló (normal si webhook ya procesó):', finalizeErr?.message);
+              }
+              return;
+            }
+          } catch (orderErr) {
+            console.warn('Error obteniendo orden por orderId:', orderErr);
+          }
+        }
+
+        if (paymentId) {
+          // Verificar el pago con el backend (legacy MercadoPago)
+          try {
+            const response = await api.get(`/payments/verify-transaction/${paymentId}`);
+            if (response.data.success) {
+              setOrder(response.data.order);
+              return;
+            }
+          } catch (err) {
+            console.warn('Error verificando por paymentId:', err);
+          }
+        }
+        
+        if (externalReference) {
           // Para otros métodos de pago, buscar la orden por referencia
           const response = await api.get(`/orders/${externalReference}`);
           if (response.data.success) {

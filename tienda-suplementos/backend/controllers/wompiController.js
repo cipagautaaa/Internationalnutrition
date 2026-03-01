@@ -327,7 +327,89 @@ const verifyWompiHandler = async (req, res) => {
     const verificationResult = await verifyWompiTransaction(transactionId);
     if (!verificationResult.success) return res.status(500).json({ success: false, message: verificationResult.error });
 
-    const order = await Order.findOne({ wompiTransactionId: transactionId }).populate('items.product');
+    const transaction = verificationResult.transaction;
+    
+    // Buscar orden por transactionId o por referencia
+    let order = await Order.findOne({ wompiTransactionId: transactionId }).populate('items.product');
+    
+    if (!order && transaction?.reference) {
+      order = await Order.findOne({ wompiReference: transaction.reference }).populate('items.product');
+    }
+    
+    // FALLBACK CRÍTICO: Si Wompi dice APPROVED pero la orden no fue actualizada por el webhook,
+    // actualizarla aquí para no perder ventas
+    if (order && transaction && (transaction.status || '').toUpperCase() === 'APPROVED') {
+      const needsUpdate = order.paymentStatus !== 'APPROVED' && order.paymentStatus !== 'paid' && order.paymentStatus !== 'approved';
+      
+      if (needsUpdate) {
+        console.log(`🔄 [VERIFY-FALLBACK] Orden ${order._id} necesita actualización. Status actual: ${order.paymentStatus}, Wompi dice: APPROVED`);
+        
+        // Actualizar estado
+        order.paymentStatus = 'APPROVED';
+        order.status = 'processing';
+        if (!order.wompiTransactionId) {
+          order.wompiTransactionId = transactionId;
+        }
+        
+        // Descontar stock
+        for (const item of order.items) {
+          if (item.kind === 'Product') {
+            await Product.findByIdAndUpdate(item.product._id || item.product, { $inc: { stock: -item.quantity } });
+          }
+        }
+        
+        // Resetear ruleta del usuario
+        if (order.user) {
+          try {
+            await User.findByIdAndUpdate(order.user, {
+              wheelPrizePending: null,
+              wheelLockedUntilPurchase: false,
+              wheelSpinAttempts: 0
+            });
+          } catch (wheelError) {
+            console.error('🎡 [VERIFY-FALLBACK] Error reseteando ruleta:', wheelError);
+          }
+        }
+        
+        await order.save();
+        console.log(`✅ [VERIFY-FALLBACK] Orden ${order._id} actualizada a APPROVED`);
+      }
+      
+      // Enviar emails si no se enviaron (idempotente)
+      try {
+        await order.populate('user');
+        await order.populate('items.product');
+        
+        const userInfo = order.user || order.customerData || {};
+        
+        if (!order.emailNotifications?.adminNewOrderSentAt) {
+          console.log('📧 [VERIFY-FALLBACK] Enviando notificación al admin...');
+          const resAdmin = await sendNewOrderNotificationToAdmin(order, userInfo);
+          if (!resAdmin?.queued && !resAdmin?.skipped) {
+            order.emailNotifications = order.emailNotifications || {};
+            order.emailNotifications.adminNewOrderSentAt = new Date();
+          }
+        }
+        
+        if (!order.emailNotifications?.customerConfirmationSentAt) {
+          console.log('📧 [VERIFY-FALLBACK] Enviando confirmación al cliente...');
+          const resCustomer = await sendOrderConfirmationToCustomer(order, userInfo);
+          if (!resCustomer?.queued && !resCustomer?.skipped) {
+            order.emailNotifications = order.emailNotifications || {};
+            order.emailNotifications.customerConfirmationSentAt = new Date();
+          }
+        }
+        
+        order.emailNotifications = order.emailNotifications || {};
+        order.emailNotifications.lastEmailError = null;
+        await order.save();
+        
+        console.log('✅ [VERIFY-FALLBACK] Flujo de emails ejecutado para orden:', order._id);
+      } catch (emailError) {
+        console.error('❌ [VERIFY-FALLBACK] Error enviando correos:', emailError?.message || emailError);
+      }
+    }
+
     return res.json({ success: true, transaction: verificationResult.transaction, order });
   } catch (error) {
     console.error('Error verificando transacción (controller):', error);
