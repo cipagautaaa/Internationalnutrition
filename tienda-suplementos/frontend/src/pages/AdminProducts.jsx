@@ -1037,7 +1037,7 @@ export default function AdminProducts() {
 
             {modalOpen && (
               <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/40 shadow-2xl p-4">
-                <div className="relative max-h-[90vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-2xl border border-[#eadfcd] bg-white p-6">
+                <div className="relative max-h-[90vh] w-full max-w-6xl space-y-4 overflow-y-auto rounded-2xl border border-[#eadfcd] bg-white p-6">
                   <h2 className="text-lg font-semibold text-gray-900">{editing ? 'Editar Producto' : 'Nuevo Producto'}</h2>
                   <ProductForm
                     initialValue={form}
@@ -1164,7 +1164,6 @@ export default function AdminProducts() {
             </div>
           ) : (
             <div className="overflow-x-auto rounded-2xl border border-[#eadfcd] bg-white shadow-sm">
-              <div>
                 <table className="min-w-full text-sm">
                   <thead className="bg-gradient-to-r from-[#fff4ea] to-[#fbe9dd] text-left text-xs font-semibold uppercase tracking-wide text-slate-600">
                     <tr>
@@ -1173,7 +1172,7 @@ export default function AdminProducts() {
                       <th className="px-4 py-3">Precio</th>
                       <th className="px-4 py-3">Disponibilidad</th>
                       <th className="px-4 py-3">Estado</th>
-                      <th className="px-4 py-3 text-left">Acciones</th>
+                      <th className="px-4 py-3 text-left min-w-[260px]">Acciones</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#f1e6d4]">
@@ -1251,7 +1250,7 @@ export default function AdminProducts() {
                             )}
                           </span>
                         </td>
-                        <td className="px-4 py-4 align-top">
+                        <td className="px-4 py-4 align-top whitespace-nowrap">
                           {product._isImplement ? (
                             <button
                               type="button"
@@ -1323,7 +1322,6 @@ export default function AdminProducts() {
                     )}
                   </tbody>
                 </table>
-              </div>
             </div>
           )}
         </div>
@@ -1331,7 +1329,7 @@ export default function AdminProducts() {
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="relative max-h-[90vh] w-full max-w-lg space-y-4 overflow-y-auto rounded-2xl border border-[#eadfcd] bg-white p-6 shadow-xl">
+          <div className="relative max-h-[90vh] w-full max-w-6xl space-y-4 overflow-y-auto rounded-2xl border border-[#eadfcd] bg-white p-6 shadow-xl">
             <h2 className="text-lg font-semibold text-gray-900">{editing ? 'Editar Producto' : 'Nuevo Producto'}</h2>
             <ProductForm
               initialValue={form}

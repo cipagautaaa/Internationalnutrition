@@ -383,631 +383,546 @@ export default function ProductForm({ initialValue, onCancel, onSave, saving, ed
 
   return (
     <form onSubmit={submit} className="space-y-6">
-      {/* Información Básica */}
-      <div className=" rounded-lg p-4 space-y-4">
-        <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Información Básica
-        </h3>
-        
-        <div className="grid md:grid-cols-2 gap-4">
-          <label className="block">
-            <span className="text-xs font-semibold text-gray-700 mb-1 block">Nombre del Producto *</span>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* ========== COLUMNA IZQUIERDA ========== */}
+        <div className="space-y-5">
+          {/* Información Básica */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-4">
+            <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Información Básica
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="text-xs font-semibold text-gray-700 mb-1 block">Nombre del Producto *</span>
+                <input 
+                  value={form.name} 
+                  onChange={e=>update('name', e.target.value)} 
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
+                  placeholder="Ej: Whey Protein Premium"
+                  required 
+                />
+              </label>
+              
+              <label className="block">
+                <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio *</span>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-500 font-bold">$</span>
+                  <input 
+                    type="number" 
+                    min="0" 
+                    step="0.01" 
+                    value={form.price} 
+                    onChange={e=>update('price', e.target.value)} 
+                    className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
+                    placeholder="0.00"
+                    required 
+                  />
+                </div>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <label className="block">
+                <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio Original (opcional)</span>
+                <div className="relative">
+                  <span className="absolute left-3 top-2.5 text-gray-500 font-bold">$</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={form.originalPrice || ''}
+                    onChange={e=>update('originalPrice', e.target.value)}
+                    className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                    placeholder="Precio anterior"
+                  />
+                </div>
+                <p className="text-[11px] text-gray-500 mt-1">Mayor que el actual para mostrar descuento.</p>
+              </label>
+              
+              <label className="block">
+                <span className="text-xs font-semibold text-gray-700 mb-1 block">Tamaño *</span>
+                <input 
+                  value={form.size} 
+                  onChange={e=>update('size', e.target.value)} 
+                  className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
+                  placeholder="Ej: 4 libras / 400g"
+                  required 
+                />
+              </label>
+            </div>
+          </div>
+
+          {/* Categoría y Tipo */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-4">
+            <h3 className="text-sm font-bold text-rose-900 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              Clasificación
+            </h3>
+            
+            <div className={`grid gap-3 ${(isProteins(form.category) || isCreatine(form.category) || isPreworkout(form.category) || isHealthWellness(form.category) || isAminoAcids(form.category) || isMealsProtein(form.category)) ? 'grid-cols-2' : 'grid-cols-1'}`}>
+              <label className="block">
+                <span className="text-xs font-semibold text-gray-700 mb-1 block">Categoría *</span>
+                {editingMode ? (
+                  <select 
+                    value={form.category} 
+                    onChange={e=>update('category', e.target.value)} 
+                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                  >
+                    {categories.map(c => <option key={c}>{c}</option>)}
+                  </select>
+                ) : categoryLocked ? (
+                  <input
+                    value={form.category}
+                    readOnly
+                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                    title="Categoría preseleccionada según el panel"
+                  />
+                ) : (
+                  <select 
+                    value={form.category} 
+                    onChange={e=>update('category', e.target.value)} 
+                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
+                    required
+                  >
+                    <option value="">Selecciona una categoría</option>
+                    {categories.map(c => <option key={c}>{c}</option>)}
+                  </select>
+                )}
+              </label>
+              
+              {(isProteins(form.category) || isCreatine(form.category) || isPreworkout(form.category) || isHealthWellness(form.category) || isAminoAcids(form.category) || isMealsProtein(form.category)) && (
+                <label className="block">
+                  <span className="text-xs font-semibold text-gray-700 mb-1 block">Tipo/Subcategoría *</span>
+                  {editingMode ? (
+                    <select
+                      value={form.tipo || ''}
+                      onChange={e => update('tipo', e.target.value)}
+                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                    >
+                      <option value="">Selecciona un tipo</option>
+                      {getTypeOptions(form.category, form.tipo)?.map(type => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  ) : categoryLocked ? (
+                    <input
+                      value={form.tipo || ''}
+                      readOnly
+                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-700 cursor-not-allowed"
+                      title="Subcategoría preseleccionada según el panel"
+                    />
+                  ) : (
+                    <select
+                      value={form.tipo || ''}
+                      onChange={e => update('tipo', e.target.value)}
+                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                    >
+                      <option value="">Selecciona un tipo</option>
+                      {getTypeOptions(form.category, form.tipo)?.map(type => (
+                        <option key={type} value={type}>{type}</option>
+                      ))}
+                    </select>
+                  )}
+                </label>
+              )}
+            </div>
+          </div>
+
+          {/* Imagen */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+            <h3 className="text-sm font-bold text-orange-900 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              Imagen del Producto
+            </h3>
+            
             <input 
-              value={form.name} 
-              onChange={e=>update('name', e.target.value)} 
+              value={form.image} 
+              onChange={e=>update('image', e.target.value)} 
               className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
-              placeholder="Ej: Whey Protein Premium"
+              placeholder="URL de la imagen"
               required 
             />
-          </label>
-          
-          <label className="block">
-            <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio *</span>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-gray-500 font-bold">$</span>
-              <input 
-                type="number" 
-                min="0" 
-                step="0.01" 
-                value={form.price} 
-                onChange={e=>update('price', e.target.value)} 
-                className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
-                placeholder="0.00"
-                required 
-              />
-            </div>
-          </label>
-        </div>
-
-        {/* Precio Original opcional para mostrar descuento */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <label className="block">
-            <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio Original (opcional)</span>
-            <div className="relative">
-              <span className="absolute left-3 top-2.5 text-gray-500 font-bold">$</span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.originalPrice || ''}
-                onChange={e=>update('originalPrice', e.target.value)}
-                className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-                placeholder="Precio anterior para mostrar descuento"
-              />
-            </div>
-            <p className="text-[11px] text-gray-500 mt-1">Si estableces un precio original mayor que el actual, se mostrará el descuento automáticamente.</p>
-          </label>
-        </div>
-        
-        <label className="block">
-          <span className="text-xs font-semibold text-gray-700 mb-1 block">Tamaño *</span>
-          <input 
-            value={form.size} 
-            onChange={e=>update('size', e.target.value)} 
-            className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
-            placeholder="Ej: 4 libras / 400g / 30 servings"
-            required 
-          />
-        </label>
-      </div>
-
-      {/* Categoría y Tipo */}
-      <div className=" p-4 space-y-4">
-        <h3 className="text-sm font-bold text-rose-900 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-          </svg>
-          Clasificación
-        </h3>
-        
-        <label className="block">
-          <span className="text-xs font-semibold text-gray-700 mb-1 block">Categoría *</span>
-          {editingMode ? (
-            <select 
-              value={form.category} 
-              onChange={e=>update('category', e.target.value)} 
-              className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-            >
-              {categories.map(c => <option key={c}>{c}</option>)}
-            </select>
-          ) : categoryLocked ? (
-            <input
-              value={form.category}
-              readOnly
-              className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-              title="Categoría preseleccionada según el panel"
-            />
-          ) : (
-            <select 
-              value={form.category} 
-              onChange={e=>update('category', e.target.value)} 
-              className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
-              required
-            >
-              <option value="">Selecciona una categoría</option>
-              {categories.map(c => <option key={c}>{c}</option>)}
-            </select>
-          )}
-        </label>
-        
-        {/* Campo Tipo/Subcategoría (editable cuando estamos editando, solo lectura cuando viene preseleccionado) */}
-        {(isProteins(form.category) || isCreatine(form.category) || isPreworkout(form.category) || isHealthWellness(form.category) || isAminoAcids(form.category) || isMealsProtein(form.category)) && (
-          <label className="block">
-            <span className="text-xs font-semibold text-gray-700 mb-1 block">Tipo/Subcategoría *</span>
-            {editingMode ? (
-              // En modo edición: dropdown editable
-              <select
-                value={form.tipo || ''}
-                onChange={e => update('tipo', e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+            
+            <div className="grid grid-cols-2 gap-3">
+              {/* Zona drag & drop */}
+              <div
+                onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragActive(true); }}
+                onDragLeave={e => { e.preventDefault(); e.stopPropagation(); setDragActive(false); }}
+                onDrop={e => {
+                  e.preventDefault(); e.stopPropagation(); setDragActive(false);
+                  if (e.dataTransfer.files && e.dataTransfer.files[0]) handleImageUpload(e.dataTransfer.files[0]);
+                }}
+                className={`flex flex-col items-center justify-center border-2 border-dashed rounded-lg px-3 py-4 transition-all ${
+                  dragActive ? 'border-red-700 bg-red-50' : 'border-gray-300 bg-gray-50'
+                }`}
               >
-                <option value="">Selecciona un tipo</option>
-                {getTypeOptions(form.category, form.tipo)?.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            ) : categoryLocked ? (
-              // En modo crear con categoría preseleccionada: solo lectura
-              <input
-                value={form.tipo || ''}
-                readOnly
-                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm bg-gray-50 text-gray-700 cursor-not-allowed"
-                title="Subcategoría preseleccionada según el panel"
-              />
-            ) : (
-              // En modo crear sin categoría preseleccionada: dropdown
-              <select
-                value={form.tipo || ''}
-                onChange={e => update('tipo', e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-              >
-                <option value="">Selecciona un tipo</option>
-                {getTypeOptions(form.category, form.tipo)?.map(type => (
-                  <option key={type} value={type}>{type}</option>
-                ))}
-              </select>
-            )}
-          </label>
-        )}
-      </div>
+                {uploadingImage ? (
+                  <div className="text-center">
+                    <svg className="w-8 h-8 mx-auto mb-1 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <p className="text-xs font-semibold text-blue-700">Subiendo...</p>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <svg className="w-8 h-8 mx-auto mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                    <p className="text-xs text-gray-600 font-medium">Arrastra aquí o Ctrl+V</p>
+                    <div className="mt-2">
+                      <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" id="imageUpload" disabled={uploadingImage} />
+                      <label htmlFor="imageUpload" className="cursor-pointer inline-flex items-center gap-1 px-3 py-1.5 border-2 border-red-700 rounded-lg text-xs font-medium bg-white hover:bg-red-50 transition-all">
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                        Elegir archivo
+                      </label>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-      {/* Imagen */}
-      <div className=" p-4 space-y-3">
-        <h3 className="text-sm font-bold text-orange-900 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-          </svg>
-          Imagen del Producto
-        </h3>
-        
-        <div className="space-y-3">
-          <input 
-            value={form.image} 
-            onChange={e=>update('image', e.target.value)} 
-            className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
-            placeholder="URL de la imagen"
-            required 
-          />
-          
-          {/* Zona de arrastrar y soltar */}
-          <div
-            onDragOver={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              setDragActive(true);
-            }}
-            onDragLeave={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              setDragActive(false);
-            }}
-            onDrop={e => {
-              e.preventDefault();
-              e.stopPropagation();
-              setDragActive(false);
-              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                handleImageUpload(e.dataTransfer.files[0]);
-              }
-            }}
-            className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg px-4 py-6 mb-3 transition-all ${
-              dragActive
-                ? 'border-red-700 bg-red-50'
-                : 'border-gray-300 bg-gray-50'
-            }`}
-          >
-            {uploadingImage ? (
-              <div className="text-center">
-                <svg className="w-10 h-10 mx-auto mb-2 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                <p className="text-sm font-semibold text-blue-700">Subiendo imagen...</p>
+              {/* Preview */}
+              <div className="flex items-center justify-center">
+                {form.image ? (
+                  <img src={form.image} alt="Preview" className="h-28 w-28 object-cover rounded-lg border-4 border-white shadow-lg" onError={(e) => { e.target.style.display = 'none'; }} />
+                ) : (
+                  <div className="h-28 w-28 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">Sin imagen</div>
+                )}
               </div>
-            ) : form.image ? (
-              <div className="text-center">
-                <img 
-                  src={form.image} 
-                  alt="Preview" 
-                  className="h-32 w-32 object-cover rounded-lg border-4 border-white shadow-lg mb-2"
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
-                <p className="text-sm font-semibold text-green-700">✓ Imagen cargada</p>
-              </div>
-            ) : (
-              <div className="text-center">
-                <svg className="w-10 h-10 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+            </div>
+            
+            {imageError && (
+              <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
-                <p className="text-sm text-gray-600 font-medium">
-                  Arrastra una imagen aquí
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  o pégala con Ctrl+V
-                </p>
+                {imageError}
               </div>
             )}
           </div>
 
-          {/* Botón de selección tradicional */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500 font-medium">o seleccionar archivo:</span>
-            <label className="flex-1">
-              <input 
-                type="file" 
-                accept="image/*"
-                onChange={handleImageUpload}
-                className="hidden"
-                id="imageUpload"
-                disabled={uploadingImage}
-              />
-              <label 
-                htmlFor="imageUpload" 
-                className="cursor-pointer inline-flex items-center justify-center gap-2 px-4 py-2 border-2 border-red-700 rounded-lg text-sm font-medium bg-white hover:bg-red-50 transition-all shadow-sm"
+          {/* Estado del Producto */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+            <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Estado del Producto
+            </h3>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex items-center gap-3 p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-red-700 transition-all">
+                <input 
+                  type="checkbox" 
+                  checked={form.inStock !== false} 
+                  onChange={e=>update('inStock', e.target.checked)} 
+                  className="w-5 h-5 rounded border-gray-300 text-red-700 focus:ring-2 focus:ring-red-700"
+                  style={{ accentColor: '#b91c1c' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-semibold text-gray-800">Stock disponible</span>
+                  <p className="text-xs text-gray-500">Disponible para venta</p>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-bold shrink-0 ${form.inStock !== false ? 'bg-green-100 text-green-700' : 'bg-red-700 text-red-700'}`}>
+                  {form.inStock !== false ? '✓' : '✕'}
+                </span>
+              </label>
+              
+              <label className="flex items-center gap-3 p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-red-700 transition-all">
+                <input 
+                  type="checkbox" 
+                  checked={form.isActive} 
+                  onChange={e=>update('isActive', e.target.checked)} 
+                  className="w-5 h-5 rounded border-gray-300 text-red-700 focus:ring-2 focus:ring-red-700"
+                  style={{ accentColor: '#b91c1c' }}
+                />
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-semibold text-gray-800">Producto activo</span>
+                  <p className="text-xs text-gray-500">Visible en tienda</p>
+                </div>
+                <span className={`px-2 py-1 rounded-full text-xs font-bold shrink-0 ${form.isActive ? 'bg-red-700 text-white' : 'bg-gray-100 text-gray-700'}`}>
+                  {form.isActive ? '👁️' : '🙈'}
+                </span>
+              </label>
+            </div>
+          </div>
+
+          {/* Descripción */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+            <h3 className="text-sm font-bold text-pink-900 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
+              </svg>
+              Descripción
+            </h3>
+            <textarea 
+              value={form.description} 
+              onChange={e=>update('description', e.target.value)} 
+              rows={4} 
+              className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+              placeholder="Describe el producto, sus beneficios, ingredientes, modo de uso, etc."
+            />
+          </div>
+        </div>
+
+        {/* ========== COLUMNA DERECHA ========== */}
+        <div className="space-y-5">
+          {/* Variantes */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+                Variantes (Tamaños)
+                <span className="text-xs font-normal text-gray-500">Opcional</span>
+              </h3>
+              <button 
+                type="button" 
+                onClick={addVariant} 
+                className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-700 text-white text-xs font-semibold transition-all shadow-sm hover:shadow flex items-center gap-1"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
-                {uploadingImage ? 'Subiendo...' : 'Elegir archivo'}
-              </label>
-            </label>
-          </div>
-          
-          {imageError && (
-            <div className="flex items-center gap-2 text-xs text-red-700 bg-red-50 px-3 py-2 rounded-lg border border-red-200">
-              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              {imageError}
+                Añadir
+              </button>
             </div>
-          )}
-          
-          {form.image && (
-            <div className="flex justify-center">
-              <img 
-                src={form.image} 
-                alt="Preview" 
-                className="h-32 w-32 object-cover rounded-lg border-4 border-white shadow-lg"
-                onError={(e) => { e.target.style.display = 'none'; }}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Disponibilidad y Estado */}
-      <div className=" p-4 space-y-3">
-        <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Estado del Producto
-        </h3>
-        
-        <div className="flex flex-col gap-3">
-          <label className="flex items-center gap-3 p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-red-700 transition-all">
-            <input 
-              type="checkbox" 
-              checked={form.inStock !== false} 
-              onChange={e=>update('inStock', e.target.checked)} 
-              className="w-5 h-5 rounded border-gray-300 text-red-700 focus:ring-2 focus:ring-red-700"
-              style={{ accentColor: '#b91c1c' }}
-            />
-            <div className="flex-1">
-              <span className="text-sm font-semibold text-gray-800">Hay stock disponible</span>
-              <p className="text-xs text-gray-500">El producto está disponible para la venta</p>
-            </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${form.inStock !== false ? 'bg-green-100 text-green-700' : 'bg-red-700 text-red-700'}`}>
-              {form.inStock !== false ? '✓ Disponible' : '✕ Agotado'}
-            </span>
-          </label>
-          
-          <label className="flex items-center gap-3 p-3 bg-white rounded-lg border-2 border-gray-200 cursor-pointer hover:border-red-700 transition-all">
-            <input 
-              type="checkbox" 
-              checked={form.isActive} 
-              onChange={e=>update('isActive', e.target.checked)} 
-              className="w-5 h-5 rounded border-gray-300 text-red-700 focus:ring-2 focus:ring-red-700"
-              style={{ accentColor: '#b91c1c' }}
-            />
-            <div className="flex-1">
-              <span className="text-sm font-semibold text-gray-800">Producto activo</span>
-              <p className="text-xs text-gray-500">Visible en la tienda</p>
-            </div>
-            <span className={`px-3 py-1 rounded-full text-xs font-bold ${form.isActive ? 'bg-red-700 text-red-700' : 'bg-gray-100 text-gray-700'}`}>
-              {form.isActive ? '👁️ Visible' : '🙈 Oculto'}
-            </span>
-          </label>
-        </div>
-      </div>
-
-      {/* Descripción */}
-      <div className=" p-4 space-y-3">
-        <h3 className="text-sm font-bold text-pink-900 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h7" />
-          </svg>
-          Descripción
-        </h3>
-        <textarea 
-          value={form.description} 
-          onChange={e=>update('description', e.target.value)} 
-          rows={4} 
-          className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-          placeholder="Describe el producto, sus beneficios, ingredientes, modo de uso, etc."
-        />
-      </div>
-
-      {/* Variantes */}
-      <div className=" p-4 space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-red-700 flex items-center gap-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-            </svg>
-            Variantes (Tamaños)
-            <span className="text-xs font-normal text-gray-500">Opcional</span>
-          </h3>
-          <button 
-            type="button" 
-            onClick={addVariant} 
-            className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-700 text-white text-xs font-semibold transition-all shadow-sm hover:shadow flex items-center gap-1"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Añadir
-          </button>
-        </div>
-        
-        {form.variants.length === 0 && (
-          <p className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg border border-dashed border-gray-300">
-            Nota: Si agregas más de una variante, el cliente verá un selector de tamaño y se usará el precio de la variante.
-          </p>
-        )}
-        
-        {form.variants.length > 0 && (
-          <div className="space-y-3 max-h-96 overflow-auto pr-1">
-            {form.variants.map((v,idx) => (
-              <div key={idx} className="bg-white p-4 rounded-lg border-2 border-gray-200 space-y-3 hover:border-red-700 transition-all">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <label className="block">
-                    <span className="text-xs font-semibold text-gray-700 mb-1 block">Nombre de la Variante</span>
-                    <input
-                      value={v.name || ''}
-                      onChange={e=>updateVariant(idx,'name', e.target.value)}
-                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-                      placeholder="Ej: Creatina 60 serv"
-                    />
-                  </label>
-                  <label className="block">
-                    <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio *</span>
-                    <div className="relative">
-                      <span className="absolute left-3 top-2.5 text-gray-500 font-bold text-sm">$</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={v.price ?? ''}
-                        onChange={e=>updateVariant(idx,'price', e.target.value)}
-                        className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-                      />
-                    </div>
-                  </label>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <label className="block">
-                    <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio Original (opcional)</span>
-                    <div className="relative">
-                      <span className="absolute left-3 top-2.5 text-gray-500 font-bold text-sm">$</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={v.originalPrice ?? ''}
-                        onChange={e=>updateVariant(idx,'originalPrice', e.target.value)}
-                        className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-                        placeholder="Precio anterior"
-                      />
-                    </div>
-                  </label>
-                  <label className="block">
-                    <span className="text-xs font-semibold text-gray-700 mb-1 block">Tamaño *</span>
-                    <input
-                      value={v.size || ''}
-                      onChange={e=>updateVariant(idx,'size', e.target.value)}
-                      className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-                      placeholder="Ej: 60 serv"
-                    />
-                  </label>
-                </div>
-
-                <label className="block">
-                  <span className="text-xs font-semibold text-gray-700 mb-1 block">Descripción de la variante</span>
-                  <textarea
-                    value={v.description || ''}
-                    onChange={e=>updateVariant(idx,'description', e.target.value)}
-                    rows={3}
-                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
-                    placeholder="Describe qué diferencia a esta variante"
-                  />
-                </label>
-
-                <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer hover:border-red-700 transition-all">
-                  <input
-                    type="checkbox"
-                    checked={v.inStock !== false}
-                    onChange={e=>updateVariant(idx,'inStock', e.target.checked)}
-                    className="w-5 h-5 rounded border-gray-300 text-red-700 focus:ring-2 focus:ring-red-700"
-                    style={{ accentColor: '#dc2626' }}
-                  />
-                  <div className="flex-1">
-                    <span className="text-sm font-semibold text-gray-800">Hay stock disponible</span>
-                    <p className="text-xs text-gray-500">Activa esta variante si se puede vender ahora.</p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${v.inStock !== false ? 'bg-green-100 text-green-700' : 'bg-red-700 text-red-700'}`}>
-                    {v.inStock !== false ? 'Disponible' : 'Sin stock'}
-                  </span>
-                </label>
-
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold text-gray-700 block">Imagen de la variante</span>
-                  <input 
-                    value={v.image} 
-                    onChange={e=>updateVariant(idx,'image', e.target.value)} 
-                    onPaste={(e)=>handleVariantPaste(idx, e)}
-                    className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
-                    placeholder="URL de la imagen" 
-                  />
-                  
-                  {/* Zona de arrastrar y soltar para variante */}
-                  <div
-                    onDragOver={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setDragActiveVariant(idx);
-                    }}
-                    onDragLeave={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setDragActiveVariant(null);
-                    }}
-                    onDrop={e => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setDragActiveVariant(null);
-                      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                        handleVariantImageUpload(idx, e.dataTransfer.files[0]);
-                      }
-                    }}
-                    onPaste={(e)=>handleVariantPaste(idx, e)}
-                    className={`w-full flex flex-col items-center justify-center border-2 border-dashed rounded-lg px-4 py-4 transition-all ${
-                      dragActiveVariant === idx
-                        ? 'border-red-700 bg-red-50'
-                        : 'border-gray-300 bg-gray-50'
-                    }`}
-                  >
-                    {uploadingVariantImage === idx ? (
-                      <div className="text-center">
-                        <svg className="w-8 h-8 mx-auto mb-1 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            
+            {form.variants.length === 0 && (
+              <p className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg border border-dashed border-gray-300">
+                Si agregas variantes, el cliente verá un selector de tamaño con el precio de cada una.
+              </p>
+            )}
+            
+            {form.variants.length > 0 && (
+              <div className="space-y-3 max-h-[55vh] overflow-y-auto pr-1">
+                {form.variants.map((v,idx) => (
+                  <div key={idx} className="bg-white p-4 rounded-lg border-2 border-gray-200 space-y-3 hover:border-red-700 transition-all">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="text-xs font-bold text-gray-500">Variante {idx + 1}</span>
+                      <button 
+                        type="button" 
+                        onClick={()=>removeVariant(idx)} 
+                        className="px-2 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-xs font-semibold transition-all flex items-center gap-1"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
-                        <p className="text-xs font-semibold text-blue-700">Subiendo...</p>
-                      </div>
-                    ) : v.image ? (
-                      <div className="text-center">
-                        <img 
-                          src={v.image} 
-                          alt="Preview" 
-                          className="h-20 w-20 object-cover rounded-lg border-2 border-white shadow mb-1"
-                          onError={(e) => { e.target.style.display = 'none'; }}
+                        Eliminar
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-3">
+                      <label className="block">
+                        <span className="text-xs font-semibold text-gray-700 mb-1 block">Nombre</span>
+                        <input
+                          value={v.name || ''}
+                          onChange={e=>updateVariant(idx,'name', e.target.value)}
+                          className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                          placeholder="Ej: Creatina 60 serv"
                         />
-                        <p className="text-xs font-semibold text-green-700">✓ Imagen cargada</p>
-                      </div>
-                    ) : (
-                      <div className="text-center">
-                        <svg className="w-8 h-8 mx-auto mb-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                        </svg>
-                        <p className="text-xs text-gray-600">Arrastra aquí</p>
-                      </div>
-                    )}
-                  </div>
+                      </label>
+                      <label className="block">
+                        <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio *</span>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2.5 text-gray-500 font-bold text-sm">$</span>
+                          <input
+                            type="number" min="0" step="0.01"
+                            value={v.price ?? ''}
+                            onChange={e=>updateVariant(idx,'price', e.target.value)}
+                            className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                          />
+                        </div>
+                      </label>
+                      <label className="block">
+                        <span className="text-xs font-semibold text-gray-700 mb-1 block">Tamaño *</span>
+                        <input
+                          value={v.size || ''}
+                          onChange={e=>updateVariant(idx,'size', e.target.value)}
+                          className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                          placeholder="Ej: 60 serv"
+                        />
+                      </label>
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    <input 
-                      type="file" 
-                      accept="image/*"
-                      onChange={(e) => handleVariantImageUpload(idx, e)}
-                      className="hidden"
-                      id={`variantImageUpload-${idx}`}
-                      disabled={uploadingVariantImage === idx}
-                    />
-                    <label 
-                      htmlFor={`variantImageUpload-${idx}`}
-                      className="cursor-pointer inline-flex items-center gap-2 px-3 py-1.5 border-2 border-red-700 rounded-lg text-xs font-medium bg-white hover:bg-red-50 transition-all"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                      </svg>
-                      {uploadingVariantImage === idx ? 'Subiendo...' : 'Seleccionar'}
+                    <div className="grid grid-cols-2 gap-3">
+                      <label className="block">
+                        <span className="text-xs font-semibold text-gray-700 mb-1 block">Precio Original (opcional)</span>
+                        <div className="relative">
+                          <span className="absolute left-3 top-2.5 text-gray-500 font-bold text-sm">$</span>
+                          <input
+                            type="number" min="0" step="0.01"
+                            value={v.originalPrice ?? ''}
+                            onChange={e=>updateVariant(idx,'originalPrice', e.target.value)}
+                            className="w-full pl-7 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                            placeholder="Precio anterior"
+                          />
+                        </div>
+                      </label>
+                      <label className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg border border-gray-200 cursor-pointer hover:border-red-700 transition-all self-end">
+                        <input
+                          type="checkbox"
+                          checked={v.inStock !== false}
+                          onChange={e=>updateVariant(idx,'inStock', e.target.checked)}
+                          className="w-4 h-4 rounded border-gray-300 text-red-700 focus:ring-2 focus:ring-red-700"
+                          style={{ accentColor: '#dc2626' }}
+                        />
+                        <span className="text-xs font-semibold text-gray-800">Stock disponible</span>
+                        <span className={`ml-auto px-2 py-0.5 rounded-full text-xs font-bold ${v.inStock !== false ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                          {v.inStock !== false ? '✓' : '✕'}
+                        </span>
+                      </label>
+                    </div>
+
+                    <label className="block">
+                      <span className="text-xs font-semibold text-gray-700 mb-1 block">Descripción</span>
+                      <textarea
+                        value={v.description || ''}
+                        onChange={e=>updateVariant(idx,'description', e.target.value)}
+                        rows={2}
+                        className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all"
+                        placeholder="Describe qué diferencia a esta variante"
+                      />
                     </label>
+
+                    {/* Imagen de variante - compacta */}
+                    <div className="space-y-2">
+                      <span className="text-xs font-semibold text-gray-700 block">Imagen de la variante</span>
+                      <div className="flex items-start gap-3">
+                        <div className="flex-1 space-y-2">
+                          <input 
+                            value={v.image} 
+                            onChange={e=>updateVariant(idx,'image', e.target.value)} 
+                            onPaste={(e)=>handleVariantPaste(idx, e)}
+                            className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-red-700 focus:outline-none transition-all" 
+                            placeholder="URL de la imagen" 
+                          />
+                          <div
+                            onDragOver={e => { e.preventDefault(); e.stopPropagation(); setDragActiveVariant(idx); }}
+                            onDragLeave={e => { e.preventDefault(); e.stopPropagation(); setDragActiveVariant(null); }}
+                            onDrop={e => {
+                              e.preventDefault(); e.stopPropagation(); setDragActiveVariant(null);
+                              if (e.dataTransfer.files && e.dataTransfer.files[0]) handleVariantImageUpload(idx, e.dataTransfer.files[0]);
+                            }}
+                            onPaste={(e)=>handleVariantPaste(idx, e)}
+                            className={`flex items-center justify-center border-2 border-dashed rounded-lg px-3 py-3 transition-all ${
+                              dragActiveVariant === idx ? 'border-red-700 bg-red-50' : 'border-gray-300 bg-gray-50'
+                            }`}
+                          >
+                            {uploadingVariantImage === idx ? (
+                              <div className="text-center">
+                                <svg className="w-6 h-6 mx-auto text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-3">
+                                <svg className="w-5 h-5 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                </svg>
+                                <span className="text-xs text-gray-500">Arrastra, pega o</span>
+                                <input type="file" accept="image/*" onChange={(e) => handleVariantImageUpload(idx, e)} className="hidden" id={`variantImageUpload-${idx}`} disabled={uploadingVariantImage === idx} />
+                                <label htmlFor={`variantImageUpload-${idx}`} className="cursor-pointer text-xs font-semibold text-red-700 hover:text-red-800 underline">
+                                  selecciona
+                                </label>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        {v.image && (
+                          <img src={v.image} alt="Preview" className="h-16 w-16 object-cover rounded-lg border-2 border-white shadow shrink-0" onError={(e) => { e.target.style.display = 'none'; }} />
+                        )}
+                      </div>
+                      {variantImageError[idx] && (
+                        <p className="text-xs text-red-700 bg-red-50 px-2 py-1 rounded border border-red-200">{variantImageError[idx]}</p>
+                      )}
+                    </div>
                   </div>
-                  {variantImageError[idx] && (
-                    <p className="text-xs text-red-700 bg-red-50 px-2 py-1 rounded border border-red-200">{variantImageError[idx]}</p>
-                  )}
-                </div>
-                
-                <div className="flex justify-end">
-                  <button 
-                    type="button" 
-                    onClick={()=>removeVariant(idx)} 
-                    className="px-3 py-1.5 rounded-lg bg-red-700 hover:bg-red-700 text-red-700 text-xs font-semibold transition-all flex items-center gap-1"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    Eliminar
-                  </button>
-                </div>
+                ))}
               </div>
-            ))}
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Sabores */}
-      <div className=" p-4 space-y-3">
-        <h3 className="text-sm font-bold text-rose-900 flex items-center gap-2">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-          </svg>
-          Sabores
-          <span className="text-xs font-normal text-gray-500">Opcional</span>
-        </h3>
-        
-        <div className="flex gap-2">
-          <input 
-            value={flavorInput} 
-            onChange={e=>setFlavorInput(e.target.value)} 
-            className="flex-1 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all" 
-            placeholder="Ej: Vainilla, Chocolate, Fresa..."
-            onKeyPress={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                if (flavorInput.trim()) {
-                  addFlavor(flavorInput);
-                  setFlavorInput('');
-                }
-              }
-            }}
-          />
-          <button 
-            type="button" 
-            onClick={()=>{ 
-              if (flavorInput.trim()) {
-                addFlavor(flavorInput); 
-                setFlavorInput(''); 
-              }
-            }} 
-            className="px-4 py-2 text-sm bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow flex items-center gap-1"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Añadir
-          </button>
+          {/* Sabores */}
+          <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 space-y-3">
+            <h3 className="text-sm font-bold text-rose-900 flex items-center gap-2">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+              Sabores
+              <span className="text-xs font-normal text-gray-500">Opcional</span>
+            </h3>
+            
+            <div className="flex gap-2">
+              <input 
+                value={flavorInput} 
+                onChange={e=>setFlavorInput(e.target.value)} 
+                className="flex-1 border-2 border-gray-300 rounded-lg px-3 py-2 text-sm focus:border-rose-500 focus:ring-2 focus:ring-rose-200 transition-all" 
+                placeholder="Ej: Vainilla, Chocolate, Fresa..."
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (flavorInput.trim()) {
+                      addFlavor(flavorInput);
+                      setFlavorInput('');
+                    }
+                  }
+                }}
+              />
+              <button 
+                type="button" 
+                onClick={()=>{ 
+                  if (flavorInput.trim()) {
+                    addFlavor(flavorInput); 
+                    setFlavorInput(''); 
+                  }
+                }} 
+                className="px-3 py-2 text-sm bg-rose-600 hover:bg-rose-700 text-white rounded-lg font-semibold transition-all shadow-sm hover:shadow flex items-center gap-1"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Añadir
+              </button>
+            </div>
+            
+            {form.flavors.length === 0 && (
+              <p className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg border border-dashed border-gray-300">
+                Si agregas más de un sabor, se mostrará un selector de sabores al cliente.
+              </p>
+            )}
+            
+            {form.flavors.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {form.flavors.map(f => (
+                  <span key={f} className="inline-flex items-center gap-2 bg-white border-2 border-rose-200 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-rose-400 transition-all">
+                    {f}
+                    <button 
+                      type="button" 
+                      onClick={()=>removeFlavor(f)} 
+                      className="text-rose-600 hover:text-rose-800 font-bold text-lg leading-none"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-        
-        {form.flavors.length === 0 && (
-          <p className="text-xs text-gray-600 bg-white px-3 py-2 rounded-lg border border-dashed border-gray-300">
-            Nota: Si agregas más de un sabor, se mostrará un selector de sabores al cliente.
-          </p>
-        )}
-        
-        {form.flavors.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {form.flavors.map(f => (
-              <span key={f} className="inline-flex items-center gap-2 bg-white border-2 border-rose-200 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-700 hover:border-rose-400 transition-all">
-                {f}
-                <button 
-                  type="button" 
-                  onClick={()=>removeFlavor(f)} 
-                  className="text-rose-600 hover:text-rose-800 font-bold text-lg leading-none"
-                >
-                  ×
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
       </div>
 
-      {/* Botones de acción */}
+      {/* Botones de acción - full width */}
       <div className="flex justify-end gap-3 pt-4 border-t-2 border-gray-200">
         <button 
           type="button" 
