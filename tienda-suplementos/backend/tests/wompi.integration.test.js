@@ -13,6 +13,9 @@ describe('Wompi integration tests', () => {
   let testUser;
 
   beforeAll(async () => {
+    process.env.WOMPI_PUBLIC_KEY = process.env.WOMPI_PUBLIC_KEY || 'pub_test_wompi';
+    process.env.WOMPI_INTEGRITY_SECRET = process.env.WOMPI_INTEGRITY_SECRET || 'test_integrity_secret';
+
     mongoServer = await MongoMemoryServer.create();
     const uri = mongoServer.getUri();
     await mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -47,6 +50,101 @@ describe('Wompi integration tests', () => {
     expect(res.body).toHaveProperty('success', true);
     expect(res.body).toHaveProperty('orderId');
     expect(res.body).toHaveProperty('wompiData');
+  });
+
+  test('POST /api/payments/create-wompi-transaction should charge variant price when variantId is provided', async () => {
+    const Product = require('../models/Product');
+    const baseId = new mongoose.Types.ObjectId('507f1f77bcf86cd799439021');
+    const variantId = new mongoose.Types.ObjectId('507f1f77bcf86cd799439022');
+
+    await Product.create({
+      _id: baseId,
+      name: 'Iso Variant Base',
+      description: 'Base',
+      price: 160000,
+      size: '2 lb',
+      image: 'base.png',
+      category: 'Proteínas',
+      familyId: 'fam-iso-1',
+      isPrimary: true,
+      inStock: true
+    });
+
+    await Product.create({
+      _id: variantId,
+      name: 'Iso Variant 5 lb',
+      description: 'Variant',
+      price: 210000,
+      size: '5 lb',
+      image: 'variant.png',
+      category: 'Proteínas',
+      familyId: 'fam-iso-1',
+      isPrimary: false,
+      variantOf: baseId,
+      inStock: true
+    });
+
+    const payload = {
+      items: [{ productId: String(baseId), variantId: String(variantId), quantity: 1, name: 'Iso Variant Base' }],
+      shippingAddress: { addressLine1: 'Calle Test', city: 'Bogota', region: 'Cundinamarca', postalCode: '111111' },
+      customerData: { email: 'int-test@example.com', fullName: 'Int Test', phoneNumber: '3001234567' }
+    };
+
+    const res = await request(app)
+      .post('/api/payments/create-wompi-transaction')
+      .set('Authorization', `Bearer ${token}`)
+      .send(payload)
+      .expect(200);
+
+    // 210.000 con envío gratis (subtotal >= 80.000)
+    expect(res.body.wompiData.amountInCents).toBe(21000000);
+  });
+
+  test('POST /api/payments/create-wompi-transaction should reject variantId not related to product', async () => {
+    const Product = require('../models/Product');
+    const baseId = new mongoose.Types.ObjectId('507f1f77bcf86cd799439031');
+    const otherVariantId = new mongoose.Types.ObjectId('507f1f77bcf86cd799439032');
+
+    await Product.create({
+      _id: baseId,
+      name: 'Creatina A',
+      description: 'Base A',
+      price: 90000,
+      size: '300g',
+      image: 'a.png',
+      category: 'Creatinas',
+      familyId: 'fam-a',
+      isPrimary: true,
+      inStock: true
+    });
+
+    await Product.create({
+      _id: otherVariantId,
+      name: 'Whey B Variant',
+      description: 'Variant B',
+      price: 180000,
+      size: '5 lb',
+      image: 'b.png',
+      category: 'Proteínas',
+      familyId: 'fam-b',
+      isPrimary: false,
+      inStock: true
+    });
+
+    const payload = {
+      items: [{ productId: String(baseId), variantId: String(otherVariantId), quantity: 1, name: 'Creatina A' }],
+      shippingAddress: { addressLine1: 'Calle Test', city: 'Bogota', region: 'Cundinamarca', postalCode: '111111' },
+      customerData: { email: 'int-test@example.com', fullName: 'Int Test', phoneNumber: '3001234567' }
+    };
+
+    const res = await request(app)
+      .post('/api/payments/create-wompi-transaction')
+      .set('Authorization', `Bearer ${token}`)
+      .send(payload)
+      .expect(400);
+
+    expect(res.body.success).toBe(false);
+    expect(res.body.message).toMatch(/variante/i);
   });
 
   test('POST /api/payments/wompi-webhook should process webhook and update order', async () => {

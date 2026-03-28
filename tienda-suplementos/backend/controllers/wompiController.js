@@ -228,15 +228,23 @@ const createWompiTransactionHandler = async (req, res) => {
       if (product) {
         priceProduct = product;
 
-        if (requestedVariantId && mongoose.Types.ObjectId.isValid(requestedVariantId)) {
+        if (requestedVariantId) {
+          if (!mongoose.Types.ObjectId.isValid(requestedVariantId)) {
+            return res.status(400).json({
+              success: false,
+              message: `Variante inválida para ${product.name}`
+            });
+          }
+
           const variantProduct = await Product.findById(requestedVariantId);
 
           if (variantProduct && isProductVariantOfBase(product, variantProduct)) {
             priceProduct = variantProduct;
           } else {
-            console.warn(
-              `⚠️ Variante inválida para producto base. productId=${productId}, variantId=${requestedVariantId}`
-            );
+            return res.status(400).json({
+              success: false,
+              message: `La variante seleccionada no corresponde a ${product.name}`
+            });
           }
         }
       }
