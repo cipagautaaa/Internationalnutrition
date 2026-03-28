@@ -171,6 +171,9 @@ const createDirectPayment = async (paymentData) => {
 const processWompiWebhook = (req) => {
   try {
     const event = req.body;
+    const strictWebhookValidation =
+      process.env.NODE_ENV === 'production' &&
+      String(process.env.WOMPI_STRICT_WEBHOOK_SIGNATURE || 'true').toLowerCase() !== 'false';
 
     // Validación de firma OBLIGATORIA en producción
     // Wompi envía un checksum en el header o en el body (signature.checksum)
@@ -183,9 +186,14 @@ const processWompiWebhook = (req) => {
         || null;
       
       if (!receivedChecksum) {
-        console.warn('⚠️ Webhook sin checksum recibido - procesando sin verificación por seguridad');
-        // En lugar de rechazar, procesar pero loguear advertencia
-        // Esto evita perder webhooks por cambios en el formato de Wompi
+        console.warn('⚠️ Webhook sin checksum recibido');
+        if (strictWebhookValidation) {
+          return {
+            success: false,
+            error: 'Webhook sin checksum (rechazado en modo estricto)'
+          };
+        }
+        // En no-producción permitimos continuar para facilitar pruebas locales.
       } else {
         // Wompi: la firma es SHA-256 de la concatenación de los valores
         // indicados en signature.properties + events_secret
@@ -238,14 +246,24 @@ const processWompiWebhook = (req) => {
                   transactionId: transaction.id,
                   status: transaction.status
                 });
-                // IMPORTANTE: No rechazar - procesar de todas maneras para no perder pagos
-                // La verificación por API directa en verifyAndFinalizeOrder es la red de seguridad
-                console.warn('⚠️ Procesando webhook aunque la firma no coincida para no perder el pago');
+                if (strictWebhookValidation) {
+                  return {
+                    success: false,
+                    error: 'Firma de webhook inválida'
+                  };
+                }
+                console.warn('⚠️ Procesando webhook con firma inválida (solo permitido fuera de producción)');
               } else {
                 console.log('✅ Webhook firma verificada (método HMAC)');
               }
             } else {
-              console.warn('⚠️ Checksum de webhook no coincide - procesando de todas maneras', {
+              if (strictWebhookValidation) {
+                return {
+                  success: false,
+                  error: 'Checksum de webhook inválido'
+                };
+              }
+              console.warn('⚠️ Checksum de webhook no coincide - continuando fuera de producción', {
                 transactionId: transaction.id,
                 status: transaction.status
               });
@@ -258,7 +276,13 @@ const processWompiWebhook = (req) => {
         }
       }
     } else {
-      console.warn('⚠️ WOMPI_EVENTS_SECRET no configurado - webhook NO verificado (PELIGROSO en producción)');
+      console.warn('⚠️ WOMPI_EVENTS_SECRET no configurado - webhook NO verificado');
+      if (strictWebhookValidation) {
+        return {
+          success: false,
+          error: 'WOMPI_EVENTS_SECRET no configurado en producción'
+        };
+      }
     }
     
     console.log(`📡 Webhook Wompi: ${event.event}`);

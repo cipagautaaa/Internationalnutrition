@@ -1,14 +1,124 @@
-﻿import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 import Alert from '../components/Alert';
+import { formatPrice } from '../utils/formatPrice';
+
+const statusLabelMap = {
+  pending: 'Pendiente',
+  processing: 'Procesando',
+  shipped: 'Enviado',
+  delivered: 'Entregado',
+  cancelled: 'Cancelado',
+  approved: 'Aprobado',
+  paid: 'Pagado',
+  failed: 'Fallido',
+  declined: 'Rechazado',
+  voided: 'Anulado',
+  error: 'Error'
+};
+
+const statusClassMap = {
+  pending: 'bg-amber-100 text-amber-800',
+  processing: 'bg-sky-100 text-sky-800',
+  shipped: 'bg-indigo-100 text-indigo-800',
+  delivered: 'bg-emerald-100 text-emerald-800',
+  cancelled: 'bg-zinc-200 text-zinc-700',
+  approved: 'bg-emerald-100 text-emerald-800',
+  paid: 'bg-emerald-100 text-emerald-800',
+  failed: 'bg-rose-100 text-rose-800',
+  declined: 'bg-rose-100 text-rose-800',
+  voided: 'bg-zinc-200 text-zinc-700',
+  error: 'bg-rose-100 text-rose-800'
+};
+
+const paymentMethodLabelMap = {
+  wompi: 'Tarjeta / PSE (Wompi)',
+  wompi_card: 'Tarjeta (Wompi Gateway)',
+  transferencia: 'Transferencia bancaria',
+  efectivo: 'Pago en efectivo'
+};
+
+const normalizeStatus = (status) => (status || '').toString().trim().toLowerCase();
+
+const getStatusLabel = (status) => statusLabelMap[normalizeStatus(status)] || status || 'No disponible';
+
+const getStatusClass = (status) => statusClassMap[normalizeStatus(status)] || 'bg-zinc-100 text-zinc-700';
+
+const formatDateTime = (value) => {
+  if (!value) return 'No disponible';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'No disponible';
+  return date.toLocaleString('es-CO', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+const formatMoney = (value) => `$${formatPrice(Number(value || 0))} COP`;
+
+const AddressBlock = ({ shippingAddress }) => {
+  if (!shippingAddress) return null;
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
+      <h3 className="text-lg font-semibold text-zinc-800 mb-3">Direccion de envio</h3>
+      <div className="text-sm text-zinc-700 space-y-1">
+        <p className="font-medium text-zinc-900">{shippingAddress.fullName || 'Cliente'}</p>
+        <p>{shippingAddress.street || 'Direccion no registrada'}</p>
+        {shippingAddress.addressLine2 ? <p>{shippingAddress.addressLine2}</p> : null}
+        <p>
+          {[shippingAddress.city, shippingAddress.state].filter(Boolean).join(', ') || 'Ciudad/estado no disponible'}
+        </p>
+        {shippingAddress.zipCode ? <p>CP: {shippingAddress.zipCode}</p> : null}
+        {shippingAddress.country ? <p>{shippingAddress.country}</p> : null}
+        {(shippingAddress.phoneNumber || shippingAddress.phone) ? (
+          <p className="mt-2 font-medium">Tel: {shippingAddress.phoneNumber || shippingAddress.phone}</p>
+        ) : null}
+      </div>
+    </div>
+  );
+};
+
+const CustomerBlock = ({ customerData }) => {
+  if (!customerData) return null;
+
+  return (
+    <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
+      <h3 className="text-lg font-semibold text-zinc-800 mb-3">Datos del cliente</h3>
+      <div className="grid sm:grid-cols-2 gap-3 text-sm">
+        <div>
+          <p className="text-zinc-500">Nombre</p>
+          <p className="font-medium text-zinc-900">{customerData.fullName || 'No disponible'}</p>
+        </div>
+        <div>
+          <p className="text-zinc-500">Email</p>
+          <p className="font-medium text-zinc-900 break-all">{customerData.email || 'No disponible'}</p>
+        </div>
+        <div>
+          <p className="text-zinc-500">Telefono</p>
+          <p className="font-medium text-zinc-900">{customerData.phoneNumber || customerData.phone || 'No disponible'}</p>
+        </div>
+        <div>
+          <p className="text-zinc-500">Documento</p>
+          <p className="font-medium text-zinc-900">
+            {[customerData.legalIdType, customerData.legalId].filter(Boolean).join(' ') || 'No disponible'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const OrderDetail = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  
+
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ show: false, message: '', type: 'info' });
@@ -18,87 +128,51 @@ const OrderDetail = () => {
       navigate('/login');
       return;
     }
-    
-    fetchOrderDetails();
-  }, [orderId, isAuthenticated]);
 
-  const fetchOrderDetails = async () => {
-    try {
-      setLoading(true);
-      const response = await api.get(`/orders/${orderId}`);
-      
-      if (response.data.success) {
-        setOrder(response.data.order);
-      } else {
-        setAlert({
-          show: true,
-          message: 'Orden no encontrada',
-          type: 'error'
-        });
+    const fetchOrderDetails = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/orders/${orderId}`);
+        if (response.data?.success && response.data?.order) {
+          setOrder(response.data.order);
+          return;
+        }
+        setAlert({ show: true, message: 'No se pudo cargar la informacion del pedido.', type: 'error' });
+      } catch (error) {
+        const message = error?.response?.data?.message || 'Error cargando los detalles de la orden';
+        setAlert({ show: true, message, type: 'error' });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching order details:', error);
-      setAlert({
-        show: true,
-        message: 'Error cargando los detalles de la orden',
-        type: 'error'
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getStatusColor = (status) => {
-    const statusColors = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'processing': 'bg-blue-100 text-blue-800',
-      'shipped': 'bg-purple-100 text-purple-800',
-      'delivered': 'bg-green-100 text-green-800',
-      'cancelled': 'bg-red-700 text-red-700'
     };
-    return statusColors[status] || 'bg-gray-100 text-gray-800';
-  };
 
-  const getPaymentStatusColor = (status) => {
-    const statusColors = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'paid': 'bg-green-100 text-green-800',
-      'failed': 'bg-red-700 text-red-700',
-      'cancelled': 'bg-gray-100 text-gray-800'
-    };
-    return statusColors[status] || 'bg-gray-100 text-gray-800';
-  };
+    fetchOrderDetails();
+  }, [orderId, isAuthenticated, navigate]);
 
-  const translateStatus = (status) => {
-    const translations = {
-      'pending': 'Pendiente',
-      'processing': 'Procesando',
-      'shipped': 'Enviado',
-      'delivered': 'Entregado',
-      'cancelled': 'Cancelado',
-      'paid': 'Pagado',
-      'failed': 'Fallido'
+  const totals = useMemo(() => {
+    const subtotal = Number(order?.subtotal || 0);
+    const discount = Number(order?.discountAmount || 0);
+    const shipping = Number(order?.shippingCost || 0);
+    const grandTotal = Number(order?.totalAmount || 0);
+
+    const shouldShowBreakdown = subtotal > 0 || discount > 0 || shipping > 0;
+
+    return {
+      subtotal,
+      discount,
+      shipping,
+      grandTotal,
+      shouldShowBreakdown
     };
-    return translations[status] || status;
-  };
+  }, [order]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center">
+      <div className="min-h-screen bg-zinc-50 py-8">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="bg-white rounded-2xl p-8 shadow-sm border border-zinc-100 text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Cargando detalles del pedido...</p>
+            <p className="text-zinc-600">Cargando detalle del pedido...</p>
           </div>
         </div>
       </div>
@@ -107,11 +181,11 @@ const OrderDetail = () => {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-zinc-50 py-8">
         <div className="max-w-4xl mx-auto px-4">
-          <Alert 
+          <Alert
             show={true}
-            message="Pedido no encontrado"
+            message="No fue posible cargar este pedido"
             type="error"
             onClose={() => navigate('/orders')}
           />
@@ -120,7 +194,7 @@ const OrderDetail = () => {
               onClick={() => navigate('/orders')}
               className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
             >
-              Volver a Mis Pedidos
+              Volver a mis pedidos
             </button>
           </div>
         </div>
@@ -129,179 +203,173 @@ const OrderDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4">
-        <Alert 
-          show={alert.show} 
-          message={alert.message} 
+    <div className="min-h-screen bg-zinc-50 py-8">
+      <div className="max-w-6xl mx-auto px-4 space-y-5">
+        <Alert
+          show={alert.show}
+          message={alert.message}
           type={alert.type}
           onClose={() => setAlert({ show: false, message: '', type: 'info' })}
         />
 
-        {/* Header */}
-        <div className="mb-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5 sm:p-6">
           <button
             onClick={() => navigate('/orders')}
-            className="text-blue-600 hover:text-blue-700 font-medium mb-4 flex items-center"
+            className="text-blue-600 hover:text-blue-700 font-medium mb-4"
           >
-            ← Volver a Mis Pedidos
+            ← Volver a mis pedidos
           </button>
-          
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                Pedido #{order.orderNumber}
+              <p className="text-xs uppercase tracking-wide text-zinc-500">Detalle de transaccion</p>
+              <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 mt-1">
+                Pedido #{order.orderNumber || order.id?.toString()?.slice(-8)?.toUpperCase()}
               </h1>
-              <p className="text-gray-600">
-                Realizado el {formatDate(order.createdAt)}
-              </p>
+              <p className="text-sm text-zinc-600 mt-2">Creado el {formatDateTime(order.createdAt)}</p>
+              <p className="text-sm text-zinc-600">Ultima actualizacion: {formatDateTime(order.updatedAt)}</p>
             </div>
-            
-            <div className="flex flex-col gap-2 mt-4 md:mt-0">
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                {translateStatus(order.status)}
+
+            <div className="flex flex-wrap gap-2">
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(order.status)}`}>
+                Pedido: {getStatusLabel(order.status)}
               </span>
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getPaymentStatusColor(order.paymentStatus)}`}>
-                {translateStatus(order.paymentStatus)}
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(order.paymentStatus)}`}>
+                Pago: {getStatusLabel(order.paymentStatus)}
               </span>
             </div>
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
-          {/* Productos */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold mb-4">Productos</h2>
-              
+        <div className="grid xl:grid-cols-3 gap-5">
+          <div className="xl:col-span-2 space-y-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5 sm:p-6">
+              <h2 className="text-xl font-semibold text-zinc-900 mb-4">Resumen de compra</h2>
+
               <div className="space-y-4">
-                {order.items.map((item, index) => (
-                  <div key={index} className="flex items-center space-x-4 p-4 border rounded-lg">
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
-                      {item.product.images && item.product.images.length > 0 ? (
-                        <img 
-                          src={item.product.images[0]} 
-                          alt={item.product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-gray-400 text-xs">Sin imagen</span>
-                      )}
-                    </div>
-                    
-                    <div className="flex-1">
-                      <h3 className="font-medium text-gray-800">{item.product.name}</h3>
-                      {item.product.description && (
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          {item.product.description}
-                        </p>
-                      )}
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="text-sm text-gray-600">
-                          Cantidad: {item.quantity}
-                        </span>
-                        <span className="font-semibold">
-                          ${item.price.toLocaleString()} COP
-                        </span>
+                {order.items?.map((item, index) => {
+                  const image = item?.product?.images?.[0] || item?.product?.image || '';
+                  return (
+                    <div key={`${item?.product?.id || item?.product?.name || 'item'}-${index}`} className="flex gap-4 p-4 rounded-xl border border-zinc-100">
+                      <div className="w-16 h-16 rounded-xl bg-zinc-100 flex items-center justify-center overflow-hidden shrink-0">
+                        {image ? (
+                          <img src={image} alt={item?.product?.name || 'Producto'} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="text-[11px] text-zinc-500 text-center px-1">Sin imagen</span>
+                        )}
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-zinc-900 break-words">{item?.product?.name || 'Producto eliminado'}</p>
+                        {item?.product?.description ? (
+                          <p className="text-sm text-zinc-600 mt-1 break-words">{item.product.description}</p>
+                        ) : null}
+                        <div className="mt-2 text-sm text-zinc-600 flex flex-wrap gap-x-4 gap-y-1">
+                          <span>Tipo: {item?.kind || 'Producto'}</span>
+                          <span>Cantidad: {item?.quantity || 0}</span>
+                          <span>Unitario: {formatMoney(item?.price || 0)}</span>
+                        </div>
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        <p className="text-xs uppercase tracking-wide text-zinc-500">Subtotal</p>
+                        <p className="font-semibold text-zinc-900">{formatMoney(item?.total || 0)}</p>
                       </div>
                     </div>
-                    
-                    <div className="text-right">
-                      <div className="font-semibold text-lg">
-                        ${item.total.toLocaleString()} COP
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
-              {/* Total */}
-              <div className="border-t pt-4 mt-6">
-                <div className="flex justify-between items-center text-xl font-bold">
-                  <span>Total del Pedido:</span>
-                  <span className="text-green-600">
-                    ${order.totalAmount.toLocaleString()} COP
-                  </span>
+              <div className="border-t border-zinc-100 mt-6 pt-4 space-y-2 text-sm">
+                {totals.shouldShowBreakdown ? (
+                  <>
+                    <div className="flex justify-between text-zinc-700">
+                      <span>Subtotal</span>
+                      <span>{formatMoney(totals.subtotal)}</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-700">
+                      <span>Descuento</span>
+                      <span>{totals.discount > 0 ? `- ${formatMoney(totals.discount)}` : formatMoney(0)}</span>
+                    </div>
+                    <div className="flex justify-between text-zinc-700">
+                      <span>Envio</span>
+                      <span>{totals.shipping > 0 ? formatMoney(totals.shipping) : 'Gratis'}</span>
+                    </div>
+                  </>
+                ) : null}
+                <div className="flex justify-between text-lg font-bold text-zinc-900 pt-1">
+                  <span>Total pagado</span>
+                  <span className="text-emerald-700">{formatMoney(totals.grandTotal)}</span>
                 </div>
               </div>
             </div>
+
+            <CustomerBlock customerData={order.customerData} />
+            <AddressBlock shippingAddress={order.shippingAddress} />
           </div>
 
-          {/* Información lateral */}
-          <div className="space-y-6">
-            {/* Información de pago */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4">Información de Pago</h3>
-              
-              <div className="space-y-3">
+          <div className="space-y-5">
+            <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
+              <h3 className="text-lg font-semibold text-zinc-900 mb-4">Pago y transaccion</h3>
+              <div className="space-y-3 text-sm">
                 <div>
-                  <span className="text-sm text-gray-600">Método de pago:</span>
-                  <p className="font-medium capitalize">
-                    {order.paymentMethod === 'wompi' ? 'Tarjeta (Wompi)' : order.paymentMethod}
-                  </p>
+                  <p className="text-zinc-500">Metodo de pago</p>
+                  <p className="font-medium text-zinc-900">{paymentMethodLabelMap[order.paymentMethod] || order.paymentMethod || 'No disponible'}</p>
                 </div>
-                
                 <div>
-                  <span className="text-sm text-gray-600">Estado del pago:</span>
-                  <p className={`font-medium ${order.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'}`}>
-                    {translateStatus(order.paymentStatus)}
-                  </p>
+                  <p className="text-zinc-500">Estado del pago</p>
+                  <p className="font-medium text-zinc-900">{getStatusLabel(order.paymentStatus)}</p>
                 </div>
-
-                {order.wompiReference && (
-                  <div>
-                    <span className="text-sm text-gray-600">Referencia Wompi:</span>
-                    <p className="font-mono text-sm">{order.wompiReference}</p>
-                  </div>
-                )}
-
-                {order.wompiTransactionId && (
-                  <div>
-                    <span className="text-sm text-gray-600">ID de Transacción:</span>
-                    <p className="font-mono text-sm">{order.wompiTransactionId}</p>
-                  </div>
-                )}
+                <div>
+                  <p className="text-zinc-500">Referencia Wompi</p>
+                  <p className="font-mono text-xs break-all text-zinc-900">{order?.transaction?.wompiReference || order?.wompiReference || 'No disponible'}</p>
+                </div>
+                <div>
+                  <p className="text-zinc-500">ID transaccion</p>
+                  <p className="font-mono text-xs break-all text-zinc-900">{order?.transaction?.wompiTransactionId || order?.wompiTransactionId || 'No disponible'}</p>
+                </div>
               </div>
             </div>
 
-            {/* Dirección de envío */}
-            {order.shippingAddress && (
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold mb-4">Dirección de Envío</h3>
-                
-                <div className="text-sm space-y-1">
-                  <p className="font-medium">{order.shippingAddress.fullName}</p>
-                  <p>{order.shippingAddress.street}</p>
-                  {order.shippingAddress.addressLine2 && (
-                    <p>{order.shippingAddress.addressLine2}</p>
-                  )}
-                  <p>
-                    {order.shippingAddress.city}, {order.shippingAddress.state}
-                  </p>
-                  {order.shippingAddress.zipCode && (
-                    <p>{order.shippingAddress.zipCode}</p>
-                  )}
-                  <p className="font-medium mt-2">
-                    Tel: {order.shippingAddress.phoneNumber}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {/* Fechas importantes */}
-            <div className="bg-white rounded-lg shadow-md p-6">
-              <h3 className="text-lg font-semibold mb-4">Fechas</h3>
-              
+            <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
+              <h3 className="text-lg font-semibold text-zinc-900 mb-4">Seguimiento del pedido</h3>
               <div className="space-y-3 text-sm">
                 <div>
-                  <span className="text-gray-600">Pedido realizado:</span>
-                  <p className="font-medium">{formatDate(order.createdAt)}</p>
+                  <p className="text-zinc-500">Estado logistica</p>
+                  <p className="font-medium text-zinc-900">{getStatusLabel(order.status)}</p>
                 </div>
-                
                 <div>
-                  <span className="text-gray-600">Última actualización:</span>
-                  <p className="font-medium">{formatDate(order.updatedAt)}</p>
+                  <p className="text-zinc-500">Numero de guia</p>
+                  <p className="font-mono text-xs break-all text-zinc-900">{order.trackingNumber || 'Aun no asignado'}</p>
                 </div>
+                <div>
+                  <p className="text-zinc-500">Codigo interno</p>
+                  <p className="font-mono text-xs break-all text-zinc-900">{order.id || 'No disponible'}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
+              <h3 className="text-lg font-semibold text-zinc-900 mb-4">Notificaciones</h3>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between gap-3">
+                  <span className="text-zinc-600">Correo administrador</span>
+                  <span className="font-medium text-right text-zinc-900">
+                    {order?.emailNotifications?.adminNewOrderSentAt ? 'Enviado' : 'Pendiente / no aplica'}
+                  </span>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <span className="text-zinc-600">Correo cliente</span>
+                  <span className="font-medium text-right text-zinc-900">
+                    {order?.emailNotifications?.customerConfirmationSentAt ? 'Enviado' : 'Pendiente / no aplica'}
+                  </span>
+                </div>
+                {order?.emailNotifications?.lastEmailError ? (
+                  <div className="pt-2 border-t border-zinc-100">
+                    <p className="text-zinc-500 mb-1">Ultimo error de email</p>
+                    <p className="text-xs text-rose-700 break-words">{order.emailNotifications.lastEmailError}</p>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

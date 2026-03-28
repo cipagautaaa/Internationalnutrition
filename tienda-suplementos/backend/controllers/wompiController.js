@@ -336,9 +336,13 @@ const verifyWompiHandler = async (req, res) => {
       order = await Order.findOne({ wompiReference: transaction.reference }).populate('items.product');
     }
     
-    // FALLBACK CRÍTICO: Si Wompi dice APPROVED pero la orden no fue actualizada por el webhook,
-    // actualizarla aquí para no perder ventas
-    if (order && transaction && (transaction.status || '').toUpperCase() === 'APPROVED') {
+    const requesterId = req.user?.id ? String(req.user.id) : null;
+    const orderUserId = order?.user ? String(order.user) : null;
+    const isAdmin = req.user?.role === 'admin';
+    const canAccessOrder = Boolean(order && (isAdmin || (requesterId && orderUserId && requesterId === orderUserId)));
+
+    // FALLBACK de actualización solo para usuarios autorizados (owner/admin)
+    if (canAccessOrder && order && transaction && (transaction.status || '').toUpperCase() === 'APPROVED') {
       const needsUpdate = order.paymentStatus !== 'APPROVED' && order.paymentStatus !== 'paid' && order.paymentStatus !== 'approved';
       
       if (needsUpdate) {
@@ -408,6 +412,10 @@ const verifyWompiHandler = async (req, res) => {
       } catch (emailError) {
         console.error('❌ [VERIFY-FALLBACK] Error enviando correos:', emailError?.message || emailError);
       }
+    }
+
+    if (!canAccessOrder) {
+      return res.json({ success: true, transaction: verificationResult.transaction });
     }
 
     return res.json({ success: true, transaction: verificationResult.transaction, order });

@@ -242,34 +242,6 @@ router.get('/my-orders', protect, async (req, res) => {
   }
 });
 
-// Obtener orden por ID
-router.get('/:orderId', protect, async (req, res) => {
-  try {
-    const order = await Order.findOne({
-      _id: req.params.orderId,
-      user: req.user.id
-    }).populate('items.product');
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: 'Orden no encontrada'
-      });
-    }
-
-    res.json({
-      success: true,
-      order: order
-    });
-  } catch (error) {
-    console.error('Error obteniendo orden:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error obteniendo la orden'
-    });
-  }
-});
-
 // Obtener todas las órdenes del usuario
 router.get('/', protect, async (req, res) => {
   try {
@@ -326,12 +298,16 @@ router.put('/:orderId/status', protect, async (req, res) => {
       });
     }
 
+    const previousPaymentStatus = order.paymentStatus;
+
     // Actualizar estados
     if (status) order.status = status;
     if (paymentStatus) order.paymentStatus = paymentStatus;
 
     // Si se confirma el pago, reducir stock
-    if (paymentStatus === 'approved' && order.paymentStatus !== 'approved') {
+    const normalizedIncomingPaymentStatus = (paymentStatus || '').toLowerCase();
+    const normalizedPreviousPaymentStatus = (previousPaymentStatus || '').toLowerCase();
+    if (normalizedIncomingPaymentStatus === 'approved' && normalizedPreviousPaymentStatus !== 'approved' && normalizedPreviousPaymentStatus !== 'paid') {
       for (const item of order.items) {
         await Product.findByIdAndUpdate(
           item.product,
@@ -422,23 +398,38 @@ router.get('/:orderId', protect, async (req, res) => {
       });
     }
 
+    const shippingCost = Number(order.shippingCost || 0);
+    const discountAmount = Number(order.discountAmount || 0);
+    const subtotal = Number(order.subtotal || 0) || Math.max(0, Number(order.totalAmount || 0) - shippingCost + discountAmount);
+
     const formattedOrder = {
       id: order._id,
       orderNumber: order.orderNumber || `ORDER-${order._id.toString().slice(-8).toUpperCase()}`,
       status: order.status,
       paymentStatus: order.paymentStatus,
       paymentMethod: order.paymentMethod,
-      totalAmount: order.totalAmount,
+      totalAmount: Number(order.totalAmount || 0),
+      subtotal,
+      discountAmount,
+      shippingCost,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
+      trackingNumber: order.trackingNumber || null,
+      customerData: order.customerData || null,
+      emailNotifications: order.emailNotifications || null,
       shippingAddress: order.shippingAddress,
+      transaction: {
+        wompiReference: order.wompiReference || null,
+        wompiTransactionId: order.wompiTransactionId || null
+      },
       items: order.items.map(item => ({
+        kind: item.kind || 'Product',
         product: item.product ? {
           id: item.product._id,
           name: item.product.name,
           price: item.product.price,
           description: item.product.description,
-          images: item.product.images
+          images: item.product.images || []
         } : {
           id: null,
           name: 'Producto eliminado',
@@ -450,8 +441,9 @@ router.get('/:orderId', protect, async (req, res) => {
         price: item.price,
         total: item.quantity * item.price
       })),
-      wompiReference: order.wompiReference,
-      wompiTransactionId: order.wompiTransactionId
+      // Compatibilidad hacia atrás con clientes existentes
+      wompiReference: order.wompiReference || null,
+      wompiTransactionId: order.wompiTransactionId || null
     };
 
     res.json({

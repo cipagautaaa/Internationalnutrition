@@ -44,7 +44,7 @@ router.post('/wompi-gateway-transaction', protect, async (req, res) => {
     }
 
     // Verificar que la orden no esté ya pagada
-    if (order.paymentStatus === 'paid') {
+    if (['paid', 'approved', 'APPROVED'].includes(order.paymentStatus)) {
       return res.status(400).json({
         success: false,
         message: 'Esta orden ya ha sido pagada'
@@ -129,7 +129,7 @@ router.get('/payment-status/:orderId', protect, async (req, res) => {
 
 // ENDPOINT DE RESPALDO: Verificar y finalizar una orden por orderId
 // Se usa cuando el webhook de Wompi no procesó correctamente la orden
-router.post('/verify-and-finalize', optionalAuth, async (req, res) => {
+router.post('/verify-and-finalize', protect, async (req, res) => {
   try {
     const { orderId } = req.body;
     if (!orderId) {
@@ -139,6 +139,14 @@ router.post('/verify-and-finalize', optionalAuth, async (req, res) => {
     const order = await Order.findById(orderId).populate('items.product').populate('user');
     if (!order) {
       return res.status(404).json({ success: false, message: 'Orden no encontrada' });
+    }
+
+    const isAdmin = req.user?.role === 'admin';
+    const requesterId = req.user?.id ? String(req.user.id) : null;
+    const orderUserId = order.user?._id ? String(order.user._id) : (order.user ? String(order.user) : null);
+    const isOwner = Boolean(requesterId && orderUserId && requesterId === orderUserId);
+    if (!isAdmin && !isOwner) {
+      return res.status(403).json({ success: false, message: 'No autorizado para verificar esta orden' });
     }
 
     // Si la orden ya está procesada, no hacer nada

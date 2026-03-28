@@ -231,12 +231,12 @@ router.get('/admin/category-summary', protect, isAdmin, async (req, res) => {
     }
 
     // Agregar conteo de Wargo y accesorios para gym
-    const implements = await Implement.find({}).select('isActive');
-    const implementsActive = implements.filter(i => i.isActive === true).length;
-    const implementsInactive = implements.filter(i => i.isActive === false).length;
+    const implementsList = await Implement.find({}).select('isActive'); 
+    const implementsActive = implementsList.filter(i => i.isActive === true).length;
+    const implementsInactive = implementsList.filter(i => i.isActive === false).length;
     summaryMap.set(IMPLEMENTS_LABEL, {
       category: IMPLEMENTS_LABEL,
-      total: implements.length,
+      total: implementsList.length,
       active: implementsActive,
       inactive: implementsInactive,
       outOfStock: 0

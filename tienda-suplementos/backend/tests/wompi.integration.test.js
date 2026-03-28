@@ -36,7 +36,7 @@ describe('Wompi integration tests', () => {
     };
     // create a product that matches the productId used in payload
     const Product = require('../models/Product');
-  await Product.create({ _id: new mongoose.Types.ObjectId('507f1f77bcf86cd799439011'), name: 'Mock Product', description: 'Mock desc', price: 10000, baseSize: '1 ud', image: 'test.png', category: 'Proteínas', stock: 10, inStock: true });
+  await Product.create({ _id: new mongoose.Types.ObjectId('507f1f77bcf86cd799439011'), name: 'Mock Product', description: 'Mock desc', price: 10000, size: '1 ud', image: 'test.png', category: 'Proteínas', stock: 10, inStock: true });
 
     const res = await request(app)
       .post('/api/payments/create-wompi-transaction')
