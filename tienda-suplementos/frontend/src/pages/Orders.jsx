@@ -86,37 +86,45 @@ const Orders = () => {
   };
 
   const getStatusColor = (status) => {
+    const normalized = (status || '').toString().trim().toLowerCase();
     const statusColors = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'processing': 'bg-blue-100 text-blue-800',
-      'shipped': 'bg-purple-100 text-purple-800',
-      'delivered': 'bg-green-100 text-green-800',
-      'cancelled': 'bg-red-700 text-red-700'
+      pending: 'bg-yellow-100 text-zinc-900 border border-yellow-300',
+      processing: 'bg-blue-100 text-zinc-900 border border-blue-300',
+      approved: 'bg-blue-100 text-zinc-900 border border-blue-300',
+      paid: 'bg-blue-100 text-zinc-900 border border-blue-300',
+      shipped: 'bg-blue-100 text-zinc-900 border border-blue-300',
+      delivered: 'bg-blue-100 text-zinc-900 border border-blue-300',
+      cancelled: 'bg-red-200 text-zinc-900 border border-red-400',
+      rejected: 'bg-red-200 text-zinc-900 border border-red-400',
+      declined: 'bg-red-200 text-zinc-900 border border-red-400',
+      failed: 'bg-red-200 text-zinc-900 border border-red-400',
+      error: 'bg-red-200 text-zinc-900 border border-red-400',
+      voided: 'bg-red-200 text-zinc-900 border border-red-400'
     };
-    return statusColors[status] || 'bg-gray-100 text-gray-800';
+    return statusColors[normalized] || 'bg-zinc-100 text-zinc-900 border border-zinc-300';
   };
 
   const getPaymentStatusColor = (status) => {
-    const statusColors = {
-      'pending': 'bg-yellow-100 text-yellow-800',
-      'paid': 'bg-green-100 text-green-800',
-      'failed': 'bg-red-700 text-red-700',
-      'cancelled': 'bg-gray-100 text-gray-800'
-    };
-    return statusColors[status] || 'bg-gray-100 text-gray-800';
+    return getStatusColor(status);
   };
 
   const translateStatus = (status) => {
+    const normalized = (status || '').toString().trim().toLowerCase();
     const translations = {
-      'pending': 'Pendiente',
-      'processing': 'Procesando',
-      'shipped': 'Enviado',
-      'delivered': 'Entregado',
-      'cancelled': 'Cancelado',
-      'paid': 'Pagado',
-      'failed': 'Fallido'
+      pending: 'Pendiente',
+      processing: 'Procesando',
+      shipped: 'Enviado',
+      delivered: 'Entregado',
+      cancelled: 'Cancelado',
+      approved: 'Aprobado',
+      paid: 'Aprobado',
+      failed: 'Fallido',
+      rejected: 'Rechazado',
+      declined: 'Rechazado',
+      error: 'Error',
+      voided: 'Anulado'
     };
-    return translations[status] || status;
+    return translations[normalized] || status;
   };
 
   const viewOrderDetails = (orderId) => {
@@ -169,7 +177,7 @@ const Orders = () => {
               <div key={order.id} className="bg-white rounded-lg shadow-md overflow-hidden">
                 <div className="p-6">
                   {/* Header del pedido */}
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-4 mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-800">
                         Pedido #{order.orderNumber}
@@ -179,11 +187,11 @@ const Orders = () => {
                       </p>
                     </div>
                     
-                    <div className="flex flex-col md:flex-row gap-2 mt-4 md:mt-0">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                    <div className="flex flex-wrap md:justify-end gap-2 min-w-[220px] md:self-start">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${getStatusColor(order.status)}`}>
                         {translateStatus(order.status)}
                       </span>
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPaymentStatusColor(order.paymentStatus)}`}>
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${getPaymentStatusColor(order.paymentStatus)}`}>
                         {translateStatus(order.paymentStatus)}
                       </span>
                     </div>

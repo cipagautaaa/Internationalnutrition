@@ -20,17 +20,18 @@ const statusLabelMap = {
 };
 
 const statusClassMap = {
-  pending: 'bg-amber-100 text-amber-800',
-  processing: 'bg-sky-100 text-sky-800',
-  shipped: 'bg-indigo-100 text-indigo-800',
-  delivered: 'bg-emerald-100 text-emerald-800',
-  cancelled: 'bg-zinc-200 text-zinc-700',
-  approved: 'bg-emerald-100 text-emerald-800',
-  paid: 'bg-emerald-100 text-emerald-800',
-  failed: 'bg-rose-100 text-rose-800',
-  declined: 'bg-rose-100 text-rose-800',
-  voided: 'bg-zinc-200 text-zinc-700',
-  error: 'bg-rose-100 text-rose-800'
+  pending: 'bg-yellow-100 text-zinc-900 border border-yellow-300',
+  processing: 'bg-blue-100 text-zinc-900 border border-blue-300',
+  shipped: 'bg-blue-100 text-zinc-900 border border-blue-300',
+  delivered: 'bg-blue-100 text-zinc-900 border border-blue-300',
+  cancelled: 'bg-red-200 text-zinc-900 border border-red-400',
+  approved: 'bg-blue-100 text-zinc-900 border border-blue-300',
+  paid: 'bg-blue-100 text-zinc-900 border border-blue-300',
+  failed: 'bg-red-200 text-zinc-900 border border-red-400',
+  declined: 'bg-red-200 text-zinc-900 border border-red-400',
+  rejected: 'bg-red-200 text-zinc-900 border border-red-400',
+  voided: 'bg-red-200 text-zinc-900 border border-red-400',
+  error: 'bg-red-200 text-zinc-900 border border-red-400'
 };
 
 const paymentMethodLabelMap = {
@@ -174,7 +175,13 @@ const OrderDetail = () => {
         const updatedOrder = response.data?.order || null;
 
         if (updatedOrder?.paymentStatus) {
-          setOrder((prev) => (prev ? { ...prev, paymentStatus: updatedOrder.paymentStatus } : prev));
+          setOrder((prev) => {
+            if (!prev) return prev;
+            const prevStatus = normalizeStatus(prev.paymentStatus);
+            const nextStatus = normalizeStatus(updatedOrder.paymentStatus);
+            if (prevStatus === nextStatus) return prev;
+            return { ...prev, paymentStatus: updatedOrder.paymentStatus };
+          });
         }
 
         setTxVerification({
@@ -207,9 +214,9 @@ const OrderDetail = () => {
   const realtimePaymentMethod = order?.paymentMethod || '';
 
   useEffect(() => {
-    if (!order || !realtimeTransactionId || !['wompi', 'wompi_card'].includes(realtimePaymentMethod)) return;
+    if (!realtimeTransactionId || !['wompi', 'wompi_card'].includes(realtimePaymentMethod)) return;
     verifyRealtimeTransaction(realtimeTransactionId);
-  }, [order, realtimeTransactionId, realtimePaymentMethod, verifyRealtimeTransaction]);
+  }, [realtimeTransactionId, realtimePaymentMethod, verifyRealtimeTransaction]);
 
   const totals = useMemo(() => {
     const subtotal = Number(order?.subtotal || 0);
@@ -289,7 +296,7 @@ const OrderDetail = () => {
             ← Volver a mis pedidos
           </button>
 
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-4">
             <div>
               <p className="text-xs uppercase tracking-wide text-zinc-500">Detalle de transaccion</p>
               <h1 className="text-2xl sm:text-3xl font-bold text-zinc-900 mt-1">
@@ -299,11 +306,11 @@ const OrderDetail = () => {
               <p className="text-sm text-zinc-600">Ultima actualizacion: {formatDateTime(order.updatedAt)}</p>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(order.status)}`}>
+            <div className="flex flex-wrap lg:justify-end gap-2 min-w-[250px] lg:self-start">
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${getStatusClass(order.status)}`}>
                 Pedido: {getStatusLabel(order.status)}
               </span>
-              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusClass(order.paymentStatus)}`}>
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold whitespace-nowrap ${getStatusClass(order.paymentStatus)}`}>
                 Pago: {getStatusLabel(order.paymentStatus)}
               </span>
             </div>
