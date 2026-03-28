@@ -332,24 +332,6 @@ const OrderDetail = () => {
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-4">Seguimiento del pedido</h3>
-              <div className="space-y-3 text-sm">
-                <div>
-                  <p className="text-zinc-500">Estado logistica</p>
-                  <p className="font-medium text-zinc-900">{getStatusLabel(order.status)}</p>
-                </div>
-                <div>
-                  <p className="text-zinc-500">Numero de guia</p>
-                  <p className="font-mono text-xs break-all text-zinc-900">{order.trackingNumber || 'Aun no asignado'}</p>
-                </div>
-                <div>
-                  <p className="text-zinc-500">Codigo interno</p>
-                  <p className="font-mono text-xs break-all text-zinc-900">{order.id || 'No disponible'}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
               <h3 className="text-lg font-semibold text-zinc-900 mb-4">Notificaciones</h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between gap-3">
