@@ -101,6 +101,38 @@ const isProductExcludedFromDiscount = (productName) => {
   );
 };
 
+const isProductVariantOfBase = (baseProduct, variantProduct) => {
+  if (!baseProduct || !variantProduct) return false;
+  const baseId = String(baseProduct._id || '');
+  const variantId = String(variantProduct._id || '');
+  const baseFamily = String(baseProduct.familyId || baseId);
+  const variantFamily = String(variantProduct.familyId || variantId);
+
+  return (
+    variantId === baseId ||
+    String(variantProduct.variantOf || '') === baseId ||
+    String(baseProduct.variantOf || '') === variantId ||
+    (baseFamily && variantFamily && baseFamily === variantFamily)
+  );
+};
+
+const applyDiscountCodeUsageOnce = async (order) => {
+  if (!order || !order.discountCode || order.discountCodeUsageApplied) return;
+
+  try {
+    const discountCodeDoc = await DiscountCode.findOne({ code: order.discountCode });
+    if (discountCodeDoc) {
+      await discountCodeDoc.incrementUsage();
+      order.discountCodeUsageApplied = true;
+      console.log(`🎟️ Uso de código ${order.discountCode} registrado para orden ${order._id}`);
+    } else {
+      console.warn(`⚠️ Código ${order.discountCode} no encontrado al registrar uso para orden ${order._id}`);
+    }
+  } catch (usageError) {
+    console.error('❌ Error registrando uso del código de descuento:', usageError);
+  }
+};
+
 // Handler para crear transacción (compatible con llamadas desde /api/payments o /api/wompi)
 const createWompiTransactionHandler = async (req, res) => {
   try {
@@ -126,8 +158,11 @@ const createWompiTransactionHandler = async (req, res) => {
     const orderItems = [];
 
     for (const item of items) {
-      const productId = item.productId || item.id || item._id;
+      const productId = item.productId || item._id || item.id;
+      const requestedVariantId = item.variantId || null;
+      const quantity = Math.max(1, Number.parseInt(item.quantity, 10) || 1);
       let product = null;
+      let priceProduct = null;
       let combo = null;
       let implement = null;
       let kind = 'Product';
@@ -190,14 +225,30 @@ const createWompiTransactionHandler = async (req, res) => {
         return res.status(400).json({ success: false, message: `El accesorio ${implement.name} no está disponible` });
       }
 
-      // SEGURIDAD: Siempre usar el precio de la base de datos, nunca confiar en el cliente
-      const unitPrice = product ? product.price : combo ? combo.price : implement.price;
+      if (product) {
+        priceProduct = product;
 
-      const lineTotal = unitPrice * item.quantity;
+        if (requestedVariantId && mongoose.Types.ObjectId.isValid(requestedVariantId)) {
+          const variantProduct = await Product.findById(requestedVariantId);
+
+          if (variantProduct && isProductVariantOfBase(product, variantProduct)) {
+            priceProduct = variantProduct;
+          } else {
+            console.warn(
+              `⚠️ Variante inválida para producto base. productId=${productId}, variantId=${requestedVariantId}`
+            );
+          }
+        }
+      }
+
+      // SEGURIDAD: Siempre usar precio de base de datos; para productos se respeta la variante seleccionada
+      const unitPrice = priceProduct ? priceProduct.price : combo ? combo.price : implement.price;
+
+      const lineTotal = unitPrice * quantity;
       totalAmount += lineTotal;
 
       // Obtener el nombre del producto para verificar exclusión
-      const productName = product ? product.name : combo ? combo.name : implement ? implement.name : item.name;
+      const productName = priceProduct ? priceProduct.name : combo ? combo.name : implement ? implement.name : item.name;
       const isExcluded = isProductExcludedFromDiscount(productName);
 
       // Clasificar subtotales por tipo para descuentos diferenciados
@@ -214,7 +265,13 @@ const createWompiTransactionHandler = async (req, res) => {
         }
       }
 
-      orderItems.push({ product: product ? product._id : combo ? combo._id : implement._id, kind, quantity: item.quantity, price: unitPrice, isExcludedFromDiscount: isExcluded });
+      orderItems.push({
+        product: priceProduct ? priceProduct._id : combo ? combo._id : implement._id,
+        kind,
+        quantity,
+        price: unitPrice,
+        isExcludedFromDiscount: isExcluded
+      });
     }
 
     // Aplicar descuentos desde la base de datos
@@ -232,10 +289,8 @@ const createWompiTransactionHandler = async (req, res) => {
           comboDiscount = Math.round(comboSubtotal * (discountCodeDoc.comboDiscount / 100));
           discountAmount = productDiscount + comboDiscount;
 
-          // Incrementar contador de uso del código
-          await discountCodeDoc.incrementUsage();
-          
           console.log(`✅ Código de descuento ${discountCode} aplicado: Productos -${discountCodeDoc.productDiscount}%, Combos -${discountCodeDoc.comboDiscount}%`);
+          console.log(`🎟️ Uso del código ${discountCode} se registrará al confirmar pago APPROVED`);
           if (excludedProductSubtotal > 0) {
             console.log(`🔥 Productos excluidos del descuento (súper promoción): $${excludedProductSubtotal}`);
           }
@@ -277,6 +332,8 @@ const createWompiTransactionHandler = async (req, res) => {
       totalAmount: netTotal,
       subtotal: totalAmount,
       discountAmount,
+      discountCode: discountAmount > 0 ? discountCode : null,
+      discountCodeUsageApplied: false,
       shippingCost,
       shippingAddress: mappedShippingAddress,
       paymentMethod: 'wompi',
@@ -354,6 +411,8 @@ const verifyWompiHandler = async (req, res) => {
         if (!order.wompiTransactionId) {
           order.wompiTransactionId = transactionId;
         }
+
+        await applyDiscountCodeUsageOnce(order);
         
         // Descontar stock
         for (const item of order.items) {
@@ -465,6 +524,10 @@ const wompiWebhookHandler = async (req, res) => {
         console.log('✅ [WEBHOOK] Transacción APROBADA');
         order.paymentStatus = 'APPROVED';
         order.status = 'processing';
+
+        if (previousStatus !== 'paid' && previousStatus !== 'APPROVED') {
+          await applyDiscountCodeUsageOnce(order);
+        }
         
         // Solo descontar stock de productos unitarios (no combos) si el pago no estaba aprobado previamente
         if (previousStatus !== 'paid' && previousStatus !== 'APPROVED') {

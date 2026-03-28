@@ -244,7 +244,8 @@ Por favor envíame los datos bancarios para realizar la transferencia. ¡Gracias
       // Preparar datos para la transacción Wompi
       const transactionData = {
         items: items.map(item => ({
-          productId: item._id || item.id,
+          productId: item.productId || item._id || item.id,
+          variantId: item.variantId || null,
           quantity: item.quantity,
           price: item.price,
           name: item.name,

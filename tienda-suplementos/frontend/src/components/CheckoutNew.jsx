@@ -133,7 +133,8 @@ const CheckoutNew = () => {
     try {
       const orderData = {
         items: items.map(item => ({
-          productId: item.id,
+          productId: item.productId || item._id || item.id,
+          variantId: item.variantId || null,
           quantity: item.quantity,
           price: item.price
         })),

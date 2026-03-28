@@ -13,9 +13,6 @@ const Checkout = () => {
 
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState({ show: false, message: '', type: 'info' });
-  const [discountCode, setDiscountCode] = useState('');
-  const [discountApplied, setDiscountApplied] = useState(null);
-  const [applyingDiscount, setApplyingDiscount] = useState(false);
 
   // Estados del formulario
   const [shippingData, setShippingData] = useState({
@@ -81,7 +78,8 @@ const Checkout = () => {
       // Preparar datos de la orden
       const orderData = {
         items: items.map(item => ({
-          productId: item.id,
+          productId: item.productId || item._id || item.id,
+          variantId: item.variantId || null,
           quantity: item.quantity,
           price: item.price
         })),
@@ -111,7 +109,7 @@ const Checkout = () => {
           navigate('/wompi-gateway-payment', { 
             state: { 
               orderId: response.data.orderId,
-              total: total,
+              total: getTotalPrice(),
               customerEmail: user?.email || ''
             }
           });
