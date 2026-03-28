@@ -330,30 +330,6 @@ const OrderDetail = () => {
                 </div>
               </div>
             </div>
-
-            <div className="bg-white rounded-2xl shadow-sm border border-zinc-100 p-5">
-              <h3 className="text-lg font-semibold text-zinc-900 mb-4">Notificaciones</h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between gap-3">
-                  <span className="text-zinc-600">Correo administrador</span>
-                  <span className="font-medium text-right text-zinc-900">
-                    {order?.emailNotifications?.adminNewOrderSentAt ? 'Enviado' : 'Pendiente / no aplica'}
-                  </span>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <span className="text-zinc-600">Correo cliente</span>
-                  <span className="font-medium text-right text-zinc-900">
-                    {order?.emailNotifications?.customerConfirmationSentAt ? 'Enviado' : 'Pendiente / no aplica'}
-                  </span>
-                </div>
-                {order?.emailNotifications?.lastEmailError ? (
-                  <div className="pt-2 border-t border-zinc-100">
-                    <p className="text-zinc-500 mb-1">Ultimo error de email</p>
-                    <p className="text-xs text-rose-700 break-words">{order.emailNotifications.lastEmailError}</p>
-                  </div>
-                ) : null}
-              </div>
-            </div>
           </div>
         </div>
       </div>
