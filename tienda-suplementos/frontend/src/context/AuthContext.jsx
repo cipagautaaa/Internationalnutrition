@@ -3,6 +3,26 @@ import axios from '../utils/axios';
 
 const AuthContext = createContext();
 
+const AUTH_LAST_ACTIVITY_KEY = 'auth_last_activity_at';
+const IDLE_TIMEOUT_MINUTES = Number(import.meta.env.VITE_AUTH_IDLE_TIMEOUT_MINUTES || 30);
+const IDLE_TIMEOUT_MS = Math.max(5, IDLE_TIMEOUT_MINUTES) * 60 * 1000;
+
+const clearPersistedAuth = () => {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem(AUTH_LAST_ACTIVITY_KEY);
+};
+
+const touchAuthActivity = () => {
+  localStorage.setItem(AUTH_LAST_ACTIVITY_KEY, String(Date.now()));
+};
+
+const hasIdleSessionExpired = () => {
+  const lastActivity = Number(localStorage.getItem(AUTH_LAST_ACTIVITY_KEY) || 0);
+  if (!lastActivity) return false;
+  return (Date.now() - lastActivity) > IDLE_TIMEOUT_MS;
+};
+
 const authReducer = (state, action) => {
   console.log('🔄 Reducer:', action.type, 'User:', action.payload?.user?.email);
   switch (action.type) {
@@ -117,22 +137,13 @@ export const AuthProvider = ({ children }) => {
       console.log('📦 Token en localStorage:', token ? token.substring(0, 20) + '...' : 'NO EXISTE');
       console.log('📦 User en localStorage:', savedUser ? JSON.parse(savedUser).email : 'NO EXISTE');
       
-      // Si hay un usuario guardado y es admin, NO restaurar sesión (por seguridad)
       if (savedUser) {
         try {
-          const userData = JSON.parse(savedUser);
-          if (userData && userData.role === 'admin') {
-            // Limpiar cualquier token de admin que pueda estar guardado
-            console.log('🔐 Admin user detectado, limpiando sesión por seguridad');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            return;
-          }
+          JSON.parse(savedUser);
         } catch {
           // JSON inválido, limpiar
           console.error('❌ JSON inválido en localStorage');
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          clearPersistedAuth();
           return;
         }
       }
@@ -141,6 +152,15 @@ export const AuthProvider = ({ children }) => {
         console.log('⚠️ No hay token, saltando boot');
         return; // no token => no intento
       }
+
+      // Cerrar sesión si excede el tiempo de inactividad configurado
+      if (hasIdleSessionExpired()) {
+        console.log('⏱️ Sesión expirada por inactividad en boot');
+        clearPersistedAuth();
+        dispatch({ type: 'LOGOUT' });
+        return;
+      }
+
       try {
         // Intentar perfil para validar token
         console.log('🔍 Validando token con /auth/profile...');
@@ -155,33 +175,74 @@ export const AuthProvider = ({ children }) => {
             role: res.data.data.role,
             isEmailVerified: res.data.data.isEmailVerified
           };
-          // Verificar nuevamente que no sea admin (por seguridad extra)
-          if (user.role === 'admin') {
-            console.log('🔐 Admin detectado en boot, limpiando');
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            dispatch({ type: 'LOGOUT' });
-            return;
-          }
           localStorage.setItem('user', JSON.stringify(user));
+          touchAuthActivity();
           console.log('✅ Boot success, user restaurado:', user.email);
-          dispatch({ type: 'LOGIN_SUCCESS', payload: { user } });
+          dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
         } else {
           console.error('❌ /auth/profile retornó datos inválidos');
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
+          clearPersistedAuth();
           dispatch({ type: 'LOGOUT' });
         }
       } catch (error) {
-        // Token inválido -> limpiar
+        // Si hay error de red, no forzar logout para evitar cerrar sesión por fallos temporales.
+        if (!error.response) {
+          console.warn('⚠️ /auth/profile sin respuesta del servidor, manteniendo sesión local temporalmente');
+          if (savedUser) {
+            try {
+              const user = JSON.parse(savedUser);
+              dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+            } catch {
+              clearPersistedAuth();
+              dispatch({ type: 'LOGOUT' });
+            }
+          }
+          return;
+        }
+
+        // Token inválido/autorización fallida -> limpiar
         console.error('❌ /auth/profile falló:', error.response?.status, error.message);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        clearPersistedAuth();
         dispatch({ type: 'LOGOUT' });
       }
     };
     boot();
   }, []);
+
+  // Persistencia por actividad: mantener sesión entre recargas y cerrar por inactividad real
+  useEffect(() => {
+    if (!state.isAuthenticated || !state.token) return;
+
+    const events = ['click', 'keydown', 'scroll', 'mousemove', 'touchstart'];
+    let lastWriteAt = 0;
+
+    const onActivity = () => {
+      const now = Date.now();
+      // Throttle para evitar demasiadas escrituras en localStorage
+      if (now - lastWriteAt < 10_000) return;
+      lastWriteAt = now;
+      touchAuthActivity();
+    };
+
+    const intervalId = setInterval(() => {
+      if (hasIdleSessionExpired()) {
+        console.log('⏱️ Logout automático por inactividad');
+        clearPersistedAuth();
+        delete axios.defaults.headers.common['Authorization'];
+        dispatch({ type: 'LOGOUT' });
+      }
+    }, 60_000);
+
+    events.forEach((eventName) => window.addEventListener(eventName, onActivity, { passive: true }));
+    document.addEventListener('visibilitychange', onActivity);
+    touchAuthActivity();
+
+    return () => {
+      clearInterval(intervalId);
+      events.forEach((eventName) => window.removeEventListener(eventName, onActivity));
+      document.removeEventListener('visibilitychange', onActivity);
+    };
+  }, [state.isAuthenticated, state.token]);
 
   const login = async (email, password) => {
     dispatch({ type: 'LOGIN_START' });
@@ -195,10 +256,9 @@ export const AuthProvider = ({ children }) => {
       }
 
       const { token, user } = data;
-      if (user && user.role !== 'admin') {
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-      }
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      touchAuthActivity();
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
       return { success: true, requiresVerification: false };
@@ -242,13 +302,11 @@ export const AuthProvider = ({ children }) => {
       } else {
         const { token, user } = data;
         console.log('✅ Non-admin user verified:', user);
-        // Solo guardar token si NO es admin
-        if (user && user.role !== 'admin') {
-          console.log('💾 Guardando token y user en localStorage');
-          localStorage.setItem('token', token);
-          localStorage.setItem('user', JSON.stringify(user));
-          console.log('✅ Token guardado:', token.substring(0, 20) + '...');
-        }
+        console.log('💾 Guardando token y user en localStorage');
+        localStorage.setItem('token', token);
+        localStorage.setItem('user', JSON.stringify(user));
+        touchAuthActivity();
+        console.log('✅ Token guardado:', token.substring(0, 20) + '...');
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         console.log('✅ Authorization header establecido');
         dispatch({ type: 'VERIFY_SUCCESS', payload: { user, token } });
@@ -269,8 +327,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axios.post('/auth/admin/verify-pin', { tempToken: state.tempToken, pin });
       const { token, user } = response.data.data;
-      // NO guardar token de admin en localStorage (por seguridad)
-      // El admin debe autenticarse en cada sesión
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+      touchAuthActivity();
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       dispatch({ type: 'ADMIN_PIN_SUCCESS', payload: { token, user } });
       return { success: true };
@@ -296,8 +355,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    clearPersistedAuth();
     delete axios.defaults.headers.common['Authorization'];
     dispatch({ type: 'LOGOUT' });
   };

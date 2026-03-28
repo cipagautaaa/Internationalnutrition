@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -45,6 +45,13 @@ const normalizeStatus = (status) => (status || '').toString().trim().toLowerCase
 const getStatusLabel = (status) => statusLabelMap[normalizeStatus(status)] || status || 'No disponible';
 
 const getStatusClass = (status) => statusClassMap[normalizeStatus(status)] || 'bg-zinc-100 text-zinc-700';
+
+const normalizePaymentStatusForCompare = (status) => {
+  const normalized = normalizeStatus(status);
+  if (normalized === 'paid') return 'approved';
+  if (normalized === 'error') return 'failed';
+  return normalized;
+};
 
 const formatDateTime = (value) => {
   if (!value) return 'No disponible';
@@ -122,6 +129,12 @@ const OrderDetail = () => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [alert, setAlert] = useState({ show: false, message: '', type: 'info' });
+  const [txVerification, setTxVerification] = useState({
+    loading: false,
+    checkedAt: null,
+    transaction: null,
+    error: ''
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -149,6 +162,55 @@ const OrderDetail = () => {
     fetchOrderDetails();
   }, [orderId, isAuthenticated, navigate]);
 
+  const verifyRealtimeTransaction = useCallback(async (transactionId) => {
+    if (!transactionId) return;
+
+    try {
+      setTxVerification((prev) => ({ ...prev, loading: true, error: '' }));
+      const response = await api.get(`/payments/verify-transaction/${transactionId}`);
+
+      if (response.data?.success) {
+        const tx = response.data?.transaction || null;
+        const updatedOrder = response.data?.order || null;
+
+        if (updatedOrder?.paymentStatus) {
+          setOrder((prev) => (prev ? { ...prev, paymentStatus: updatedOrder.paymentStatus } : prev));
+        }
+
+        setTxVerification({
+          loading: false,
+          checkedAt: new Date().toISOString(),
+          transaction: tx,
+          error: ''
+        });
+        return;
+      }
+
+      setTxVerification((prev) => ({
+        ...prev,
+        loading: false,
+        checkedAt: new Date().toISOString(),
+        error: response.data?.message || 'No fue posible verificar el estado real en Wompi.'
+      }));
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Error consultando estado real en Wompi.';
+      setTxVerification((prev) => ({
+        ...prev,
+        loading: false,
+        checkedAt: new Date().toISOString(),
+        error: message
+      }));
+    }
+  }, []);
+
+  const realtimeTransactionId = order?.transaction?.wompiTransactionId || order?.wompiTransactionId || '';
+  const realtimePaymentMethod = order?.paymentMethod || '';
+
+  useEffect(() => {
+    if (!order || !realtimeTransactionId || !['wompi', 'wompi_card'].includes(realtimePaymentMethod)) return;
+    verifyRealtimeTransaction(realtimeTransactionId);
+  }, [order, realtimeTransactionId, realtimePaymentMethod, verifyRealtimeTransaction]);
+
   const totals = useMemo(() => {
     const subtotal = Number(order?.subtotal || 0);
     const discount = Number(order?.discountAmount || 0);
@@ -165,6 +227,13 @@ const OrderDetail = () => {
       shouldShowBreakdown
     };
   }, [order]);
+
+  const statusComparison = useMemo(() => {
+    const internal = normalizePaymentStatusForCompare(order?.paymentStatus);
+    const realtime = normalizePaymentStatusForCompare(txVerification?.transaction?.status);
+    if (!realtime) return { mismatch: false, internal, realtime };
+    return { mismatch: Boolean(internal && realtime && internal !== realtime), internal, realtime };
+  }, [order?.paymentStatus, txVerification?.transaction?.status]);
 
   if (loading) {
     return (
@@ -319,6 +388,51 @@ const OrderDetail = () => {
                 <div>
                   <p className="text-zinc-500">Estado del pago</p>
                   <p className="font-medium text-zinc-900">{getStatusLabel(order.paymentStatus)}</p>
+                </div>
+                <div className="pt-2 border-t border-zinc-100">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <p className="text-zinc-500">Estado real en Wompi</p>
+                    {['wompi', 'wompi_card'].includes(order.paymentMethod) && (order?.transaction?.wompiTransactionId || order?.wompiTransactionId) ? (
+                      <button
+                        type="button"
+                        onClick={() => verifyRealtimeTransaction(order?.transaction?.wompiTransactionId || order?.wompiTransactionId)}
+                        disabled={txVerification.loading}
+                        className="text-xs px-2 py-1 rounded-md border border-zinc-300 text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+                      >
+                        {txVerification.loading ? 'Verificando...' : 'Actualizar'}
+                      </button>
+                    ) : null}
+                  </div>
+
+                  {txVerification.transaction ? (
+                    <div className="space-y-2">
+                      <p>
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusClass(txVerification.transaction.status)}`}>
+                          {getStatusLabel(txVerification.transaction.status)}
+                        </span>
+                      </p>
+                      {txVerification.transaction.status_message ? (
+                        <p className="text-xs text-zinc-600 break-words">{txVerification.transaction.status_message}</p>
+                      ) : null}
+                      {txVerification.checkedAt ? (
+                        <p className="text-[11px] text-zinc-500">Verificado: {formatDateTime(txVerification.checkedAt)}</p>
+                      ) : null}
+
+                      {statusComparison.mismatch ? (
+                        <div className="mt-2 p-2 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs">
+                          Hay diferencia entre estado interno ({getStatusLabel(order.paymentStatus)}) y estado real ({getStatusLabel(txVerification.transaction.status)}).
+                        </div>
+                      ) : (
+                        <div className="mt-2 p-2 rounded-md bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs">
+                          El estado interno coincide con Wompi.
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-zinc-500">
+                      {txVerification.error || 'Aun no se ha verificado en tiempo real esta transaccion.'}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <p className="text-zinc-500">Referencia Wompi</p>
