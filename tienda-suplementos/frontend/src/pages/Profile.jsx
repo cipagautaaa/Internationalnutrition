@@ -649,7 +649,7 @@ export default function Profile() {
               <h3 className="mt-2 sm:mt-3 text-lg sm:text-xl md:text-2xl font-black text-gray-900">¿Necesitas ayuda?</h3>
               <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-gray-600">Escríbenos y te guiamos en minutos.</p>
               <button
-                onClick={() => navigate('/contact')}
+                onClick={() => navigate('/contacto')}
                 className="mt-4 sm:mt-6 w-full rounded-xl sm:rounded-2xl border border-gray-200 px-4 sm:px-5 py-2.5 sm:py-3 text-xs sm:text-sm uppercase tracking-[0.3em] sm:tracking-[0.35em] text-gray-800 hover:bg-gray-50"
               >
                 Contactar soporte

@@ -744,92 +744,6 @@ export default function AdminProducts() {
               })}
             </div>
 
-            <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-lg font-semibold text-gray-900">Usuarios registrados</h2>
-                  <p className="text-xs text-gray-500">Solo lectura. No se permite editar ni eliminar desde aquí.</p>
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowUsers(v => !v)}
-                    className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d9cbb6] bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-[#fdf8f1]"
-                  >
-                    {showUsers ? 'Ocultar' : 'Mostrar'}
-                  </button>
-                  {showUsers && (
-                    <button
-                      type="button"
-                      onClick={fetchUsers}
-                      disabled={usersLoading}
-                      className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d9cbb6] bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-[#fdf8f1] disabled:opacity-60"
-                    >
-                      Refrescar
-                    </button>
-                  )}
-                </div>
-              </div>
-              {showUsers && (
-                <div className="overflow-hidden rounded-2xl border border-[#eadfcd] bg-white">
-                  {usersError && (
-                    <div className="border-b border-red-700 bg-red-700 px-4 py-3 text-xs text-red-700">{usersError}</div>
-                  )}
-                  {usersLoading ? (
-                    <div className="px-4 py-4 text-sm text-gray-500">Cargando usuarios...</div>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="min-w-full text-sm">
-                        <thead className="bg-[#faf4eb] text-left text-xs uppercase tracking-wide text-slate-600">
-                          <tr>
-                            <th className="px-3 py-2">Email</th>
-                            <th className="px-3 py-2">Nombre</th>
-                            <th className="px-3 py-2">Rol</th>
-                            <th className="px-3 py-2">Verificado</th>
-                            <th className="px-3 py-2">Último login</th>
-                            <th className="px-3 py-2">Creado</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {users.map(u => {
-                            const fullName = [u.firstName, u.lastName].filter(Boolean).join(' ') || '-';
-                            return (
-                              <tr key={u._id || u.id} className="border-b border-[#f1e7d6] text-xs last:border-b-0 hover:bg-[#fff8f0]">
-                                <td className="px-3 py-2 font-mono">{u.email}</td>
-                                <td className="px-3 py-2">{fullName}</td>
-                                <td className="px-3 py-2">
-                                  <span className={`rounded-full px-2 py-0.5 text-[10px] ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-[#f1e7d6] text-slate-700'}`}>
-                                    {u.role}
-                                  </span>
-                                </td>
-                                <td className="px-3 py-2">{u.isEmailVerified ? 'Sí' : 'No'}</td>
-                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '-'}</td>
-                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '-'}</td>
-                              </tr>
-                            );
-                          })}
-                          {users.length === 0 && !usersLoading && !usersError && (
-                            <tr>
-                              <td colSpan="6" className="px-3 py-4 text-center text-xs text-gray-500">Sin usuarios</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )}
-            </section>
-
-            {/* Panel de Códigos de Descuento */}
-            <div className="rounded-2xl border border-[#eadfcd] bg-white/95 p-5 shadow-sm">
-              <DiscountCodesPanel />
-            </div>
-
-            <div className="rounded-2xl border border-[#eadfcd] bg-white/95 p-5 shadow-sm">
-              <AdminPageManagement />
-            </div>
-
             <section className="space-y-6">
               <header className="flex flex-col gap-2">
                 <h2 className="text-2xl font-bold text-gray-900">Panel de combos</h2>
@@ -929,6 +843,92 @@ export default function AdminProducts() {
                 </button>
               </div>
             </section>
+
+            <section className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">Usuarios registrados</h2>
+                  <p className="text-xs text-gray-500">Solo lectura. No se permite editar ni eliminar desde aquí.</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowUsers(v => !v)}
+                    className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d9cbb6] bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-[#fdf8f1]"
+                  >
+                    {showUsers ? 'Ocultar' : 'Mostrar'}
+                  </button>
+                  {showUsers && (
+                    <button
+                      type="button"
+                      onClick={fetchUsers}
+                      disabled={usersLoading}
+                      className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d9cbb6] bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-[#fdf8f1] disabled:opacity-60"
+                    >
+                      Refrescar
+                    </button>
+                  )}
+                </div>
+              </div>
+              {showUsers && (
+                <div className="overflow-hidden rounded-2xl border border-[#eadfcd] bg-white">
+                  {usersError && (
+                    <div className="border-b border-red-700 bg-red-700 px-4 py-3 text-xs text-red-700">{usersError}</div>
+                  )}
+                  {usersLoading ? (
+                    <div className="px-4 py-4 text-sm text-gray-500">Cargando usuarios...</div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full text-sm">
+                        <thead className="bg-[#faf4eb] text-left text-xs uppercase tracking-wide text-slate-600">
+                          <tr>
+                            <th className="px-3 py-2">Email</th>
+                            <th className="px-3 py-2">Nombre</th>
+                            <th className="px-3 py-2">Rol</th>
+                            <th className="px-3 py-2">Verificado</th>
+                            <th className="px-3 py-2">Último login</th>
+                            <th className="px-3 py-2">Creado</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {users.map(u => {
+                            const fullName = [u.firstName, u.lastName].filter(Boolean).join(' ') || '-';
+                            return (
+                              <tr key={u._id || u.id} className="border-b border-[#f1e7d6] text-xs last:border-b-0 hover:bg-[#fff8f0]">
+                                <td className="px-3 py-2 font-mono">{u.email}</td>
+                                <td className="px-3 py-2">{fullName}</td>
+                                <td className="px-3 py-2">
+                                  <span className={`rounded-full px-2 py-0.5 text-[10px] ${u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-[#f1e7d6] text-slate-700'}`}>
+                                    {u.role}
+                                  </span>
+                                </td>
+                                <td className="px-3 py-2">{u.isEmailVerified ? 'Sí' : 'No'}</td>
+                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : '-'}</td>
+                                <td className="px-3 py-2 text-[10px] text-gray-500">{u.createdAt ? new Date(u.createdAt).toLocaleDateString() : '-'}</td>
+                              </tr>
+                            );
+                          })}
+                          {users.length === 0 && !usersLoading && !usersError && (
+                            <tr>
+                              <td colSpan="6" className="px-3 py-4 text-center text-xs text-gray-500">Sin usuarios</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+            </section>
+
+            {/* Panel de Códigos de Descuento */}
+            <div className="rounded-2xl border border-[#eadfcd] bg-white/95 p-5 shadow-sm">
+              <DiscountCodesPanel />
+            </div>
+
+            <div className="rounded-2xl border border-[#eadfcd] bg-white/95 p-5 shadow-sm">
+              <AdminPageManagement />
+            </div>
           </div>
         </div>
       </div>

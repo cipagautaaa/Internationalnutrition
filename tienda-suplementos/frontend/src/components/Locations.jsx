@@ -25,7 +25,7 @@ const Locations = () => {
       hours: {
         weekdays: "Lunes - Viernes: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
         saturday: "Sábado: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
-        sunday: "Domingo y festivos: 10:00 AM - 5:00 PM"
+        sunday: "Domingo y festivos: 10:00 AM - 4:00 PM"
       },
       isOpen: true,
       rating: 4.9,
@@ -46,7 +46,7 @@ const Locations = () => {
       hours: {
         weekdays: "Lunes - Viernes: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
         saturday: "Sábado: 9:00 AM - 1:00 PM y 3:00 PM - 8:00 PM",
-        sunday: "Domingo y festivos: 10:00 AM - 5:00 PM"
+        sunday: "Domingo y festivos: 10:00 AM - 4:00 PM"
       },
       isOpen: true,
       rating: 4.9,

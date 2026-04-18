@@ -10,6 +10,7 @@ export default function DiscountCodesPanel() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [collapsed, setCollapsed] = useState(false);
 
   // Form state
   const [form, setForm] = useState({
@@ -170,49 +171,67 @@ export default function DiscountCodesPanel() {
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div
+        className="flex items-center justify-between cursor-pointer select-none"
+        onClick={() => setCollapsed((c) => !c)}
+      >
         <div>
           <h2 className="text-lg font-semibold text-gray-900">Códigos de Descuento</h2>
           <p className="text-xs text-gray-500">Crea, edita y gestiona los códigos de descuento para la tienda.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex items-center gap-2">
+          {!collapsed && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); handleNewCode(); }}
+                className="inline-flex h-9 items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-3 text-xs font-medium text-white transition-colors"
+              >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Nuevo código
+              </button>
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); fetchDiscountCodes(); }}
+                disabled={loading}
+                className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d9cbb6] bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-[#fdf8f1] disabled:opacity-60"
+              >
+                Refrescar
+              </button>
+            </>
+          )}
           <button
             type="button"
-            onClick={handleNewCode}
-            className="inline-flex h-9 items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 px-3 text-xs font-medium text-white transition-colors"
+            onClick={(e) => { e.stopPropagation(); setCollapsed((c) => !c); }}
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-[#d9cbb6] bg-white text-slate-500 transition-colors hover:bg-[#fdf8f1]"
+            title={collapsed ? 'Expandir' : 'Colapsar'}
           >
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" />
+            <svg
+              className={`h-4 w-4 transition-transform duration-200 ${collapsed ? '' : 'rotate-180'}`}
+              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
             </svg>
-            Nuevo código
-          </button>
-          <button
-            type="button"
-            onClick={fetchDiscountCodes}
-            disabled={loading}
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d9cbb6] bg-white px-3 text-xs font-medium text-slate-700 transition-colors hover:bg-[#fdf8f1] disabled:opacity-60"
-          >
-            Refrescar
           </button>
         </div>
       </div>
 
-      {/* Success message */}
-      {successMessage && (
+      {/* Collapsible content */}
+      {!collapsed && successMessage && (
         <div className="rounded-lg bg-green-50 border border-green-200 px-4 py-3 text-sm text-green-700">
           {successMessage}
         </div>
       )}
 
-      {/* Error message */}
-      {error && (
+      {!collapsed && error && (
         <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           {error}
         </div>
       )}
 
-      {/* Form modal */}
-      {showForm && (
+      {!collapsed && showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
@@ -366,7 +385,7 @@ export default function DiscountCodesPanel() {
       )}
 
       {/* Codes table */}
-      <div className="overflow-hidden rounded-2xl border border-[#eadfcd] bg-white">
+      {!collapsed && <div className="overflow-hidden rounded-2xl border border-[#eadfcd] bg-white">
         {loading ? (
           <div className="px-4 py-4 text-sm text-gray-500">Cargando códigos de descuento...</div>
         ) : (
@@ -456,7 +475,7 @@ export default function DiscountCodesPanel() {
             </table>
           </div>
         )}
-      </div>
+      </div>}
     </section>
   );
 }
