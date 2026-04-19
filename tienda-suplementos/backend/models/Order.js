@@ -83,6 +83,11 @@ const orderSchema = new mongoose.Schema({
     type: String,
     default: null
   },
+  // Flag de idempotencia: evita descontar stock dos veces si webhook y verify coinciden
+  stockDeducted: {
+    type: Boolean,
+    default: false
+  },
   // Tracking de notificaciones por email (idempotencia y observabilidad)
   emailNotifications: {
     adminNewOrderSentAt: { type: Date, default: null },

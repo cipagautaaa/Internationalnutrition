@@ -2,7 +2,7 @@
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Tag } from 'lucide-react';
+import { Tag, Lock, Shield, Truck as TruckIcon, CheckCircle } from 'lucide-react';
 import api from '../services/api';
 import Alert from './Alert';
 

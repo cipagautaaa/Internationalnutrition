@@ -64,10 +64,10 @@ discountCodeSchema.methods.isValid = function() {
   return true;
 };
 
-// Método para incrementar el contador de uso
+// Método para incrementar el contador de uso (atómico para evitar race conditions bajo alto tráfico)
 discountCodeSchema.methods.incrementUsage = async function() {
+  await this.constructor.updateOne({ _id: this._id }, { $inc: { usageCount: 1 } });
   this.usageCount += 1;
-  await this.save();
 };
 
 // Virtual para obtener el estado legible

@@ -286,7 +286,7 @@ router.post('/verify-code', loginLimiter, validateVerifyEmail, async (req, res) 
 
 
 // Reenviar código de verificación
-router.post('/resend-code', async (req, res) => {
+router.post('/resend-code', codeLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 

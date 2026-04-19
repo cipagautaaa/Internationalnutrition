@@ -133,6 +133,27 @@ const applyDiscountCodeUsageOnce = async (order) => {
   }
 };
 
+// Helper atómico para descontar stock UNA sola vez por orden.
+// Usa findOneAndUpdate con stockDeducted=false como condición para evitar race conditions.
+const deductStockOnce = async (order) => {
+  const locked = await Order.findOneAndUpdate(
+    { _id: order._id, stockDeducted: { $ne: true } },
+    { $set: { stockDeducted: true } },
+    { new: true }
+  );
+  if (!locked) {
+    console.log(`⚠️ [deductStockOnce] Stock ya descontado para orden ${order._id}. Saltando.`);
+    return false;
+  }
+  for (const item of order.items) {
+    if (item.kind === 'Product') {
+      await Product.findByIdAndUpdate(item.product._id || item.product, { $inc: { stock: -item.quantity } });
+    }
+  }
+  console.log(`✅ [deductStockOnce] Stock descontado para orden ${order._id}`);
+  return true;
+};
+
 // Handler para crear transacción (compatible con llamadas desde /api/payments o /api/wompi)
 const createWompiTransactionHandler = async (req, res) => {
   try {
@@ -422,12 +443,8 @@ const verifyWompiHandler = async (req, res) => {
 
         await applyDiscountCodeUsageOnce(order);
         
-        // Descontar stock
-        for (const item of order.items) {
-          if (item.kind === 'Product') {
-            await Product.findByIdAndUpdate(item.product._id || item.product, { $inc: { stock: -item.quantity } });
-          }
-        }
+        // Descontar stock (atómico, evita doble deducción)
+        await deductStockOnce(order);
         
         // Resetear ruleta del usuario
         if (order.user) {
@@ -537,27 +554,21 @@ const wompiWebhookHandler = async (req, res) => {
           await applyDiscountCodeUsageOnce(order);
         }
         
-        // Solo descontar stock de productos unitarios (no combos) si el pago no estaba aprobado previamente
-        if (previousStatus !== 'paid' && previousStatus !== 'APPROVED') {
-          for (const item of order.items) {
-            if (item.kind === 'Product') {
-              await Product.findByIdAndUpdate(item.product, { $inc: { stock: -item.quantity } });
-            }
-          }
-          
-          // Resetear la ruleta del usuario para que pueda jugar de nuevo
-          if (order.user) {
-            try {
-              await User.findByIdAndUpdate(order.user, {
-                wheelPrizePending: null,
-                wheelLockedUntilPurchase: false,
-                wheelSpinAttempts: 0
-              });
-              console.log(`🎡 [WEBHOOK] Ruleta reseteada para usuario ${order.user} tras pago APPROVED`);
-            } catch (wheelError) {
-              console.error('🎡 [WEBHOOK] Error reseteando ruleta:', wheelError);
-              // No fallar la orden por esto
-            }
+        // Descontar stock (atómico, evita doble deducción con verify-fallback)
+        await deductStockOnce(order);
+        
+        // Resetear la ruleta del usuario para que pueda jugar de nuevo
+        if (order.user) {
+          try {
+            await User.findByIdAndUpdate(order.user, {
+              wheelPrizePending: null,
+              wheelLockedUntilPurchase: false,
+              wheelSpinAttempts: 0
+            });
+            console.log(`🎡 [WEBHOOK] Ruleta reseteada para usuario ${order.user} tras pago APPROVED`);
+          } catch (wheelError) {
+            console.error('🎡 [WEBHOOK] Error reseteando ruleta:', wheelError);
+            // No fallar la orden por esto
           }
         }
         

@@ -198,11 +198,21 @@ router.post('/verify-and-finalize', protect, async (req, res) => {
       order.paymentStatus = 'APPROVED';
       order.status = 'processing';
       
-      // Descontar stock
-      for (const item of order.items) {
-        if (item.kind === 'Product') {
-          await Product.findByIdAndUpdate(item.product._id || item.product, { $inc: { stock: -item.quantity } });
+      // Descontar stock (atómico, evita doble deducción)
+      const stockLocked = await Order.findOneAndUpdate(
+        { _id: order._id, stockDeducted: { $ne: true } },
+        { $set: { stockDeducted: true } },
+        { new: true }
+      );
+      if (stockLocked) {
+        for (const item of order.items) {
+          if (item.kind === 'Product') {
+            await Product.findByIdAndUpdate(item.product._id || item.product, { $inc: { stock: -item.quantity } });
+          }
         }
+        console.log(`✅ [VERIFY-FINALIZE] Stock descontado para orden ${order._id}`);
+      } else {
+        console.log(`⚠️ [VERIFY-FINALIZE] Stock ya descontado para orden ${order._id}. Saltando.`);
       }
       
       // Resetear ruleta

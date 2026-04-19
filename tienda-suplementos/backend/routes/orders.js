@@ -280,13 +280,13 @@ router.get('/', protect, async (req, res) => {
 // Actualizar estado de orden (solo para administradores)
 router.put('/:orderId/status', protect, async (req, res) => {
   try {
-    // Verificar si el usuario es admin (esto depende de cómo manejes los roles)
-    // if (!req.user.isAdmin) {
-    //   return res.status(403).json({
-    //     success: false,
-    //     message: 'No autorizado'
-    //   });
-    // }
+    // Verificar si el usuario es admin
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'No autorizado'
+      });
+    }
 
     const { status, paymentStatus } = req.body;
     const order = await Order.findById(req.params.orderId);
@@ -304,15 +304,22 @@ router.put('/:orderId/status', protect, async (req, res) => {
     if (status) order.status = status;
     if (paymentStatus) order.paymentStatus = paymentStatus;
 
-    // Si se confirma el pago, reducir stock
+    // Si se confirma el pago, reducir stock (atómico)
     const normalizedIncomingPaymentStatus = (paymentStatus || '').toLowerCase();
     const normalizedPreviousPaymentStatus = (previousPaymentStatus || '').toLowerCase();
     if (normalizedIncomingPaymentStatus === 'approved' && normalizedPreviousPaymentStatus !== 'approved' && normalizedPreviousPaymentStatus !== 'paid') {
-      for (const item of order.items) {
-        await Product.findByIdAndUpdate(
-          item.product,
-          { $inc: { stock: -item.quantity } }
-        );
+      const stockLocked = await Order.findOneAndUpdate(
+        { _id: order._id, stockDeducted: { $ne: true } },
+        { $set: { stockDeducted: true } },
+        { new: true }
+      );
+      if (stockLocked) {
+        for (const item of order.items) {
+          await Product.findByIdAndUpdate(
+            item.product,
+            { $inc: { stock: -item.quantity } }
+          );
+        }
       }
       
       // Resetear la ruleta del usuario para que pueda jugar de nuevo

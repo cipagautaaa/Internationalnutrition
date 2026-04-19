@@ -879,19 +879,25 @@ module.exports = {
     if (!nombre || !apellido || !email || !mensaje) {
       throw new Error('Campos incompletos para mensaje de contacto');
     }
+    // Sanitizar inputs para prevenir inyección HTML en emails
+    const esc = (str) => String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    const sNombre = esc(nombre);
+    const sApellido = esc(apellido);
+    const sEmail = esc(email);
+    const sMensaje = esc(mensaje);
     const transporter = await createTransporterAsync();
     const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'internationalnutritioncol@gmail.com';
     const mailOptions = {
       from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
       to: adminEmail,
       replyTo: email,
-      subject: `📩 [Mensaje de cliente] ${nombre} ${apellido}`,
+      subject: `📩 [Mensaje de cliente] ${sNombre} ${sApellido}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width:600px; margin:0 auto;">
           <h2 style="color:#dc2626;">Nuevo mensaje de contacto</h2>
-          <p><strong>Nombre:</strong> ${nombre} ${apellido}</p>
-          <p><strong>Email:</strong> ${email}</p>
-          <p style="white-space:pre-wrap; line-height:1.5;"><strong>Mensaje:</strong><br/>${mensaje}</p>
+          <p><strong>Nombre:</strong> ${sNombre} ${sApellido}</p>
+          <p><strong>Email:</strong> ${sEmail}</p>
+          <p style="white-space:pre-wrap; line-height:1.5;"><strong>Mensaje:</strong><br/>${sMensaje}</p>
           <hr style="margin:24px 0; border:none; border-top:1px solid #eee;"/>
           <p style="font-size:12px;color:#555;">Este correo fue generado desde el formulario de contacto.</p>
         </div>
