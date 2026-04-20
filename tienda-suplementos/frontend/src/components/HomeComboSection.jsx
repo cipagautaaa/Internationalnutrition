@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ArrowRight, ShoppingCart } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Search, ArrowUpDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import axios from '../utils/axios';
 import { useCart } from '../context/CartContext';
@@ -12,6 +12,8 @@ const HomeComboSection = () => {
   const [imageErrors, setImageErrors] = useState({});
   const { addToCart, openCart } = useCart();
   const [quickCombo, setQuickCombo] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     fetchCombos();
@@ -33,19 +35,21 @@ const HomeComboSection = () => {
     }
   };
 
-  // Filtrar por categoría y ordenar SIEMPRE por precio ascendente
+  // Filtrar por categoría, búsqueda y ordenar por precio
   const filteredCombos = useMemo(() => {
     if (!combos.length) return [];
     
+    const query = searchQuery.toLowerCase().trim();
+    
     const filtered = combos
       .filter(combo => combo.category === activeCategory)
-      .slice() // crear copia para no mutar
-      .sort((a, b) => (a.price || 0) - (b.price || 0))
-      .slice(0, 4);
+      .filter(combo => !query || combo.name?.toLowerCase().includes(query) || combo.description?.toLowerCase().includes(query))
+      .slice()
+      .sort((a, b) => sortOrder === 'asc' ? (a.price || 0) - (b.price || 0) : (b.price || 0) - (a.price || 0));
     
-    console.log('🏠 HOME Combos filtrados y ordenados:', activeCategory, filtered.map(c => `${c.name}: $${c.price}`));
-    return filtered;
-  }, [combos, activeCategory]);
+    // Mostrar todos cuando hay búsqueda, limitado a 4 sin búsqueda
+    return query ? filtered : filtered.slice(0, 4);
+  }, [combos, activeCategory, sortOrder, searchQuery]);
 
   const formatPrice = (price) => {
     return new Intl.NumberFormat('es-CO', {
@@ -83,27 +87,63 @@ const HomeComboSection = () => {
           </p>
         </div>
 
-        {/* Tabs de categoría */}
-        <div className="flex justify-center mb-12 gap-4">
-          {['Volumen', 'Definición'].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold transition-all duration-300 text-sm sm:text-base ${
-                activeCategory === cat
-                  ? 'bg-red-700 text-white shadow-lg shadow-red-700/30'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* Controles: Categoría + Ordenar + Buscar */}
+        <div className="flex flex-col gap-4 mb-12">
+          {/* Fila 1: Tabs de categoría + Ordenar por precio */}
+          <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <div className="flex gap-3">
+              {['Volumen', 'Definición'].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => { setActiveCategory(cat); setSearchQuery(''); }}
+                  className={`px-6 sm:px-8 py-2.5 sm:py-3 rounded-full font-semibold transition-all duration-300 text-sm sm:text-base ${
+                    activeCategory === cat
+                      ? 'bg-red-700 text-white shadow-lg shadow-red-700/30'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
 
-        {/* Active category badge */}
-        <div className="flex justify-center mb-12">
-          <div className="inline-flex items-center px-4 py-2 rounded-full border-2 border-red-700 text-red-700 font-medium text-sm">
-            Mostrando: <span className="ml-2 font-bold">{activeCategory}</span>
+            <button
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border-2 border-gray-300 text-gray-700 font-medium text-sm hover:border-red-700 hover:text-red-700 transition-all"
+            >
+              <ArrowUpDown className="w-4 h-4" />
+              Precio: {sortOrder === 'asc' ? 'Menor a Mayor' : 'Mayor a Menor'}
+            </button>
+          </div>
+
+          {/* Fila 2: Barra de búsqueda */}
+          <div className="flex justify-center">
+            <div className="relative w-full max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar combo..."
+                className="w-full pl-10 pr-4 py-2.5 rounded-full border-2 border-gray-200 focus:border-red-700 focus:outline-none text-sm transition-colors"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-lg"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Badge de categoría */}
+          <div className="flex justify-center">
+            <div className="inline-flex items-center px-4 py-2 rounded-full border-2 border-red-700 text-red-700 font-medium text-sm">
+              Mostrando: <span className="ml-2 font-bold">{activeCategory}</span>
+              {searchQuery && <span className="ml-2">· "{searchQuery}"</span>}
+            </div>
           </div>
         </div>
 
