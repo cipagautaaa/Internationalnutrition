@@ -467,4 +467,57 @@ router.get('/:orderId', protect, async (req, res) => {
   }
 });
 
+// Reenviar email de notificación al admin (solo para administradores)
+// Útil cuando el email original no llegó por fallo temporal del proveedor
+router.post('/:orderId/resend-admin-email', protect, async (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, message: 'No autorizado' });
+    }
+
+    const order = await Order.findById(req.params.orderId)
+      .populate('user')
+      .populate('items.product');
+
+    if (!order) {
+      return res.status(404).json({ success: false, message: 'Orden no encontrada' });
+    }
+
+    const userInfo = order.user || order.customerData || {};
+
+    // Forzar reenvío (resetear el flag de envío para que no sea idempotente)
+    const resAdmin = await sendNewOrderNotificationToAdmin(order, userInfo);
+    
+    if (resAdmin?.skipped || resAdmin?.queued) {
+      return res.json({
+        success: true,
+        message: 'Email encolado para reenvío',
+        result: resAdmin
+      });
+    }
+
+    // Actualizar timestamp de envío
+    await Order.updateOne(
+      { _id: order._id },
+      { $set: { 
+        'emailNotifications.adminNewOrderSentAt': new Date(),
+        'emailNotifications.lastEmailError': null
+      }}
+    );
+
+    res.json({
+      success: true,
+      message: 'Email de notificación reenviado al admin exitosamente',
+      messageId: resAdmin?.messageId
+    });
+  } catch (error) {
+    console.error('Error reenviando email al admin:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error reenviando email',
+      error: error.message
+    });
+  }
+});
+
 module.exports = router;

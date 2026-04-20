@@ -270,6 +270,18 @@ const createTransporterAsync = async () => {
               const gmail = google.gmail({ version: 'v1', auth: oauth2Client });
               const res = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } });
               console.log(`✅ [Gmail OAuth] Email enviado a ${to} (intento ${attempt})`);
+
+              // Si se pidió suprimir la copia en Enviados (ej: confirmación al cliente),
+              // eliminar el mensaje del buzón del admin para que no aparezca en su Gmail
+              if (opts._suppressSentCopy && res.data?.id) {
+                try {
+                  await gmail.users.messages.trash({ userId: 'me', id: res.data.id });
+                  console.log(`🗑️ [Gmail OAuth] Copia en Enviados eliminada para ${to}`);
+                } catch (trashErr) {
+                  console.warn(`⚠️ [Gmail OAuth] No se pudo eliminar copia en Enviados:`, trashErr.message);
+                }
+              }
+
               return { messageId: res.data?.id || 'gmail-api', accepted: [to], rejected: [] };
             } catch (err) {
               lastError = err;
@@ -766,6 +778,8 @@ const sendOrderConfirmationToCustomer = async (order, userInfo) => {
   const mailOptions = {
     from: process.env.EMAIL_FROM || process.env.EMAIL_USER,
     to: customerEmail,
+    // Suprimir copia en Enviados del admin para que este email solo lo vea el cliente
+    _suppressSentCopy: true,
     subject: `✅ Confirmación de Orden - SportSupps #${order.orderNumber || order._id.toString().slice(-8).toUpperCase()}`,
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px;">
