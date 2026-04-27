@@ -33,7 +33,7 @@ const Checkout = () => {
 
   // Validar formulario
   const validateForm = () => {
-    const required = ['street', 'city', 'state', 'zipCode'];
+    const required = ['street', 'city', 'state'];
     for (const field of required) {
       if (!shippingData[field].trim()) {
         setAlert({
@@ -277,7 +277,7 @@ const Checkout = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Código Postal *
+                    Código Postal
                   </label>
                   <input
                     type="text"
@@ -286,7 +286,6 @@ const Checkout = () => {
                     onChange={handleInputChange}
                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     placeholder="Ej: 1001"
-                    required
                   />
                 </div>
 
