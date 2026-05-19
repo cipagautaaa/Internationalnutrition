@@ -591,14 +591,9 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
   const customerLegalIdType = userInfo?.legalIdType || order?.customerData?.legalIdType || '';
   const customerLegalId = userInfo?.legalId || order?.customerData?.legalId || '';
   
-  const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER;
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'internationalnutritioncol@gmail.com';
   console.log('📧 [sendNewOrderNotificationToAdmin] Admin Email:', adminEmail);
   console.log('📧 [sendNewOrderNotificationToAdmin] Email From:', process.env.EMAIL_FROM || process.env.EMAIL_USER);
-
-  if (!adminEmail) {
-    console.error('❌ [sendNewOrderNotificationToAdmin] ADMIN_EMAIL/EMAIL_USER no configurado. No se puede enviar notificación.');
-    return { skipped: true, reason: 'missing_admin_email' };
-  }
   
   const orderItemsHtml = order.items.map(item => `
     <tr>
@@ -654,12 +649,12 @@ const sendNewOrderNotificationToAdmin = async (order, userInfo) => {
           ${order.shippingAddress ? `
           <div style="margin-bottom: 20px;">
             <h2 style="color: #333;">Dirección de Envío</h2>
-            <p><strong>Nombre:</strong> ${order.shippingAddress.fullName}</p>
-            <p><strong>Teléfono:</strong> ${order.shippingAddress.phoneNumber}</p>
-            <p><strong>Dirección:</strong> ${order.shippingAddress.street}</p>
-            ${order.shippingAddress.addressLine2 ? `<p><strong>Complemento:</strong> ${order.shippingAddress.addressLine2}</p>` : ''}
-            <p><strong>Ciudad:</strong> ${order.shippingAddress.city}, ${order.shippingAddress.region}</p>
+            ${customerFullName ? `<p><strong>Nombre:</strong> ${customerFullName}</p>` : ''}
+            ${customerPhone ? `<p><strong>Teléfono:</strong> ${customerPhone}</p>` : ''}
+            <p><strong>Dirección:</strong> ${order.shippingAddress.street || 'N/A'}</p>
+            <p><strong>Ciudad:</strong> ${order.shippingAddress.city || 'N/A'}, ${order.shippingAddress.state || order.shippingAddress.region || 'N/A'}</p>
             <p><strong>Código Postal:</strong> ${order.shippingAddress.zipCode || 'N/A'}</p>
+            <p><strong>País:</strong> ${order.shippingAddress.country || 'Colombia'}</p>
           </div>
           ` : ''}
 

@@ -18,7 +18,9 @@
     "db:setup:json": "npm run create-indexes && npm run seed:json",
     "db:clear:products": "node scripts/clearProducts.js",
     "transform:raw": "node scripts/transformRawProducts.js",
-    "test:wompi": "node test-wompi-config.js"
+    "test:wompi": "node test-wompi-config.js",
+    "recover-email": "node scripts/recover-order-email.js",
+    "recover-email:order": "node scripts/recover-order-email.js"
   },
   "keywords": [],
   "author": "",
