@@ -52,6 +52,15 @@ const comboSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  comboOfMonth: {
+    type: Boolean,
+    default: false
+  },
+  comboOfMonthPosition: {
+    type: Number,
+    default: null,
+    min: 0
+  },
   rating: {
     type: Number,
     min: 0,
@@ -66,5 +75,6 @@ const comboSchema = new mongoose.Schema({
 comboSchema.index({ category: 1 });
 comboSchema.index({ inStock: 1 });
 comboSchema.index({ featured: 1 });
+comboSchema.index({ comboOfMonth: 1 });
 
 module.exports = mongoose.model('Combo', comboSchema);

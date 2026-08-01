@@ -3,6 +3,8 @@ import { ArrowRight, Star, Truck, RotateCcw, CheckCircle, ChevronDown, MessageCi
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import FeaturedProductCard from '../components/FeaturedProductCard';
 import SelectProductModal from '../components/SelectProductModal';
+import FeaturedComboCard from '../components/FeaturedComboCard';
+import SelectComboModal from '../components/SelectComboModal';
 import FeaturedTypeTabs from '../components/FeaturedTypeTabs';
 import CategoryCarouselClean from '../components/CategoryCarouselClean';
 import ProcessSection from '../components/ProcessSection';
@@ -30,6 +32,10 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [selectModalOpen, setSelectModalOpen] = useState(false);
   const [slotToReplace, setSlotToReplace] = useState(null);
+  const [comboOfMonth, setComboOfMonth] = useState([]);
+  const [comboLoading, setComboLoading] = useState(true);
+  const [selectComboModalOpen, setSelectComboModalOpen] = useState(false);
+  const [comboSlotToReplace, setComboSlotToReplace] = useState(null);
   const [openFaqIndex, setOpenFaqIndex] = useState(null);
   const [showPromo, setShowPromo] = useState(false);
   const [showWheel, setShowWheel] = useState(false);
@@ -111,6 +117,7 @@ const Home = () => {
 
   useEffect(() => {
     fetchFeaturedProducts();
+    fetchComboOfMonth();
   }, []);
 
   const ensureHeroVideoPlays = useCallback(() => {
@@ -243,6 +250,80 @@ const Home = () => {
       alert('Error al agregar el producto destacado');
     }
   };
+
+  const fetchComboOfMonth = async () => {
+    setComboLoading(true);
+    try {
+      const { data } = await axios.get('/combos/featured-month');
+      const featured = data.data || data.featured || data || [];
+      // Asegurar que siempre haya 4 slots
+      const filledSlots = [...featured];
+      while (filledSlots.length < 4) {
+        filledSlots.push(null);
+      }
+      setComboOfMonth(filledSlots.slice(0, 4));
+    } catch (error) {
+      console.error('Error al cargar combos del mes:', error);
+      // En caso de error, dejar los slots vacíos para no mostrar datos antiguos
+      setComboOfMonth([null, null, null, null]);
+    } finally {
+      setComboLoading(false);
+    }
+  };
+
+  const handleRemoveComboOfMonth = async (comboId) => {
+    if (!isAdmin) return;
+    if (!comboId) {
+      console.error('Intento de remover combo del mes sin ID válido');
+      alert('No se pudo identificar el combo. Recarga la página e inténtalo de nuevo.');
+      return;
+    }
+
+    try {
+      await axios.delete(`/combos/featured-month/${comboId}`, { headers: getAuthHeaders() });
+      const index = comboOfMonth.findIndex(c => c && (c._id === comboId || c.id === comboId));
+      if (index !== -1) {
+        const newCombos = [...comboOfMonth];
+        newCombos[index] = null;
+        setComboOfMonth(newCombos);
+      }
+    } catch (error) {
+      console.error('Error al remover combo del mes:', error?.response?.status, error?.response?.data || error);
+      const serverMessage = error?.response?.data?.message;
+      alert(serverMessage || 'Error al remover el combo del mes');
+    }
+  };
+
+  const handleAddComboOfMonth = (slotIndex) => {
+    if (!isAdmin) return;
+    setComboSlotToReplace(slotIndex);
+    setSelectComboModalOpen(true);
+  };
+
+  const handleComboSelected = async (combo) => {
+    if (!isAdmin || comboSlotToReplace === null) return;
+    const comboId = combo?._id || combo?.id;
+    if (!comboId) {
+      console.error('Combo seleccionado sin identificador válido');
+      alert('No se pudo identificar el combo. Intenta con otro combo o recarga la página.');
+      return;
+    }
+
+    try {
+      await axios.post('/combos/featured-month', {
+        comboId,
+        position: comboSlotToReplace
+      }, { headers: getAuthHeaders() });
+      const newCombos = [...comboOfMonth];
+      newCombos[comboSlotToReplace] = { ...combo, _id: comboId };
+      setComboOfMonth(newCombos);
+      setComboSlotToReplace(null);
+    } catch (error) {
+      console.error('Error al agregar combo del mes:', error);
+      alert('Error al agregar el combo del mes');
+    }
+  };
+
   const scrollToCategories = () => {
     const section = document.getElementById('categories');
     const title = document.getElementById('categories-title');
@@ -436,6 +517,55 @@ const Home = () => {
             setSlotToReplace(null);
           }}
           onSelect={handleProductSelected}
+        />
+      )}
+
+      {/* Combos del Mes - Diseño limpio */}
+      <section className="py-16 sm:py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 tracking-tight">
+              COMBOS DEL MES
+            </h2>
+            <p className="text-base sm:text-xl text-gray-600 font-light">
+              Los combos elegidos para maximizar tus resultados este mes
+            </p>
+            {isAdmin && (
+              <p className="text-sm text-red-700 font-medium mt-2">
+                Modo Edición: Pasa el mouse sobre un combo para editarlo
+              </p>
+            )}
+          </div>
+
+          {comboLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-700"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-5 lg:gap-8">
+              {comboOfMonth.map((combo, index) => (
+                <FeaturedComboCard
+                  key={combo ? (combo._id || combo.id) : `empty-combo-${index}`}
+                  combo={combo}
+                  isEmpty={!combo}
+                  onRemove={handleRemoveComboOfMonth}
+                  onAdd={() => handleAddComboOfMonth(index)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Modal de selección de combo - Solo para admin */}
+      {isAdmin && (
+        <SelectComboModal
+          isOpen={selectComboModalOpen}
+          onClose={() => {
+            setSelectComboModalOpen(false);
+            setComboSlotToReplace(null);
+          }}
+          onSelect={handleComboSelected}
         />
       )}
 

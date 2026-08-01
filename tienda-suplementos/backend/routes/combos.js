@@ -22,6 +22,94 @@ router.get('/', async (req, res) => {
   }
 });
 
+// ===== RUTAS PARA COMBOS DEL MES (ANTES DE /:id) =====
+
+// GET /api/combos/featured-month - Obtener combos del mes
+router.get('/featured-month', async (req, res) => {
+  try {
+    const featuredCombos = await Combo.find({ comboOfMonth: true })
+      .populate('products.productId')
+      .sort({ comboOfMonthPosition: 1 })
+      .limit(4);
+
+    // Crear un array de 4 posiciones garantizadas
+    const slots = [null, null, null, null];
+
+    featuredCombos.forEach(combo => {
+      const position = combo.comboOfMonthPosition || 0;
+      if (position >= 0 && position < 4) {
+        slots[position] = combo;
+      }
+    });
+
+    res.json({ success: true, data: slots });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// POST /api/combos/featured-month - Agregar combo a combos del mes (admin)
+router.post('/featured-month', auth.protect, isAdmin, async (req, res) => {
+  try {
+    const { comboId, position } = req.body;
+    if (!comboId) {
+      return res.status(400).json({ success: false, message: 'Combo ID es requerido' });
+    }
+
+    const combo = await Combo.findById(comboId).lean();
+    if (!combo) {
+      return res.status(404).json({ success: false, message: 'Combo no encontrado' });
+    }
+
+    const targetPosition = position !== undefined ? position : 0;
+
+    if (combo.comboOfMonth) {
+      const updated = await Combo.findByIdAndUpdate(
+        comboId,
+        { comboOfMonthPosition: targetPosition },
+        { new: true, runValidators: false }
+      );
+      return res.json({ success: true, data: updated });
+    }
+
+    if (position !== undefined) {
+      await Combo.updateMany(
+        { comboOfMonth: true, comboOfMonthPosition: position },
+        { $set: { comboOfMonth: false, comboOfMonthPosition: null } }
+      );
+    }
+
+    const updated = await Combo.findByIdAndUpdate(
+      comboId,
+      { comboOfMonth: true, comboOfMonthPosition: targetPosition },
+      { new: true, runValidators: false }
+    );
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
+// DELETE /api/combos/featured-month/:id - Remover combo de combos del mes (admin)
+router.delete('/featured-month/:id', auth.protect, isAdmin, async (req, res) => {
+  try {
+    const updated = await Combo.findByIdAndUpdate(
+      req.params.id,
+      { comboOfMonth: false, comboOfMonthPosition: null },
+      { new: true, runValidators: false }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ success: false, message: 'Combo no encontrado' });
+    }
+
+    res.json({ success: true, message: 'Combo removido de combos del mes', data: updated });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+});
+
 // GET combo por ID
 router.get('/:id', async (req, res) => {
   try {
