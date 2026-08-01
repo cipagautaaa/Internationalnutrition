@@ -356,13 +356,7 @@ const Home = () => {
   };
 
   const handleOpenPromo = () => {
-    if (!ENABLE_WHEEL) return;
-    // Si el usuario está logueado, abrir directamente la ruleta
-    if (isAuthenticated) {
-      setShowWheel(true);
-    } else {
-      setShowPromo(true);
-    }
+    setShowPromo(true);
   };
 
   const handleCloseWheel = () => {
@@ -382,7 +376,7 @@ const Home = () => {
             open={showWheel}
             onClose={handleCloseWheel}
           />
-          {/* Boton flotante "Ruleta Anabolica" - siempre visible cuando modales estan cerrados */}
+          {/* Boton flotante "Promo Platinum" - siempre visible cuando modales estan cerrados */}
           <PromoFloatButton 
             show={!showPromo && !showWheel} 
             onClick={handleOpenPromo} 
