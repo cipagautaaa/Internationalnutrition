@@ -19,7 +19,7 @@ import PromoWelcomeModal from '../components/PromoWelcomeModal';
 import PromoFloatButton from '../components/PromoFloatButton';
 import SpinWheel from '../components/SpinWheel';
 
-const ENABLE_WHEEL = false;
+const ENABLE_WHEEL = true;
 
 const Home = () => {
   const { isAuthenticated, user, token } = useAuth();
