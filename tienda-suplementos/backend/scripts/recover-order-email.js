@@ -79,7 +79,14 @@ async function main() {
   console.log('✅ Conectado a MongoDB\n');
 
   // Cargar modelos DESPUÉS de conectar
-  const Order = mongoose.model('Order') || require('../models/Order');
+  // `mongoose.model('Order')` throws when the model has not been registered
+  // yet, so load the model module directly for this standalone script.
+  const Order = require('../models/Order');
+  // Register the referenced models so `populate` can resolve each order item.
+  require('../models/Product');
+  require('../models/Combo');
+  require('../models/Implement');
+  require('../models/User');
 
   let order = null;
   try {

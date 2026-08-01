@@ -47,6 +47,14 @@ mongoose.connect(mongoUri, mongoOptions)
       console.warn('⚠️ No se pudo iniciar EmailOutbox worker:', e?.message || e);
     }
 
+    // Job de reconciliación Wompi: detecta órdenes con pago aprobado que no se procesaron
+    try {
+      const { startWompiReconciliationJob } = require('./utils/wompiReconciliation');
+      startWompiReconciliationJob();
+    } catch (e) {
+      console.warn('⚠️ No se pudo iniciar WompiReconciliation job:', e?.message || e);
+    }
+
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Servidor corriendo en puerto ${PORT}`));
   })

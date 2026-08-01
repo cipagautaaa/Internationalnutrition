@@ -427,8 +427,13 @@ const verifyWompiHandler = async (req, res) => {
     const isAdmin = req.user?.role === 'admin';
     const canAccessOrder = Boolean(order && (isAdmin || (requesterId && orderUserId && requesterId === orderUserId)));
 
-    // FALLBACK de actualización solo para usuarios autorizados (owner/admin)
-    if (canAccessOrder && order && transaction && (transaction.status || '').toUpperCase() === 'APPROVED') {
+    // Para órdenes de invitados (sin usuario asociado): el hecho de tener el transactionId
+    // de Wompi ya es prueba de que el cliente completó el pago. Permitir fallback.
+    const isGuestOrder = order && !orderUserId;
+    const canTriggerFallback = canAccessOrder || isGuestOrder;
+
+    // FALLBACK de actualización: para usuarios autorizados y también para órdenes de invitados
+    if (canTriggerFallback && order && transaction && (transaction.status || '').toUpperCase() === 'APPROVED') {
       const needsUpdate = order.paymentStatus !== 'APPROVED' && order.paymentStatus !== 'paid' && order.paymentStatus !== 'approved';
       
       if (needsUpdate) {
@@ -498,7 +503,7 @@ const verifyWompiHandler = async (req, res) => {
       }
     }
 
-    if (!canAccessOrder) {
+    if (!canTriggerFallback) {
       return res.json({ success: true, transaction: verificationResult.transaction });
     }
 
@@ -573,33 +578,26 @@ const wompiWebhookHandler = async (req, res) => {
         }
         
         // Enviar emails de confirmación
-        // IMPORTANTE: Cada email tiene su propio try-catch para que un fallo
-        // en uno no impida el envío del otro
-        console.log('📧 [WEBHOOK] Iniciando envío de emails para orden:', order._id);
-        
-        // Poblar user e items.product con manejo de error independiente
-        let userInfo = order.customerData || {};
         try {
+          console.log('📧 [WEBHOOK] Iniciando envío de emails para orden:', order._id);
+          
+          // Poblar user e items.product
           await order.populate('user');
           await order.populate('items.product');
-          userInfo = order.user || order.customerData || {};
-        } catch (populateError) {
-          console.error('⚠️ [WEBHOOK] Error en populate, usando customerData como fallback:', populateError?.message);
-          // Continuar con customerData - los emails aún pueden enviarse
-        }
-        
-        console.log('📧 [WEBHOOK] Info del usuario obtenida:', {
-          email: userInfo.email,
-          firstName: userInfo.firstName,
-          lastName: userInfo.lastName,
-          fullName: userInfo.fullName
-        });
-        
-        const emailUpdates = {};
+          
+          // Obtener información del usuario (si existe) o fallback a customerData (invitado)
+          const userInfo = order.user || order.customerData || {};
+          
+          console.log('📧 [WEBHOOK] Info del usuario obtenida:', {
+            email: userInfo.email,
+            firstName: userInfo.firstName,
+            lastName: userInfo.lastName,
+            fullName: userInfo.fullName
+          });
+          
+          const emailUpdates = {};
 
-        // --- Email al ADMIN (try-catch independiente) ---
-        if (!order.emailNotifications?.adminNewOrderSentAt) {
-          try {
+          if (!order.emailNotifications?.adminNewOrderSentAt) {
             console.log('📧 [WEBHOOK] Enviando notificación al admin...');
             const resAdmin = await sendNewOrderNotificationToAdmin(order, userInfo);
             if (!resAdmin?.queued && !resAdmin?.skipped) {
@@ -608,23 +606,11 @@ const wompiWebhookHandler = async (req, res) => {
             } else {
               console.log('📮 [WEBHOOK] Notificación al admin encolada/skipped:', resAdmin);
             }
-          } catch (adminEmailError) {
-            console.error('❌ [WEBHOOK] Error enviando email al admin:', adminEmailError?.message);
-            // Forzar encolado en outbox como safety net
-            try {
-              const { enqueueEmailOutboxJob } = require('../utils/emailService');
-              // No tenemos mailOptions aquí, pero la función sendNewOrderNotificationToAdmin
-              // ya encola internamente en producción. Este log es informativo.
-            } catch (e) { /* no-op */ }
-            emailUpdates['emailNotifications.lastEmailError'] = (adminEmailError?.message || String(adminEmailError)).slice(0, 4000);
+          } else {
+            console.log('↩️ [WEBHOOK] Admin ya notificado. Saltando envío.');
           }
-        } else {
-          console.log('↩️ [WEBHOOK] Admin ya notificado. Saltando envío.');
-        }
 
-        // --- Email al CLIENTE (try-catch independiente) ---
-        if (!order.emailNotifications?.customerConfirmationSentAt) {
-          try {
+          if (!order.emailNotifications?.customerConfirmationSentAt) {
             console.log('📧 [WEBHOOK] Enviando confirmación al cliente...');
             const resCustomer = await sendOrderConfirmationToCustomer(order, userInfo);
             if (!resCustomer?.queued && !resCustomer?.skipped) {
@@ -633,12 +619,9 @@ const wompiWebhookHandler = async (req, res) => {
             } else {
               console.log('📮 [WEBHOOK] Confirmación al cliente encolada/skipped:', resCustomer);
             }
-          } catch (customerEmailError) {
-            console.error('❌ [WEBHOOK] Error enviando email al cliente:', customerEmailError?.message);
+          } else {
+            console.log('↩️ [WEBHOOK] Cliente ya confirmado. Saltando envío.');
           }
-        } else {
-          console.log('↩️ [WEBHOOK] Cliente ya confirmado. Saltando envío.');
-        }
 
           if (Object.keys(emailUpdates).length > 0) {
             order.emailNotifications = order.emailNotifications || {};
@@ -648,14 +631,17 @@ const wompiWebhookHandler = async (req, res) => {
             if (emailUpdates['emailNotifications.customerConfirmationSentAt']) {
               order.emailNotifications.customerConfirmationSentAt = emailUpdates['emailNotifications.customerConfirmationSentAt'];
             }
-            if (emailUpdates['emailNotifications.lastEmailError']) {
-              order.emailNotifications.lastEmailError = emailUpdates['emailNotifications.lastEmailError'];
-            } else {
-              order.emailNotifications.lastEmailError = null;
-            }
+            order.emailNotifications.lastEmailError = null;
           }
 
           console.log('✅ [WEBHOOK] Flujo de emails ejecutado para orden:', order._id);
+        } catch (emailError) {
+          console.error('❌ [WEBHOOK] Error enviando correos:', {
+            orderId: order._id,
+            error: emailError?.message || emailError,
+            stack: emailError?.stack
+          });
+        }
         
       } else if (transactionStatus === 'DECLINED' || transactionStatus === 'ERROR') {
         console.log('❌ [WEBHOOK] Transacción RECHAZADA o ERROR');

@@ -358,9 +358,32 @@ const getAvailablePaymentMethods = async () => {
   }
 };
 
+// Buscar transacciones Wompi por referencia de orden.
+// Útil para el job de reconciliación cuando wompiTransactionId no está guardado.
+const searchTransactionByReference = async (reference) => {
+  try {
+    const url = `${WOMPI_BASE_URL}/transactions?reference=${encodeURIComponent(reference)}`;
+    const resp = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${WOMPI_PRIVATE_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      timeout: 10000
+    });
+    // Wompi devuelve { data: [...transactions], meta: {...} }
+    const transactions = resp.data?.data || [];
+    console.log(`🔍 [Wompi] Búsqueda por referencia "${reference}": ${transactions.length} transacción(es)`);
+    return { success: true, transactions };
+  } catch (error) {
+    console.error('Error buscando transacción por referencia:', error?.response?.data || error?.message);
+    return { success: false, error: error?.response?.data || error?.message || String(error) };
+  }
+};
+
 module.exports = {
   createWompiTransaction,
   verifyWompiTransaction,
+  searchTransactionByReference,
   createDirectPayment,
   processWompiWebhook,
   getAvailablePaymentMethods,
