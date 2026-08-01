@@ -471,55 +471,6 @@ const Home = () => {
 
       
 
-      {/* Featured Products - Diseño limpio */}
-      <section className="py-16 sm:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-left mb-10 sm:mb-16">
-            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 tracking-tight">
-              ¡LO MAS VENDIDO!
-            </h2>
-            <p className="text-base sm:text-xl text-gray-600 font-light">
-              Estos son los productos que nuestros clientes prefieren
-            </p>
-            {isAdmin && (
-              <p className="text-sm text-red-700 font-medium mt-2">
-                Modo Edición: Pasa el mouse sobre un producto para editarlo
-              </p>
-            )}
-          </div>
-          
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-700"></div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-5 lg:gap-8">
-              {featuredProducts.map((product, index) => (
-                <FeaturedProductCard
-                  key={product ? (product._id || product.id) : `empty-${index}`}
-                  product={product}
-                  isEmpty={!product}
-                  onRemove={handleRemoveFeatured}
-                  onAdd={() => handleAddFeatured(index)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Modal de selección de producto - Solo para admin */}
-      {isAdmin && (
-        <SelectProductModal
-          isOpen={selectModalOpen}
-          onClose={() => {
-            setSelectModalOpen(false);
-            setSlotToReplace(null);
-          }}
-          onSelect={handleProductSelected}
-        />
-      )}
-
       {/* Combos del Mes - Diseño limpio */}
       <section className="py-16 sm:py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -566,6 +517,55 @@ const Home = () => {
             setComboSlotToReplace(null);
           }}
           onSelect={handleComboSelected}
+        />
+      )}
+
+      {/* Featured Products - Diseño limpio */}
+      <section className="py-16 sm:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-left mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 tracking-tight">
+              ¡LO MAS VENDIDO!
+            </h2>
+            <p className="text-base sm:text-xl text-gray-600 font-light">
+              Estos son los productos que nuestros clientes prefieren
+            </p>
+            {isAdmin && (
+              <p className="text-sm text-red-700 font-medium mt-2">
+                Modo Edición: Pasa el mouse sobre un producto para editarlo
+              </p>
+            )}
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-700"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-5 lg:gap-8">
+              {featuredProducts.map((product, index) => (
+                <FeaturedProductCard
+                  key={product ? (product._id || product.id) : `empty-${index}`}
+                  product={product}
+                  isEmpty={!product}
+                  onRemove={handleRemoveFeatured}
+                  onAdd={() => handleAddFeatured(index)}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Modal de selección de producto - Solo para admin */}
+      {isAdmin && (
+        <SelectProductModal
+          isOpen={selectModalOpen}
+          onClose={() => {
+            setSelectModalOpen(false);
+            setSlotToReplace(null);
+          }}
+          onSelect={handleProductSelected}
         />
       )}
 
