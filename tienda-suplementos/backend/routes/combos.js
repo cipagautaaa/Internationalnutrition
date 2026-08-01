@@ -30,14 +30,14 @@ router.get('/featured-month', async (req, res) => {
     const featuredCombos = await Combo.find({ comboOfMonth: true })
       .populate('products.productId')
       .sort({ comboOfMonthPosition: 1 })
-      .limit(4);
+      .limit(5);
 
-    // Crear un array de 4 posiciones garantizadas
-    const slots = [null, null, null, null];
+    // Crear un array de 5 posiciones garantizadas
+    const slots = [null, null, null, null, null];
 
     featuredCombos.forEach(combo => {
       const position = combo.comboOfMonthPosition || 0;
-      if (position >= 0 && position < 4) {
+      if (position >= 0 && position < 5) {
         slots[position] = combo;
       }
     });

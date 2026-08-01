@@ -256,16 +256,16 @@ const Home = () => {
     try {
       const { data } = await axios.get('/combos/featured-month');
       const featured = data.data || data.featured || data || [];
-      // Asegurar que siempre haya 4 slots
+      // Asegurar que siempre haya 5 slots
       const filledSlots = [...featured];
-      while (filledSlots.length < 4) {
+      while (filledSlots.length < 5) {
         filledSlots.push(null);
       }
-      setComboOfMonth(filledSlots.slice(0, 4));
+      setComboOfMonth(filledSlots.slice(0, 5));
     } catch (error) {
       console.error('Error al cargar combos del mes:', error);
       // En caso de error, dejar los slots vacíos para no mostrar datos antiguos
-      setComboOfMonth([null, null, null, null]);
+      setComboOfMonth([null, null, null, null, null]);
     } finally {
       setComboLoading(false);
     }
@@ -487,7 +487,7 @@ const Home = () => {
               <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-red-700"></div>
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:gap-5 lg:gap-8">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 sm:gap-5 lg:gap-6">
               {comboOfMonth.map((combo, index) => (
                 <FeaturedComboCard
                   key={combo ? (combo._id || combo.id) : `empty-combo-${index}`}
