@@ -149,10 +149,6 @@ const Home = () => {
 
   useEffect(() => {
     if (!ENABLE_WHEEL) return;
-    if (isAuthenticated) {
-      setShowPromo(false);
-      return;
-    }
 
     let alreadyDismissed = false;
     try {
@@ -167,7 +163,7 @@ const Home = () => {
 
     const timer = setTimeout(() => setShowPromo(true), 5000);
     return () => clearTimeout(timer);
-  }, [isAuthenticated]);
+  }, []);
 
   const fetchFeaturedProducts = async () => {
     setLoading(true);
