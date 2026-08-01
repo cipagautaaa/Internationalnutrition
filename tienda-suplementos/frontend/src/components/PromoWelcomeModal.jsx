@@ -1,134 +1,35 @@
-import { X, ArrowRight, Target } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { X } from 'lucide-react';
+import promoPlatinumImg from '../assets/images/PROMO PLATINUM  (1).png';
 
 /**
- * PromoWelcomeModal - Modal de bienvenida para la Ruleta Anabólica
- * 
- * Aparece a los 5 segundos de entrar al sitio.
- * - Si el usuario NO está logueado: redirige a registro/login
- * - Si el usuario está logueado: abre la ruleta directamente
+ * PromoWelcomeModal - Banner informativo de bienvenida
+ *
+ * Aparece a los 5 segundos de entrar al sitio. Es puramente informativo:
+ * muestra la promoción Platinum y solo puede cerrarse (sin CTA ni redirección).
  */
-const PromoWelcomeModal = ({ open, onClose, onOpenWheel }) => {
-  const { isAuthenticated } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-
+const PromoWelcomeModal = ({ open, onClose }) => {
   if (!open) return null;
-
-  const handlePlayClick = () => {
-    onClose();
-    
-    if (isAuthenticated) {
-      // Usuario logueado: abrir la ruleta
-      if (onOpenWheel) {
-        onOpenWheel();
-      }
-    } else {
-      // Usuario no logueado: redirigir a registro
-      navigate('/sign-in', { 
-        state: { 
-          from: location.pathname,
-          openWheel: true // Flag para abrir ruleta después de login
-        } 
-      });
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center px-4 sm:px-6 py-6 overflow-y-auto pointer-events-auto">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Contenedor principal */}
-      <div className="relative max-w-lg w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
+      <div className="relative max-w-md w-full bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-200">
         {/* Botón cerrar */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-full transition"
+          className="absolute top-4 right-4 z-10 p-2 text-white bg-black/40 hover:bg-black/60 rounded-full transition"
           aria-label="Cerrar"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Línea superior */}
-        <div className="absolute top-0 left-0 w-full h-px bg-slate-200"></div>
-
-        {/* Contenido */}
-        <div className="relative p-6 sm:p-8 text-center">
-          {/* Ícono principal */}
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full border border-slate-200 bg-slate-50">
-            <Target className="w-8 h-8 text-slate-700" />
-          </div>
-
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-slate-100 border border-slate-200 rounded-full text-xs font-semibold text-slate-600 mb-4 uppercase tracking-wide">
-            Nueva promoción
-          </div>
-
-          {/* Título */}
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-3 leading-tight">
-            Llegó la
-            <span className="block text-red-500">Ruleta Anabólica</span>
-          </h2>
-
-          {/* Descripción */}
-          <p className="text-slate-600 text-base sm:text-lg mb-6 max-w-md mx-auto">
-            Participa por la oportunidad de ganar
-            <span className="text-slate-900 font-semibold"> descuentos</span>,
-            <span className="text-slate-900 font-semibold"> regalos sorpresa</span> y
-            <span className="text-slate-900 font-semibold"> suplementos gratis</span>.
-          </p>
-
-          {/* Premios disponibles */}
-          <div className="flex flex-wrap justify-center gap-2 mb-6">
-            <span className="px-3 py-1 bg-slate-50 text-slate-700 text-xs font-semibold rounded-full border border-slate-200">
-              5% - 20%
-            </span>
-            <span className="px-3 py-1 bg-slate-50 text-slate-700 text-xs font-semibold rounded-full border border-slate-200">
-              Regalos sorpresa
-            </span>
-            <span className="px-3 py-1 bg-slate-50 text-slate-700 text-xs font-semibold rounded-full border border-slate-200">
-              Suplementos gratis
-            </span>
-          </div>
-
-          {/* Beneficios */}
-          <div className="space-y-2 mb-6">
-            <div className="flex items-center justify-center gap-2 text-sm text-slate-500">
-              <span>Premios reales en cada giro</span>
-            </div>
-          </div>
-
-          {/* CTA Principal */}
-          <button
-            onClick={handlePlayClick}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-red-600 text-white font-semibold text-base sm:text-lg px-6 py-3.5 shadow-lg shadow-black/30 hover:bg-red-700 transition"
-          >
-            <Target className="w-5 h-5" />
-            Quiero probar suerte
-            <ArrowRight className="w-5 h-5" />
-          </button>
-
-          {/* Nota de autenticación */}
-          {!isAuthenticated && (
-            <p className="text-xs text-slate-500 mt-3">
-              * Necesitas una cuenta para participar y guardar tu premio
-            </p>
-          )}
-
-          {/* Botón secundario */}
-          <button
-            onClick={onClose}
-            className="w-full mt-3 text-sm font-semibold text-slate-500 hover:text-slate-700 transition py-2"
-          >
-            Ahora no
-          </button>
-
-          {/* Términos */}
-          <p className="text-[10px] text-slate-500 mt-4">
-            *Aplican términos y condiciones. Promoción válida hasta agotar existencias. Un premio por compra realizada.
-          </p>
-        </div>
+        <img
+          src={promoPlatinumImg}
+          alt="Promoción Platinum"
+          className="w-full h-auto block"
+        />
       </div>
     </div>
   );

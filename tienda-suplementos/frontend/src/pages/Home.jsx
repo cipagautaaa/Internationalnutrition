@@ -365,11 +365,6 @@ const Home = () => {
     }
   };
 
-  const handleOpenWheel = () => {
-    if (!ENABLE_WHEEL) return;
-    setShowWheel(true);
-  };
-
   const handleCloseWheel = () => {
     setShowWheel(false);
   };
@@ -381,7 +376,6 @@ const Home = () => {
           <PromoWelcomeModal
             open={showPromo}
             onClose={handleClosePromo}
-            onOpenWheel={handleOpenWheel}
           />
           {/* Ruleta Anabolica */}
           <SpinWheel
