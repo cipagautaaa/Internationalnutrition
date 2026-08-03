@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Target } from 'lucide-react';
+import { DollarSign } from 'lucide-react';
 
 /**
  * Botón flotante "Promo Platinum" que aparece en la esquina inferior izquierda
@@ -17,12 +17,12 @@ const PromoFloatButton = ({ onClick, show }) => {
       className={`
         fixed left-3 md:left-6 z-30
         flex items-center gap-1.5 md:gap-2
-        bg-gradient-to-r from-red-600 to-orange-600
+        bg-gradient-to-r from-gray-800 to-gray-950
         text-white font-bold text-[11px] md:text-sm
         px-3 py-2 md:px-4 md:py-2.5 rounded-full
-        shadow-md shadow-red-600/25
+        shadow-md shadow-black/25
         transition-all duration-300
-        hover:scale-105 hover:shadow-xl hover:shadow-red-600/40
+        hover:scale-105 hover:shadow-xl hover:shadow-black/40
         animate-bounce-slow
       `}
       style={{
@@ -32,7 +32,7 @@ const PromoFloatButton = ({ onClick, show }) => {
       aria-label="Ver Promo Platinum"
     >
       <div className="w-6 h-6 md:w-7 md:h-7 bg-white/20 rounded-full flex items-center justify-center">
-        <Target className="w-3 h-3 md:w-3.5 md:h-3.5" />
+        <DollarSign className="w-3 h-3 md:w-3.5 md:h-3.5" />
       </div>
       <span className="uppercase tracking-wide">
         Promo Platinum

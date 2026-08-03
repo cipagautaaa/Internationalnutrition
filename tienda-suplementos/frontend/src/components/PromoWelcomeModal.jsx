@@ -30,6 +30,18 @@ const PromoWelcomeModal = ({ open, onClose }) => {
           alt="Promoción Platinum"
           className="w-full h-auto block"
         />
+
+        <div className="p-6 sm:p-7">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 leading-snug">
+            La Creatina Platinum queda en $120.000 comprando cualquiera de los 5 combos del mes
+          </h2>
+          <p className="text-sm sm:text-base text-slate-600 mt-3 leading-relaxed">
+            En un combo normal el descuento se reparte entre los dos productos. En estos combos todo el descuento se concentra en la creatina, así que queda en $120.000 sin importar qué proteína elijas, algo que no vas a conseguir comprándola por separado.
+          </p>
+          <p className="text-xs sm:text-sm text-slate-500 mt-4">
+            Disponible solo en los combos del mes y mientras haya unidades.
+          </p>
+        </div>
       </div>
     </div>
   );

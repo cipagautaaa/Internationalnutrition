@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from 'react';
+import { ArrowUpDown } from 'lucide-react';
 import axios from '../utils/axios';
 import ProductCard from './ProductCard';
 
@@ -11,6 +12,7 @@ export default function FeaturedTypeTabs() {
   const [selectedType, setSelectedType] = useState('Volumen');
   const [combos, setCombos] = useState([]);
   const [combosLoading, setCombosLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState('asc');
 
   // Obtener combos de la API
   useEffect(() => {
@@ -29,10 +31,11 @@ export default function FeaturedTypeTabs() {
     fetchCombos();
   }, []);
 
-  // Filtrar combos por categoría seleccionada
-  const filteredCombos = combos.filter(combo => {
-    return combo.category === selectedType && combo.inStock;
-  });
+  // Filtrar combos por categoría seleccionada y ordenar por precio
+  const filteredCombos = combos
+    .filter(combo => combo.category === selectedType && combo.inStock)
+    .slice()
+    .sort((a, b) => sortOrder === 'asc' ? (a.price || 0) - (b.price || 0) : (b.price || 0) - (a.price || 0));
 
   const allItems = [...filteredCombos];
 
@@ -67,8 +70,16 @@ export default function FeaturedTypeTabs() {
                 {type}
               </button>
             ))}
+
+            <button
+              onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+              className="whitespace-nowrap inline-flex items-center gap-2 px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold text-sm sm:text-base hover:border-red-700 hover:text-red-700 transition-all"
+            >
+              <ArrowUpDown className="w-4 h-4" />
+              Precio: {sortOrder === 'asc' ? 'Menor a Mayor' : 'Mayor a Menor'}
+            </button>
           </div>
-          
+
           {/* Indicador de selección */}
           <div className="mt-3 inline-flex px-4 py-2 bg-white rounded-full border border-red-700 text-sm text-gray-700">
             <span className="font-semibold">
