@@ -11,7 +11,7 @@ const PromoWelcomeModal = ({ open, onClose }) => {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center px-4 sm:px-6 py-6 overflow-y-auto pointer-events-auto">
+    <div className="fixed inset-0 z-[150] flex items-start sm:items-center justify-center px-4 sm:px-6 py-6 overflow-y-auto pointer-events-auto">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Contenedor principal */}
